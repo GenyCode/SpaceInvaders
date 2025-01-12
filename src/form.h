@@ -5,7 +5,7 @@
 using namespace std;
 const Coordinate start_area = {12,8};
 const Coordinate end_area = {116,25};
-const Coordinate footer_area = {12,28};
+const Coordinate footer_area = {12,29};
 string blank_form = R"(
     ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
     ║       _______  _____  _______ _______ _______      _____ __   _ _    _ _______ ______  _______  ______ _______       ║

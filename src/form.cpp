@@ -143,6 +143,14 @@ void RenderRangebar(RangeBar &rangeBar, Display display)
         cout << fg_color << rangeBar.value << FG_WHITE;
     }
 }
+void RenderFooter(string text)
+{
+    Gotoxy(footer_area.x, footer_area.y);
+    cout << FG_WHITE << text;
+    for(int i = footer_area.x+text.length();i<end_area.x;i++){
+        cout << " ";
+    }
+}
 // TODO: کاربر میتونه روی المنتی که وجود نداره حرکت کنه، این باگ هست
 void HandleNavigation(char input, Display &display, int row_count)
 {
@@ -302,13 +310,13 @@ void OnPress6(void *element, ElementType type)
     switch (type)
     {
     case CHECKBOX:
-        ToggleCheckboxState(*((Checkbox*)element));
+        ToggleCheckboxState(*((Checkbox *)element));
         break;
     case SELECTBOX:
-        UpdateSelectBoxSelection(*((Selectbox*)element),6);
+        UpdateSelectBoxSelection(*((Selectbox *)element), 6);
         break;
     case RANGEBAR:
-        UpdateRangeBarValue(*((RangeBar*)element),6);
+        UpdateRangeBarValue(*((RangeBar *)element), 6);
         break;
     }
 }
@@ -317,10 +325,10 @@ void OnPress5(void *element, ElementType type)
     switch (type)
     {
     case SELECTBOX:
-        UpdateSelectBoxSelection(*((Selectbox*)element),5);
+        UpdateSelectBoxSelection(*((Selectbox *)element), 5);
         break;
     case RANGEBAR:
-        UpdateRangeBarValue(*((RangeBar*)element),5);
+        UpdateRangeBarValue(*((RangeBar *)element), 5);
         break;
     }
 }
@@ -339,7 +347,25 @@ void HandleInput(char input, Display &display, ElementType type, void *element, 
         HandleNavigation(input, display, row_count);
     }
 }
-
+string GetKeyHints(ElementType type){
+    string result = "";
+    switch (type)
+    {
+    case CHECKBOX:
+        result = "[X]: Toggle Checkbox";
+        break;
+    case SELECTBOX:
+        result = "[Z]: Previous Option  [X]: Next Option";
+        break;
+    case RANGEBAR:
+        result = "[Z]: Decrease Value  [X]: Increase Value";
+        break;
+    default:
+        result = "Use [W], [A], [S], [D] to Navigate, [Enter] to Select.";
+        break;
+    }
+    return result;
+}
 int main()
 {
     system("cls");
@@ -399,12 +425,13 @@ int main()
             }
             RenderCheckbox(checkbox[i], display);
         }
+        RenderFooter(GetKeyHints(selectedElementType));
         if (display.SetValueMode)
             display.SetValueMode = !display.SetValueMode;
         else
         {
             char ch = getch();
-            HandleInput(ch,display,selectedElementType,selectedElement,row_count);
+            HandleInput(ch, display, selectedElementType, selectedElement, row_count);
         }
     }
     return 0;
