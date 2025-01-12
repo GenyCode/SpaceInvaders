@@ -6,11 +6,11 @@
 #include <conio.h>
 using namespace std;
 
-void PrintBlankForm()
+void RenderBackground()
 {
     cout << BG_BLACK << FG_WHITE << blank_form;
 }
-void PrintBox(int width, int height, string fg_color)
+void DrawBox(int width, int height, string fg_color)
 {
     Coordinate point = GetCursorPosition();
     for (int i = 0; i < height; i++)
@@ -47,7 +47,7 @@ void PrintBox(int width, int height, string fg_color)
     }
     cout << FG_WHITE;
 }
-void PrintButton(Button button, Display display)
+void RenderButton(Button button, Display display)
 {
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
@@ -64,11 +64,11 @@ void PrintButton(Button button, Display display)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    PrintBox(width, height, fg_color);
+    DrawBox(width, height, fg_color);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << button.text << FG_WHITE;
 }
-void PrintTextbox(Textbox &textbox, Display display)
+void RenderTextbox(Textbox &textbox, Display display)
 {
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
@@ -80,7 +80,7 @@ void PrintTextbox(Textbox &textbox, Display display)
         elementPos.y += (textbox.position.row - display.start_row) * 4;
         elementPos.x += (textbox.position.col) * 54;
         Gotoxy(elementPos.x, elementPos.y);
-        PrintBox(width, height, fg_color);
+        DrawBox(width, height, fg_color);
         Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
         textbox.value = GetInput(width - 4);
     }
@@ -88,15 +88,15 @@ void PrintTextbox(Textbox &textbox, Display display)
     {
         if (!textbox.value.empty())
         {
-            PrintButton({textbox.value, textbox.position}, display);
+            RenderButton({textbox.value, textbox.position}, display);
         }
         else
         {
-            PrintButton({textbox.placeholder, textbox.position}, display);
+            RenderButton({textbox.placeholder, textbox.position}, display);
         }
     }
 }
-void PrintRangebar(RangeBar &rangeBar, Display display)
+void RenderRangebar(RangeBar &rangeBar, Display display)
 {
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
@@ -113,7 +113,7 @@ void PrintRangebar(RangeBar &rangeBar, Display display)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    PrintBox(width, height, fg_color);
+    DrawBox(width, height, fg_color);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << rangeBar.text << FG_WHITE;
     Gotoxy(elementPos.x + 14, elementPos.y + (height / 2));
@@ -144,7 +144,7 @@ void PrintRangebar(RangeBar &rangeBar, Display display)
     }
 }
 // TODO: کاربر میتونه روی المنتی که وجود نداره حرکت کنه، این باگ هست
-void NavigateForm(char input, Display &display, int row_count)
+void HandleNavigation(char input, Display &display, int row_count)
 {
     if (isupper(input))
     {
@@ -198,7 +198,7 @@ void NavigateForm(char input, Display &display, int row_count)
         break;
     }
 }
-void PrintCheckbox(Checkbox &checkbox, Display display)
+void RenderCheckbox(Checkbox &checkbox, Display display)
 {
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
@@ -215,7 +215,7 @@ void PrintCheckbox(Checkbox &checkbox, Display display)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    PrintBox(width, height, fg_color);
+    DrawBox(width, height, fg_color);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << checkbox.text << FG_WHITE;
     Gotoxy(elementPos.x + width - 4, elementPos.y + (height / 2));
@@ -246,7 +246,7 @@ void PrintSelectbox(Selectbox &selectbox, Display display)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    PrintBox(width, height, fg_color);
+    DrawBox(width, height, fg_color);
     Gotoxy(elementPos.x + 2, elementPos.y + 1);
     cout << fg_color << "<";
     Gotoxy(elementPos.x + width - 3, elementPos.y + 1);
@@ -261,7 +261,7 @@ void PrintSelectbox(Selectbox &selectbox, Display display)
         cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
     }
 }
-void OnChange(Selectbox &selectbox, int input)
+void UpdateSelectBoxSelection(Selectbox &selectbox, int input)
 {
     if (input == 5)
     {
@@ -276,7 +276,7 @@ void OnChange(Selectbox &selectbox, int input)
             selectbox.SelectedIndex = 0;
     }
 }
-void OnChange(RangeBar &rangeBar, int input)
+void UpdateRangeBarValue(RangeBar &rangeBar, int input)
 {
     int dis = rangeBar.max - rangeBar.min;
     int step = dis / 28;
@@ -293,7 +293,7 @@ void OnChange(RangeBar &rangeBar, int input)
             rangeBar.value = rangeBar.max;
     }
 }
-void OnChange(Checkbox &checkbox)
+void ToggleCheckboxState(Checkbox &checkbox)
 {
     checkbox.isChecked = !checkbox.isChecked;
 }
@@ -302,13 +302,13 @@ void OnPress6(void *element, ElementType type)
     switch (type)
     {
     case CHECKBOX:
-        OnChange(*((Checkbox*)element));
+        ToggleCheckboxState(*((Checkbox*)element));
         break;
     case SELECTBOX:
-        OnChange(*((Selectbox*)element),6);
+        UpdateSelectBoxSelection(*((Selectbox*)element),6);
         break;
     case RANGEBAR:
-        OnChange(*((RangeBar*)element),6);
+        UpdateRangeBarValue(*((RangeBar*)element),6);
         break;
     }
 }
@@ -317,10 +317,10 @@ void OnPress5(void *element, ElementType type)
     switch (type)
     {
     case SELECTBOX:
-        OnChange(*((Selectbox*)element),5);
+        UpdateSelectBoxSelection(*((Selectbox*)element),5);
         break;
     case RANGEBAR:
-        OnChange(*((RangeBar*)element),5);
+        UpdateRangeBarValue(*((RangeBar*)element),5);
         break;
     }
 }
@@ -336,7 +336,7 @@ void HandleInput(char input, Display &display, ElementType type, void *element, 
     }
     else
     {
-        NavigateForm(input, display, row_count);
+        HandleNavigation(input, display, row_count);
     }
 }
 
@@ -347,7 +347,7 @@ int main()
     int row_count = 5;
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
-    PrintBlankForm();
+    RenderBackground();
     Checkbox checkbox[5] = {
         {"Feature 01", false, {0, 0}},
         {"Feature 02", false, {1, 0}},
@@ -379,7 +379,7 @@ int main()
                 selectedElement = &rangebar[i];
                 selectedElementType = RANGEBAR;
             }
-            PrintRangebar(rangebar[i], display);
+            RenderRangebar(rangebar[i], display);
         }
         /* for (int i = display.start_row; i <= display.end_row; i++)
         {
@@ -397,7 +397,7 @@ int main()
                 selectedElement = &checkbox[i];
                 selectedElementType = CHECKBOX;
             }
-            PrintCheckbox(checkbox[i], display);
+            RenderCheckbox(checkbox[i], display);
         }
         if (display.SetValueMode)
             display.SetValueMode = !display.SetValueMode;
