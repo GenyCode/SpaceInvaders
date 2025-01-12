@@ -118,7 +118,9 @@ void PrintRangebar(RangeBar &rangeBar, Display display)
     cout << fg_color << rangeBar.text << FG_WHITE;
     Gotoxy(elementPos.x + 14, elementPos.y + (height / 2));
     int dis = rangeBar.max - rangeBar.min;
-    int fillCharacterCount = (rangeBar.value % dis) * 29 / dis;
+    float ProgressRate = (rangeBar.value - rangeBar.min) * 1.0 / dis;
+
+    int fillCharacterCount = ProgressRate * 28;
     cout << fg_color;
     for (int i = 0; i < 29; i++)
     {
@@ -130,10 +132,11 @@ void PrintRangebar(RangeBar &rangeBar, Display display)
             cout << "░";
     }
     cout << FG_WHITE;
-    Gotoxy(elementPos.x +width-6, elementPos.y + (height / 2));
+    Gotoxy(elementPos.x + width - 6, elementPos.y + (height / 2));
     if (rangeBar.UsePercentage)
     {
-        cout << fg_color << (rangeBar.value % dis) * 100 / dis << "%" << FG_WHITE;
+        int percentage = ProgressRate * 100;
+        cout << fg_color << percentage << "%" << FG_WHITE;
     }
     else
     {
@@ -258,7 +261,85 @@ void PrintSelectbox(Selectbox &selectbox, Display display)
         cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
     }
 }
-// TODO: Create Action function for Modified Elements depends on User Input
+void OnChange(Selectbox &selectbox, int input)
+{
+    if (input == 5)
+    {
+        selectbox.SelectedIndex--;
+        if (selectbox.SelectedIndex < 0)
+            selectbox.SelectedIndex = selectbox.ItemsCount - 1;
+    }
+    else if (input == 6)
+    {
+        selectbox.SelectedIndex++;
+        if (selectbox.SelectedIndex > selectbox.ItemsCount - 1)
+            selectbox.SelectedIndex = 0;
+    }
+}
+void OnChange(RangeBar &rangeBar, int input)
+{
+    int dis = rangeBar.max - rangeBar.min;
+    int step = dis / 28;
+    if (input == 5 && rangeBar.value != 0)
+    {
+        rangeBar.value -= step;
+        if (rangeBar.value < 0)
+            rangeBar.value = 0;
+    }
+    else if (input == 6 && rangeBar.value != rangeBar.max)
+    {
+        rangeBar.value += step;
+        if (rangeBar.value > rangeBar.max)
+            rangeBar.value = rangeBar.max;
+    }
+}
+void OnChange(Checkbox &checkbox)
+{
+    checkbox.isChecked = !checkbox.isChecked;
+}
+void OnPress6(void *element, ElementType type)
+{
+    switch (type)
+    {
+    case CHECKBOX:
+        OnChange(*((Checkbox*)element));
+        break;
+    case SELECTBOX:
+        OnChange(*((Selectbox*)element),6);
+        break;
+    case RANGEBAR:
+        OnChange(*((RangeBar*)element),6);
+        break;
+    }
+}
+void OnPress5(void *element, ElementType type)
+{
+    switch (type)
+    {
+    case SELECTBOX:
+        OnChange(*((Selectbox*)element),5);
+        break;
+    case RANGEBAR:
+        OnChange(*((RangeBar*)element),5);
+        break;
+    }
+}
+void HandleInput(char input, Display &display, ElementType type, void *element, int row_count)
+{
+    if (input == 'x')
+    {
+        OnPress6(element, type);
+    }
+    else if (input == 'z')
+    {
+        OnPress5(element, type);
+    }
+    else
+    {
+        NavigateForm(input, display, row_count);
+    }
+}
+
 int main()
 {
     system("cls");
@@ -277,27 +358,43 @@ int main()
         {"Sound:", 0, 100, 50, false, {0, 1}},
         {"Range 02", 0, 200, 50, true, {1, 1}},
         {"Range 03", 100, 150, 110, false, {2, 1}},
-        {"Range 04", 0, 100, 30, true ,{3, 1}},
+        {"Range 04", 0, 100, 30, true, {3, 1}},
         {"Range 05", 0, 100, 0, false, {4, 1}}};
+    //  Selectbox selectbox[5] = {
+    //     {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 01",4, -1, {0, 1}},
+    //     {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 02",4, -1, {1, 1}},
+    //     {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 03",4, -1, {2, 1}},
+    //     {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 04",4, -1, {3, 1}},
+    //     {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 05",4, -1, {4, 1}}
+    //};
     while (true)
     {
-        int selectedElementIndex = 0;
+        void *selectedElement;
         ElementType selectedElementType;
 
         for (int i = display.start_row; i <= display.end_row; i++)
         {
             if ((rangebar[i].position.col == display.userPosition.col) && (rangebar[i].position.row == display.userPosition.row))
             {
-                selectedElementIndex = i;
+                selectedElement = &rangebar[i];
                 selectedElementType = RANGEBAR;
             }
             PrintRangebar(rangebar[i], display);
         }
+        /* for (int i = display.start_row; i <= display.end_row; i++)
+        {
+            if ((selectbox[i].position.col == display.userPosition.col) && (selectbox[i].position.row == display.userPosition.row))
+            {
+                selectedElementIndex = i;
+                selectedElementType = SELECTBOX;
+            }
+            PrintSelectbox(selectbox[i], display);
+        } */
         for (int i = display.start_row; i <= display.end_row; i++)
         {
             if ((checkbox[i].position.col == display.userPosition.col) && (checkbox[i].position.row == display.userPosition.row))
             {
-                selectedElementIndex = i;
+                selectedElement = &checkbox[i];
                 selectedElementType = CHECKBOX;
             }
             PrintCheckbox(checkbox[i], display);
@@ -307,19 +404,7 @@ int main()
         else
         {
             char ch = getch();
-            if (ch == 'x')
-            {
-                switch (selectedElementType)
-                {
-                case CHECKBOX:
-                    checkbox[selectedElementIndex].isChecked = !checkbox[selectedElementIndex].isChecked;
-                    break;
-                }
-            }
-            else
-            {
-                NavigateForm(ch, display, row_count);
-            }
+            HandleInput(ch,display,selectedElementType,selectedElement,row_count);
         }
     }
     return 0;
