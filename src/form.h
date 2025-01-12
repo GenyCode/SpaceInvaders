@@ -37,7 +37,12 @@ string blank_form = R"(
     ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
     ║                                                                                                                      ║
     ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝)";
-
+enum ElementType
+{
+    BUTTON,
+    TEXTBOX,
+    CHECKBOX,
+};
 struct Position{
     int row;
     int col;
@@ -45,7 +50,9 @@ struct Position{
 struct Display{
     int start_row = 0;
     int end_row = 4;
-    bool isEditing = false;
+    int start_col = 0;
+    int end_col = 1;
+    bool SetValueMode = false;
     Position userPosition = {0, 0};
 };
 struct Button{

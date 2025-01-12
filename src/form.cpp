@@ -72,7 +72,7 @@ void PrintTextbox(Textbox &textbox, Display display)
 {
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
-    if (display.isEditing && textbox.position.col == display.userPosition.col && textbox.position.row == display.userPosition.row)
+    if (display.SetValueMode && textbox.position.col == display.userPosition.col && textbox.position.row == display.userPosition.row)
     {
         fg_color = FG_YELLOW;
         int width = 50;
@@ -96,6 +96,7 @@ void PrintTextbox(Textbox &textbox, Display display)
         }
     }
 }
+// TODO: کاربر میتونه روی المنتی که وجود نداره حرکت کنه، این باگ هست
 void NavigateForm(char input, Display &display, int row_count)
 {
     if (isupper(input))
@@ -118,7 +119,7 @@ void NavigateForm(char input, Display &display, int row_count)
 
         break;
     case 's':
-        if (display.userPosition.row < row_count-1)
+        if (display.userPosition.row < row_count - 1)
         {
             display.userPosition.row++;
             if (display.userPosition.row > display.end_row)
@@ -144,50 +145,88 @@ void NavigateForm(char input, Display &display, int row_count)
         }
         break;
     case '\r':
-        display.isEditing = true;
+        display.SetValueMode = true;
         break;
     default:
         break;
+    }
+}
+void PrintCheckbox(Checkbox &checkbox, Display display)
+{
+    Coordinate elementPos = {start_area.x, start_area.y};
+    string fg_color = "";
+    if (checkbox.position.col == display.userPosition.col && checkbox.position.row == display.userPosition.row)
+    {
+        fg_color = FG_CYAN;
+    }
+    else
+    {
+        fg_color = FG_WHITE;
+    }
+    elementPos.y += (checkbox.position.row - display.start_row) * 4;
+    elementPos.x += (checkbox.position.col) * 54;
+    int width = 50;
+    int height = 3;
+    Gotoxy(elementPos.x, elementPos.y);
+    PrintBox(width, height, fg_color);
+    Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+    cout << fg_color << checkbox.text << FG_WHITE;
+    Gotoxy(elementPos.x + width - 4, elementPos.y + (height / 2));
+    if (checkbox.isChecked)
+    {
+        cout << fg_color << "▒█" << FG_WHITE;
+    }
+    else
+    {
+        cout << fg_color << "█░" << FG_WHITE;
     }
 }
 int main()
 {
     system("cls");
     Display display;
-    int row_count = 17;
+    int row_count = 5;
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
     PrintBlankForm();
-    Textbox txt[17] = {
-        {"New User0", false, "", "", true, {0, 0}},
-        {"New User1", false, "", "", true, {1, 0}},
-        {"New User2", false, "", "", true, {2, 0}},
-        {"New User3", false, "", "", true, {3, 0}},
-        {"New User4", false, "", "", true, {4, 0}},
-        {"New User5", false, "", "", true, {5, 0}},
-        {"New User6", false, "", "", true, {6, 0}},
-        {"New User7", false, "", "", true, {7, 0}},
-        {"New User8", false, "", "", true, {8, 0}},
-        {"New User9", false, "", "", true, {9, 0}},
-        {"New User10", false, "", "", true, {10, 0}},
-        {"New User11", false, "", "", true, {11, 0}},
-        {"New User12", false, "", "", true, {12, 0}},
-        {"New User13", false, "", "", true, {13, 0}},
-        {"New User14", false, "", "", true, {14, 0}},
-        {"New User15", false, "", "", true, {15, 0}},
-        {"New User16", false, "", "", true, {16, 0}}};
+    Checkbox checkbox[5] = {
+        {"Feature 01", false, {0, 0}},
+        {"Feature 02", false, {1, 0}},
+        {"Feature 03", true, {2, 0}},
+        {"Feature 04", false, {3, 0}},
+        {"Feature 05", false, {4, 0}},
+    };
     while (true)
     {
+        int selectedElementIndex = 0;
+        ElementType selectedElementType;
+
         for (int i = display.start_row; i <= display.end_row; i++)
         {
-            PrintTextbox(txt[i], display);
+            if ((checkbox[i].position.col == display.userPosition.col) && (checkbox[i].position.row == display.userPosition.row))
+            {
+                selectedElementIndex = i;
+                selectedElementType = CHECKBOX;
+            }
+            PrintCheckbox(checkbox[i], display);
         }
-        if (display.isEditing)
-            display.isEditing = !display.isEditing;
+        if (display.SetValueMode)
+            display.SetValueMode = !display.SetValueMode;
         else
         {
             char ch = getch();
-            NavigateForm(ch, display, row_count);
+            if (ch == 'x')
+            {
+                switch(selectedElementType){
+                    case CHECKBOX:
+                        checkbox[selectedElementIndex].isChecked =  !checkbox[selectedElementIndex].isChecked;
+                    break;
+                }
+            }
+            else
+            {
+                NavigateForm(ch, display, row_count);
+            }
         }
     }
 
