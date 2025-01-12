@@ -96,12 +96,49 @@ void PrintTextbox(Textbox &textbox, Position userPosition, bool isEditing)
         }
     }
 }
+void NavigateForm(Position &userPosition, char input,bool &isEditing)
+{
+    if (isupper(input))
+    {
+        input = tolower(input);
+    }
+
+    switch (input)
+    {
+    case 'w':
+        userPosition.row--;
+        break;
+    case 's':
+        userPosition.row++;
+        break;
+    case 'a':
+        userPosition.col--;
+        if(userPosition.col < 0){
+            userPosition.col = 1;
+        }
+        break;
+    case 'd':
+        userPosition.col++;
+        if(userPosition.col > 1){
+            userPosition.col = 0;
+        }
+        break;
+    case '\r':
+        isEditing = true;
+        break;
+    default:
+        break;
+    }
+}
 int main()
 {
+
     system("cls");
+    Position userPosition = {0, 0};
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+    HideCursor();
     PrintBlankForm();
-    Textbox txt1 = {"New User", false, "", "H", true, {0, 0}};
+    Textbox txt1 = {"New User", false, "", "", true, {0, 0}};
     Textbox txt2 = {"New User", false, "", "", true, {1, 0}};
     Textbox txt3 = {"New User", false, "", "", true, {2, 0}};
     Textbox txt4 = {"New User", false, "", "", true, {3, 0}};
@@ -115,22 +152,22 @@ int main()
     while (true)
     {
 
-        PrintTextbox(txt1, {0, 0}, isEditing);
-        PrintTextbox(txt2, {0, 0}, isEditing);
-        PrintTextbox(txt3, {0, 0}, isEditing);
-        PrintTextbox(txt4, {0, 0}, isEditing);
-        PrintTextbox(txt5, {0, 0}, isEditing);
-        PrintTextbox(txt6, {0, 0}, isEditing);
-        PrintTextbox(txt7, {0, 0}, isEditing);
-        PrintTextbox(txt8, {0, 0}, isEditing);
-        PrintTextbox(txt9, {0, 0}, isEditing);
-        PrintTextbox(txt10, {0, 0}, isEditing);
+        PrintTextbox(txt1, userPosition, isEditing);
+        PrintTextbox(txt2, userPosition, isEditing);
+        PrintTextbox(txt3, userPosition, isEditing);
+        PrintTextbox(txt4, userPosition, isEditing);
+        PrintTextbox(txt5, userPosition, isEditing);
+        PrintTextbox(txt6, userPosition, isEditing);
+        PrintTextbox(txt7, userPosition, isEditing);
+        PrintTextbox(txt8, userPosition, isEditing);
+        PrintTextbox(txt9, userPosition, isEditing);
+        PrintTextbox(txt10, userPosition, isEditing);
         if (isEditing)
             isEditing = !isEditing;
         else
         {
             char ch = getch();
-            isEditing = true;
+            NavigateForm(userPosition,ch,isEditing);
         }
     }
 

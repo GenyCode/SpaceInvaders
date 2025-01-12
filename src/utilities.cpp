@@ -32,9 +32,6 @@ void Gotoxy(int x, int y)
     pos.Y = y;
     SetConsoleCursorPosition(hConsole, pos);
 }
-#include <iostream>
-#include <windows.h>
-using namespace std;
 
 Coordinate GetCursorPosition() {
     Coordinate coordinate;
@@ -98,7 +95,10 @@ string GetInput(int maxLength)
     while (true)
     {
         ch = getch();
-
+        if (ch == 32)
+        {
+            ch = '_';
+        }
         if (ch == '\r')
         {
             break;
