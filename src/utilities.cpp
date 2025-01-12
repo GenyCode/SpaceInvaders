@@ -4,10 +4,6 @@
 #include "utilities.h"
 
 using namespace std;
-struct Coordinate{
-    int x;
-    int y;
-};
 void HideCursor()
 {
     cout << "\033[?25l";

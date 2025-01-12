@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
-
+struct Coordinate{
+    int x;
+    int y;
+};
 using namespace std;
 void HideCursor();
 void ShowCursor();
