@@ -42,6 +42,12 @@ struct Position{
     int row;
     int col;
 };
+struct Display{
+    int start_row = 0;
+    int end_row = 4;
+    bool isEditing = false;
+    Position userPosition = {0, 0};
+};
 struct Button{
     string text;
     Position position;
