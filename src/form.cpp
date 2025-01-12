@@ -5,7 +5,9 @@
 #include "utilities.cpp"
 #include <conio.h>
 using namespace std;
-
+bool IsElementSelected(Position position,Display display){
+    return position.row == display.userPosition.row && position.col == display.userPosition.col;
+}
 void RenderBackground()
 {
     cout << BG_BLACK << FG_WHITE << blank_form;
@@ -51,7 +53,7 @@ void RenderButton(Button button, Display display)
 {
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
-    if (button.position.col == display.userPosition.col && button.position.row == display.userPosition.row)
+    if (IsElementSelected(button.position,display))
     {
         fg_color = FG_CYAN;
     }
@@ -100,7 +102,7 @@ void RenderRangebar(RangeBar &rangeBar, Display display)
 {
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
-    if (rangeBar.position.col == display.userPosition.col && rangeBar.position.row == display.userPosition.row)
+    if (IsElementSelected(rangeBar.position,display))
     {
         fg_color = FG_CYAN;
     }
@@ -147,7 +149,8 @@ void RenderFooter(string text)
 {
     Gotoxy(footer_area.x, footer_area.y);
     cout << FG_WHITE << text;
-    for(int i = footer_area.x+text.length();i<end_area.x;i++){
+    for (int i = footer_area.x + text.length(); i < end_area.x; i++)
+    {
         cout << " ";
     }
 }
@@ -210,7 +213,7 @@ void RenderCheckbox(Checkbox &checkbox, Display display)
 {
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
-    if (checkbox.position.col == display.userPosition.col && checkbox.position.row == display.userPosition.row)
+    if (IsElementSelected(checkbox.position,display))
     {
         fg_color = FG_CYAN;
     }
@@ -236,12 +239,12 @@ void RenderCheckbox(Checkbox &checkbox, Display display)
         cout << fg_color << "█░" << FG_WHITE;
     }
 }
-void PrintSelectbox(Selectbox &selectbox, Display display)
+void RenderSelectbox(Selectbox &selectbox, Display display)
 {
 
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
-    if (selectbox.position.col == display.userPosition.col && selectbox.position.row == display.userPosition.row)
+    if (IsElementSelected(selectbox.position,display))
     {
         fg_color = FG_CYAN;
     }
@@ -347,7 +350,8 @@ void HandleInput(char input, Display &display, ElementType type, void *element, 
         HandleNavigation(input, display, row_count);
     }
 }
-string GetKeyHints(ElementType type){
+string GetKeyHints(ElementType type)
+{
     string result = "";
     switch (type)
     {
@@ -366,6 +370,7 @@ string GetKeyHints(ElementType type){
     }
     return result;
 }
+
 int main()
 {
     system("cls");
@@ -374,20 +379,16 @@ int main()
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
     RenderBackground();
-    Checkbox checkbox[5] = {
-        {"Feature 01", false, {0, 0}},
-        {"Feature 02", false, {1, 0}},
-        {"Feature 03", true, {2, 0}},
-        {"Feature 04", false, {3, 0}},
-        {"Feature 05", false, {4, 0}}};
+    Checkbox checkbox = {"Feature 01", false, {0, 0}};
     RangeBar rangebar[5] = {
         {"Sound:", 0, 100, 50, false, {0, 1}},
         {"Range 02", 0, 200, 50, true, {1, 1}},
         {"Range 03", 100, 150, 110, false, {2, 1}},
         {"Range 04", 0, 100, 30, true, {3, 1}},
         {"Range 05", 0, 100, 0, false, {4, 1}}};
+    Selectbox selectbox = {{{"item1", 0}, {"item2", 1}, {"item3", 2}, {"item4", 4}}, "Enter Selectbox 01", 4, -1, {3, 0}};
     //  Selectbox selectbox[5] = {
-    //     {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 01",4, -1, {0, 1}},
+    //    ,
     //     {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 02",4, -1, {1, 1}},
     //     {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 03",4, -1, {2, 1}},
     //     {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 04",4, -1, {3, 1}},
@@ -400,13 +401,19 @@ int main()
 
         for (int i = display.start_row; i <= display.end_row; i++)
         {
-            if ((rangebar[i].position.col == display.userPosition.col) && (rangebar[i].position.row == display.userPosition.row))
+            if (IsElementSelected(rangebar[i].position,display))
             {
                 selectedElement = &rangebar[i];
                 selectedElementType = RANGEBAR;
             }
             RenderRangebar(rangebar[i], display);
         }
+        if (IsElementSelected(selectbox.position,display))
+        {
+            selectedElement = &selectbox;
+            selectedElementType = SELECTBOX;
+        }
+        RenderSelectbox(selectbox, display);
         /* for (int i = display.start_row; i <= display.end_row; i++)
         {
             if ((selectbox[i].position.col == display.userPosition.col) && (selectbox[i].position.row == display.userPosition.row))
@@ -416,15 +423,15 @@ int main()
             }
             PrintSelectbox(selectbox[i], display);
         } */
-        for (int i = display.start_row; i <= display.end_row; i++)
-        {
-            if ((checkbox[i].position.col == display.userPosition.col) && (checkbox[i].position.row == display.userPosition.row))
+
+
+            if (IsElementSelected(checkbox.position,display))
             {
-                selectedElement = &checkbox[i];
+                selectedElement = &checkbox;
                 selectedElementType = CHECKBOX;
             }
-            RenderCheckbox(checkbox[i], display);
-        }
+            RenderCheckbox(checkbox, display);
+        
         RenderFooter(GetKeyHints(selectedElementType));
         if (display.SetValueMode)
             display.SetValueMode = !display.SetValueMode;
