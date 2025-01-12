@@ -11,5 +11,5 @@ void ClearScreen();
 void Gotoxy(int x, int y);
 void MoveCursorToTopLeft();
 string GetNumberInput(int maxLength, int cursorX, int cursorY);
-string GetInput(int maxLength, int cursorX, int cursorY);
+string GetInput(int maxLength);
 string IntToString(int number);

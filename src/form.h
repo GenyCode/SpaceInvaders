@@ -70,10 +70,11 @@ struct RangeBar{
     Position position;
 };
 struct Textbox{
-    string text;
+    string placeholder;
     bool IsNumberOnly = false;
-    Label ValidationMessage;
+    string ValidationMessage;
     string value = "";
+    bool CanEdit = true;
     Position position;
 };
 struct Form{

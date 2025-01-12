@@ -89,10 +89,11 @@ string GetNumberInput(int maxLength, int cursorX, int cursorY)
 
     return input;
 }
-string GetInput(int maxLength, int cursorX, int cursorY)
+string GetInput(int maxLength)
 {
     string input;
     char ch;
+    Coordinate point = GetCursorPosition();
 
     while (true)
     {
@@ -107,7 +108,7 @@ string GetInput(int maxLength, int cursorX, int cursorY)
             if (!input.empty())
             {
                 input.pop_back();
-                Gotoxy(cursorX + input.length(), cursorY);
+                Gotoxy(point.x + input.length(), point.y);
                 cout << " \b";
             }
         }
