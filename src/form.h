@@ -42,7 +42,8 @@ enum ElementType
     BUTTON,
     TEXTBOX,
     CHECKBOX,
-    SELECTBOX
+    SELECTBOX,
+    RANGEBAR
 };
 struct Position{
     int row;
@@ -81,7 +82,10 @@ struct Checkbox{
 };
 struct RangeBar{
     string text;
+    int min = 0;
+    int max = 100;
     int value;
+    bool UsePercentage = false;
     Position position;
 };
 struct Textbox{

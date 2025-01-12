@@ -96,6 +96,50 @@ void PrintTextbox(Textbox &textbox, Display display)
         }
     }
 }
+void PrintRangebar(RangeBar &rangeBar, Display display)
+{
+    Coordinate elementPos = {start_area.x, start_area.y};
+    string fg_color = "";
+    if (rangeBar.position.col == display.userPosition.col && rangeBar.position.row == display.userPosition.row)
+    {
+        fg_color = FG_CYAN;
+    }
+    else
+    {
+        fg_color = FG_WHITE;
+    }
+    elementPos.y += (rangeBar.position.row - display.start_row) * 4;
+    elementPos.x += (rangeBar.position.col) * 54;
+    int width = 50;
+    int height = 3;
+    Gotoxy(elementPos.x, elementPos.y);
+    PrintBox(width, height, fg_color);
+    Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+    cout << fg_color << rangeBar.text << FG_WHITE;
+    Gotoxy(elementPos.x + 14, elementPos.y + (height / 2));
+    int dis = rangeBar.max - rangeBar.min;
+    int fillCharacterCount = (rangeBar.value % dis) * 29 / dis;
+    cout << fg_color;
+    for (int i = 0; i < 29; i++)
+    {
+        if (i < fillCharacterCount)
+            cout << "▓";
+        else if (i == fillCharacterCount)
+            cout << "█";
+        else
+            cout << "░";
+    }
+    cout << FG_WHITE;
+    Gotoxy(elementPos.x +width-6, elementPos.y + (height / 2));
+    if (rangeBar.UsePercentage)
+    {
+        cout << fg_color << (rangeBar.value % dis) * 100 / dis << "%" << FG_WHITE;
+    }
+    else
+    {
+        cout << fg_color << rangeBar.value << FG_WHITE;
+    }
+}
 // TODO: کاربر میتونه روی المنتی که وجود نداره حرکت کنه، این باگ هست
 void NavigateForm(char input, Display &display, int row_count)
 {
@@ -181,7 +225,8 @@ void PrintCheckbox(Checkbox &checkbox, Display display)
         cout << fg_color << "█░" << FG_WHITE;
     }
 }
-void PrintSelectbox(Selectbox &selectbox,Display display){
+void PrintSelectbox(Selectbox &selectbox, Display display)
+{
 
     Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
@@ -199,17 +244,20 @@ void PrintSelectbox(Selectbox &selectbox,Display display){
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
     PrintBox(width, height, fg_color);
-    Gotoxy(elementPos.x+2, elementPos.y+1);
+    Gotoxy(elementPos.x + 2, elementPos.y + 1);
     cout << fg_color << "<";
-    Gotoxy(elementPos.x+width-3, elementPos.y+1);
+    Gotoxy(elementPos.x + width - 3, elementPos.y + 1);
     cout << fg_color << ">";
-    Gotoxy(elementPos.x+4, elementPos.y+1);
-    if(selectbox.SelectedIndex == -1){
+    Gotoxy(elementPos.x + 4, elementPos.y + 1);
+    if (selectbox.SelectedIndex == -1)
+    {
         cout << fg_color << selectbox.placeholder << FG_WHITE;
-    }else{
+    }
+    else
+    {
         cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
     }
-    }
+}
 // TODO: Create Action function for Modified Elements depends on User Input
 int main()
 {
@@ -224,15 +272,13 @@ int main()
         {"Feature 02", false, {1, 0}},
         {"Feature 03", true, {2, 0}},
         {"Feature 04", false, {3, 0}},
-        {"Feature 05", false, {4, 0}}
-    };
-    Selectbox selectbox[5] = {
-        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 01",4, -1, {0, 1}},
-        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 02",4, -1, {1, 1}},
-        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 03",4, -1, {2, 1}},
-        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 04",4, -1, {3, 1}},
-        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 05",4, -1, {4, 1}}
-    };
+        {"Feature 05", false, {4, 0}}};
+    RangeBar rangebar[5] = {
+        {"Sound:", 0, 100, 50, false, {0, 1}},
+        {"Range 02", 0, 200, 50, true, {1, 1}},
+        {"Range 03", 100, 150, 110, false, {2, 1}},
+        {"Range 04", 0, 100, 30, true ,{3, 1}},
+        {"Range 05", 0, 100, 0, false, {4, 1}}};
     while (true)
     {
         int selectedElementIndex = 0;
@@ -240,12 +286,12 @@ int main()
 
         for (int i = display.start_row; i <= display.end_row; i++)
         {
-            if ((selectbox[i].position.col == display.userPosition.col) && (selectbox[i].position.row == display.userPosition.row))
+            if ((rangebar[i].position.col == display.userPosition.col) && (rangebar[i].position.row == display.userPosition.row))
             {
                 selectedElementIndex = i;
-                selectedElementType = SELECTBOX;
+                selectedElementType = RANGEBAR;
             }
-            PrintSelectbox(selectbox[i], display);
+            PrintRangebar(rangebar[i], display);
         }
         for (int i = display.start_row; i <= display.end_row; i++)
         {
@@ -263,9 +309,10 @@ int main()
             char ch = getch();
             if (ch == 'x')
             {
-                switch(selectedElementType){
-                    case CHECKBOX:
-                        checkbox[selectedElementIndex].isChecked =  !checkbox[selectedElementIndex].isChecked;
+                switch (selectedElementType)
+                {
+                case CHECKBOX:
+                    checkbox[selectedElementIndex].isChecked = !checkbox[selectedElementIndex].isChecked;
                     break;
                 }
             }
