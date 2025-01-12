@@ -181,6 +181,36 @@ void PrintCheckbox(Checkbox &checkbox, Display display)
         cout << fg_color << "█░" << FG_WHITE;
     }
 }
+void PrintSelectbox(Selectbox &selectbox,Display display){
+
+    Coordinate elementPos = {start_area.x, start_area.y};
+    string fg_color = "";
+    if (selectbox.position.col == display.userPosition.col && selectbox.position.row == display.userPosition.row)
+    {
+        fg_color = FG_CYAN;
+    }
+    else
+    {
+        fg_color = FG_WHITE;
+    }
+    elementPos.y += (selectbox.position.row - display.start_row) * 4;
+    elementPos.x += (selectbox.position.col) * 54;
+    int width = 50;
+    int height = 3;
+    Gotoxy(elementPos.x, elementPos.y);
+    PrintBox(width, height, fg_color);
+    Gotoxy(elementPos.x+2, elementPos.y+1);
+    cout << fg_color << "<";
+    Gotoxy(elementPos.x+width-3, elementPos.y+1);
+    cout << fg_color << ">";
+    Gotoxy(elementPos.x+4, elementPos.y+1);
+    if(selectbox.SelectedIndex == -1){
+        cout << fg_color << selectbox.placeholder << FG_WHITE;
+    }else{
+        cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
+    }
+    }
+// TODO: Create Action function for Modified Elements depends on User Input
 int main()
 {
     system("cls");
@@ -194,13 +224,29 @@ int main()
         {"Feature 02", false, {1, 0}},
         {"Feature 03", true, {2, 0}},
         {"Feature 04", false, {3, 0}},
-        {"Feature 05", false, {4, 0}},
+        {"Feature 05", false, {4, 0}}
+    };
+    Selectbox selectbox[5] = {
+        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 01",4, -1, {0, 1}},
+        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 02",4, -1, {1, 1}},
+        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 03",4, -1, {2, 1}},
+        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 04",4, -1, {3, 1}},
+        {{{"item1",0},{"item2",1},{"item3",2},{"item4",4}},"Enter Selectbox 05",4, -1, {4, 1}}
     };
     while (true)
     {
         int selectedElementIndex = 0;
         ElementType selectedElementType;
 
+        for (int i = display.start_row; i <= display.end_row; i++)
+        {
+            if ((selectbox[i].position.col == display.userPosition.col) && (selectbox[i].position.row == display.userPosition.row))
+            {
+                selectedElementIndex = i;
+                selectedElementType = SELECTBOX;
+            }
+            PrintSelectbox(selectbox[i], display);
+        }
         for (int i = display.start_row; i <= display.end_row; i++)
         {
             if ((checkbox[i].position.col == display.userPosition.col) && (checkbox[i].position.row == display.userPosition.row))
@@ -229,6 +275,5 @@ int main()
             }
         }
     }
-
     return 0;
 }

@@ -42,6 +42,7 @@ enum ElementType
     BUTTON,
     TEXTBOX,
     CHECKBOX,
+    SELECTBOX
 };
 struct Position{
     int row;
@@ -68,8 +69,9 @@ struct SelectboxItem{
 };
 struct Selectbox{
     SelectboxItem Items[10];
+    string placeholder = "";
     int ItemsCount = 0;
-    int SelectedIndex = 0;
+    int SelectedIndex = -1;
     Position position;
 };
 struct Checkbox{
