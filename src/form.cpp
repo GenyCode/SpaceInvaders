@@ -554,7 +554,7 @@ void CloseForm(Form &form)
 {
     FreeElementGrid(form);
 }
-int main()
+/* int main()
 {
     system("cls");
     Form form = {"Main", 15, 2};
@@ -600,3 +600,4 @@ int main()
     CloseForm(form);
     return 0;
 }
+ */
