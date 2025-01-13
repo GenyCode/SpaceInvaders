@@ -9,10 +9,7 @@ bool IsElementSelected(Position position, Display display)
 {
     return position.row == display.userPosition.row && position.col == display.userPosition.col;
 }
-void RenderBackground()
-{
-    cout << BG_BLACK << FG_WHITE << blank_form;
-}
+
 void DrawBox(int width, int height, string fg_color)
 {
     Coordinate point = GetCursorPosition();
@@ -49,6 +46,38 @@ void DrawBox(int width, int height, string fg_color)
         Gotoxy(point.x, point.y + i + 1);
     }
     cout << FG_WHITE;
+}
+void RenderBackground()
+{
+    cout << BG_BLACK << FG_WHITE << blank_form;
+}
+void RenderForm(Form &form, Display &display)
+{
+    for (int i = display.start_col; i <= display.end_col; i++)
+    {
+        for (int j = display.start_row; j <= display.end_row; j++)
+        {
+            Element element = form.ElementsGrid[j][i];
+            if (element.ptr != nullptr)
+            {
+                switch (element.type)
+                {
+                case CHECKBOX:
+                    RenderCheckbox(*((Checkbox *)element.ptr), display);
+                    break;
+                case SELECTBOX:
+                    RenderSelectbox(*((Selectbox *)element.ptr), display);
+                    break;
+                case RANGEBAR:
+                    RenderRangebar(*((Rangebar *)element.ptr), display);
+                    break;
+            }
+            }
+            else{
+                RenderNullElement({j,i},display);
+            }
+        }
+    }
 }
 void RenderButton(Button button, Display display)
 {
@@ -155,101 +184,22 @@ void RenderFooter(string text)
         cout << " ";
     }
 }
-// TODO: کاربر میتونه روی المنتی که وجود نداره حرکت کنه، این باگ هست
-bool CanAccess(Form &form, Position position){
-    return position.row >= 0 && position.row < form.rows_count &&
-    position.col >= 0 && position.col < form.cols_count;
-}
-void HandleNavigation(char input, Form form, Display &display)
+void RenderNullElement(Position position, Display display)
 {
-    if (isupper(input))
+    Coordinate elementPos = {start_area.x, start_area.y};
+    elementPos.y += (position.row - display.start_row) * 4;
+    elementPos.x += (position.col) * 54;
+    int width = 50;
+    int height = 3;
+    for (int j = 0; j < height; j++)
     {
-        input = tolower(input);
+        Gotoxy(elementPos.x, elementPos.y + j);
+        for (int i = 0; i < width; i++)
+        {
+                cout << " ";
+        }
     }
-    int distance = display.end_row - display.start_row;
-    Position newUserPosition = display.userPosition;
-    switch (input)
-    {
-    case 'w':
-        if (display.userPosition.row > 0)
-        {
-            do
-            {
-                newUserPosition.row--;
-            } while (newUserPosition.row > 0 && form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr == nullptr);
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
-            {
-                if (newUserPosition.row < display.start_row)
-                {
-                    display.start_row--;
-                    display.end_row--;
-                }
-                display.userPosition = newUserPosition;
-            }
-        }
 
-        break;
-    case 's':
-        if (display.userPosition.row < form.rows_count - 1)
-        {
-            do
-            {
-                newUserPosition.row++;
-            } while (display.userPosition.row < form.rows_count - 1 && form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr == nullptr);
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
-            {
-                if (display.userPosition.row > display.end_row)
-                {
-                    display.start_row++;
-                    display.end_row++;
-                }
-                display.userPosition = newUserPosition;
-            }
-        }
-
-        break;
-    case 'a':
-        if (display.userPosition.col > 0)
-        {
-            do
-            {
-                newUserPosition.col--;
-            } while (newUserPosition.col > 0 && form.ElementsGrid[newUserPosition.col][newUserPosition.col].ptr == nullptr);
-            if (form.ElementsGrid[newUserPosition.col][newUserPosition.col].ptr != nullptr)
-            {
-                if (newUserPosition.col < display.start_col)
-                {
-                    display.start_col--;
-                    display.end_col--;
-                }
-                display.userPosition = newUserPosition;
-            }
-        }
-        break;
-    case 'd':
-        if (display.userPosition.col < form.cols_count - 1)
-        {
-            do
-            {
-                newUserPosition.col++;
-            } while (display.userPosition.col < form.cols_count - 1 && form.ElementsGrid[newUserPosition.col][newUserPosition.col].ptr == nullptr);
-            if (form.ElementsGrid[newUserPosition.col][newUserPosition.col].ptr != nullptr)
-            {
-                if (display.userPosition.col > display.end_col)
-                {
-                    display.start_col++;
-                    display.end_col++;
-                }
-                display.userPosition = newUserPosition;
-            }
-        }
-        break;
-    case '\r':
-        display.SetValueMode = true;
-        break;
-    default:
-        break;
-    }
 }
 void RenderCheckbox(Checkbox &checkbox, Display display)
 {
@@ -314,6 +264,13 @@ void RenderSelectbox(Selectbox &selectbox, Display display)
         cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
     }
 }
+
+bool CanAccess(Form &form, Position position)
+{
+    return position.row >= 0 && position.row < form.rows_count &&
+           position.col >= 0 && position.col < form.cols_count;
+}
+
 void UpdateSelectBoxSelection(Selectbox &selectbox, int input)
 {
     if (input == 5)
@@ -349,6 +306,98 @@ void UpdateRangebarValue(Rangebar &Rangebar, int input)
 void ToggleCheckboxState(Checkbox &checkbox)
 {
     checkbox.isChecked = !checkbox.isChecked;
+}
+void HandleNavigation(char input, Form form, Display &display)
+{
+    if (isupper(input))
+    {
+        input = tolower(input);
+    }
+    int distance = display.end_row - display.start_row;
+    Position newUserPosition = display.userPosition;
+    switch (input)
+    {
+    case 'w':
+        if (display.userPosition.row > 0)
+        {
+            do
+            {
+                newUserPosition.row--;
+            } while (newUserPosition.row > 0 && form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr == nullptr);
+            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            {
+                if (newUserPosition.row < display.start_row)
+                {
+                    display.start_row -= display.userPosition.row - newUserPosition.row;
+                    display.end_row -= display.userPosition.row - newUserPosition.row;
+                }
+                display.userPosition = newUserPosition;
+            }
+        }
+
+        break;
+    case 's':
+        if (display.userPosition.row < form.rows_count - 1)
+        {
+            do
+            {
+                newUserPosition.row++;
+            } while (newUserPosition.row < form.rows_count - 1 && form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr == nullptr);
+            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            {
+                if (newUserPosition.row > display.end_row)
+                {
+
+                    display.start_row += newUserPosition.row - display.userPosition.row;
+                    display.end_row += newUserPosition.row - display.userPosition.row;
+                }
+                display.userPosition = newUserPosition;
+            }
+        }
+
+        break;
+    case 'a':
+        if (display.userPosition.col > 0)
+        {
+            do
+            {
+                newUserPosition.col--;
+            } while (newUserPosition.col > 0 && form.ElementsGrid[newUserPosition.col][newUserPosition.col].ptr == nullptr);
+            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            {
+                if (newUserPosition.col < display.start_col)
+                {
+                    display.start_col--;
+                    display.end_col--;
+                }
+                display.userPosition = newUserPosition;
+            }
+        }
+        break;
+    case 'd':
+        if (display.userPosition.col < form.cols_count - 1)
+        {
+            do
+            {
+                newUserPosition.col++;
+            } while (newUserPosition.col < form.cols_count - 1 && form.ElementsGrid[newUserPosition.col][newUserPosition.col].ptr == nullptr);
+            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            {
+                if (newUserPosition.col > display.end_col)
+                {
+                    display.start_col++;
+                    display.end_col++;
+                }
+                display.userPosition = newUserPosition;
+            }
+        }
+        break;
+    case '\r':
+        display.SetValueMode = true;
+        break;
+    default:
+        break;
+    }
 }
 void OnPress6(void *element, ElementType type)
 {
@@ -390,7 +439,7 @@ void HandleInput(char input, Display &display, Form form)
     }
     else
     {
-        HandleNavigation(input, form ,display);
+        HandleNavigation(input, form, display);
     }
 }
 string GetKeyHints(ElementType type)
@@ -414,31 +463,6 @@ string GetKeyHints(ElementType type)
     return result;
 }
 
-void RenderForm(Form &form, Display &display)
-{
-    for (int i = display.start_col; i <= display.end_col; i++)
-    {
-        for (int j = display.start_row; j <= display.end_row; j++)
-        {
-            Element element = form.ElementsGrid[j][i];
-            if (element.ptr != nullptr)
-            {
-                switch (element.type)
-                {
-                case CHECKBOX:
-                    RenderCheckbox(*((Checkbox *)element.ptr), display);
-                    break;
-                case SELECTBOX:
-                    RenderSelectbox(*((Selectbox *)element.ptr), display);
-                    break;
-                case RANGEBAR:
-                    RenderRangebar(*((Rangebar *)element.ptr), display);
-                    break;
-                }
-            }
-        }
-    }
-}
 void DeleteElement(Form &form, Position position)
 {
     switch (form.ElementsGrid[position.row][position.col].type)
@@ -468,77 +492,81 @@ void AddElementToForm(Form &form, Element &element, Position position)
     }
     form.ElementsGrid[position.row][position.col] = element;
 };
-void AddButtonToForm(Form &form, Button* button, Position position)
+void AddButtonToForm(Form &form, Button *button, Position position)
 {
     (*button).position = position;
     Element element = {button, BUTTON};
     AddElementToForm(form, element, position);
 }
-void AddTextboxToForm(Form &form, Textbox* textbox, Position position)
+void AddTextboxToForm(Form &form, Textbox *textbox, Position position)
 {
     (*textbox).position = position;
     Element element = {textbox, TEXTBOX};
     AddElementToForm(form, element, position);
 }
-void AddRangebarToForm(Form &form, Rangebar* rangebar, Position position)
+void AddRangebarToForm(Form &form, Rangebar *rangebar, Position position)
 {
     (*rangebar).position = position;
     Element element = {rangebar, RANGEBAR};
     AddElementToForm(form, element, position);
 }
-void AddCheckboxToForm(Form &form, Checkbox* checkbox, Position position)
+void AddCheckboxToForm(Form &form, Checkbox *checkbox, Position position)
 {
     (*checkbox).position = position;
     Element element = {checkbox, CHECKBOX};
     AddElementToForm(form, element, position);
 }
-void AddSelectboxToForm(Form &form, Selectbox* selectbox, Position position)
+void AddSelectboxToForm(Form &form, Selectbox *selectbox, Position position)
 {
-(*selectbox).position = position;
+    (*selectbox).position = position;
     Element element = {selectbox, SELECTBOX};
     AddElementToForm(form, element, position);
 }
-void InitialElementGrid(Form &form){
-    form.ElementsGrid = new Element*[form.rows_count];
-    for(int i = 0;i<form.rows_count;i++){
+void InitialElementGrid(Form &form)
+{
+    form.ElementsGrid = new Element *[form.rows_count];
+    for (int i = 0; i < form.rows_count; i++)
+    {
         form.ElementsGrid[i] = new Element[form.cols_count];
-        for(int j = 0; j <form.cols_count;j++){
+        for (int j = 0; j < form.cols_count; j++)
+        {
             form.ElementsGrid[i][j].ptr = nullptr;
             form.ElementsGrid[i][j].type = NULLELEMENT;
         }
     }
-    
 }
+
 int main()
 {
     system("cls");
-     Form form ={"Main",10,2};
-    Display display = {0,4,0,1,false,{0,0}};
+    Form form = {"Main", 10, 2};
+    Display display = {1, 5, 0, 1, false, {0, 0}};
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
     RenderBackground();
     InitialElementGrid(form);
-    //AddCheckboxToForm(form,new Checkbox{"Feature 01", false}, {0, 0});
-    Rangebar* rangebar= new Rangebar{"Sound2:", 0, 200, 50, true};
-    Checkbox* checkboxs[5] = {
+    // AddCheckboxToForm(form,new Checkbox{"Feature 01", false}, {0, 0});
+    Rangebar *rangebar = new Rangebar{"Sound2:", 0, 200, 50, true};
+    Checkbox *checkboxs[6] = {
         {new Checkbox{"Feature 00", false}},
         {new Checkbox{"Feature 01", false}},
         {new Checkbox{"Feature 02", false}},
         {new Checkbox{"Feature 03", false}},
-        {new Checkbox{"Feature 04", false}}
-    };
-    Selectbox* selectbox = new Selectbox{{{"item1", 0}, {"item2", 1}, {"item3", 2}, {"item4", 4}}, "Enter Selectbox 01", 4, -1, {3, 0}};
-    AddRangebarToForm(form,rangebar,{1,0});
-    AddCheckboxToForm(form,checkboxs[0], {0, 0});
-    AddCheckboxToForm(form,checkboxs[2], {2, 0});
-    //AddCheckboxToForm(form,checkboxs[3], {3, 0});
-    AddCheckboxToForm(form,checkboxs[4], {4, 0});
-    AddSelectboxToForm(form,selectbox,{0, 1});
+        {new Checkbox{"Feature 04", false}},
+        {new Checkbox{"Feature 05", true}}};
+    Selectbox *selectbox = new Selectbox{{{"item1", 0}, {"item2", 1}, {"item3", 2}, {"item4", 4}}, "Enter Selectbox 01", 4, -1, {3, 0}};
+    AddRangebarToForm(form, rangebar, {1, 0});
+    AddCheckboxToForm(form, checkboxs[0], {0, 0});
+    AddCheckboxToForm(form, checkboxs[2], {2, 0});
+    // AddCheckboxToForm(form,checkboxs[3], {3, 0});
+    AddCheckboxToForm(form, checkboxs[4], {4, 0});
+    AddCheckboxToForm(form, checkboxs[5], {5, 0});
+    AddSelectboxToForm(form, selectbox, {0, 1});
     while (true)
     {
-       
-        RenderForm(form,display);
-    Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
+
+        RenderForm(form, display);
+        Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
         RenderFooter(GetKeyHints(SelectedElement.type));
         if (display.SetValueMode)
             display.SetValueMode = !display.SetValueMode;
