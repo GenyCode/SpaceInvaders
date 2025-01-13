@@ -43,7 +43,8 @@ enum ElementType
     TEXTBOX,
     CHECKBOX,
     SELECTBOX,
-    RANGEBAR
+    RANGEBAR,
+    NULLELEMENT
 };
 struct Position{
     int row;
@@ -80,7 +81,7 @@ struct Checkbox{
     bool isChecked;
     Position position;
 };
-struct RangeBar{
+struct Rangebar{
     string text;
     int min = 0;
     int max = 100;
@@ -96,9 +97,14 @@ struct Textbox{
     bool CanEdit = true;
     Position position;
 };
+struct Element{
+    void* ptr;
+    ElementType type;
+};
+
 struct Form{
     string title;
-    int type = 0;
     int rows_count = 5;
-    int cols_count = 0;
+    int cols_count = 1;
+    Element** ElementsGrid;
 };
