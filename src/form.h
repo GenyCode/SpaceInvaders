@@ -107,3 +107,39 @@ struct Form{
     int cols_count = 1;
     Element** ElementsGrid;
 };
+
+bool IsElementSelected(Position position, Display display);
+
+void DrawBox(int width, int height, string fg_color);
+void RenderBackground();
+void RenderButton(Button button, Display display);
+void RenderTextbox(Textbox &textbox, Display display);
+void RenderRangebar(Rangebar &Rangebar, Display display);
+void RenderFooter(string text);
+void RenderNullElement(Position position, Display display);
+void RenderCheckbox(Checkbox &checkbox, Display display);
+void RenderSelectbox(Selectbox &selectbox, Display display);
+void RenderForm(Form &form, Display &display);
+
+bool CanAccess(Form &form, Position position);
+void UpdateSelectBoxSelection(Selectbox &selectbox, int input);
+void UpdateRangebarValue(Rangebar &Rangebar, int input);
+void ToggleCheckboxState(Checkbox &checkbox);
+void HandleNavigation(char input, Form form, Display &display);
+void GetTextboxValue(Textbox &textbox, Display &display);
+void OnPress6(void *element, ElementType type, Display &display);
+void OnPress5(void *element, ElementType type, Display &display);
+
+void HandleInput(char input, Display &display, Form form);
+string GetKeyHints(ElementType type);
+
+void DeleteElement(Form &form, Position position);
+void AddElementToForm(Form &form, Element &element, Position position);
+void AddButtonToForm(Form &form, Button *button);
+void AddTextboxToForm(Form &form, Textbox *textbox);
+void AddRangebarToForm(Form &form, Rangebar *rangebar);
+void AddCheckboxToForm(Form &form, Checkbox *checkbox);
+void AddSelectboxToForm(Form &form, Selectbox *selectbox);
+void InitialElementGrid(Form &form);
+void FreeElementGrid(Form &form);
+void CloseForm(Form &form);
