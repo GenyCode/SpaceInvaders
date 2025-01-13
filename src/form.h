@@ -55,7 +55,6 @@ struct Display{
     int end_row = 4;
     int start_col = 0;
     int end_col = 1;
-    bool SetValueMode = false;
     Position userPosition = {0, 0};
 };
 struct Button{
