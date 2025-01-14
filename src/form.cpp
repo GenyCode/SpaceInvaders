@@ -294,20 +294,21 @@ void UpdateSelectBoxSelection(Selectbox &selectbox, int input)
 void UpdateRangebarValue(Rangebar &Rangebar, int input)
 {
     int dis = Rangebar.max - Rangebar.min;
-    int step = dis / 28;
-    if (input == 5 && Rangebar.value != 0)
+    int step = (dis < 28) ? 1 : dis / 28;
+    if (input == 5 && Rangebar.value > Rangebar.min)
     {
         Rangebar.value -= step;
-        if (Rangebar.value < 0)
-            Rangebar.value = 0;
+        if (Rangebar.value < Rangebar.min)
+            Rangebar.value = Rangebar.min;
     }
-    else if (input == 6 && Rangebar.value != Rangebar.max)
+    else if (input == 6 && Rangebar.value < Rangebar.max)
     {
         Rangebar.value += step;
         if (Rangebar.value > Rangebar.max)
             Rangebar.value = Rangebar.max;
     }
 }
+
 void ToggleCheckboxState(Checkbox &checkbox)
 {
     checkbox.isChecked = !checkbox.isChecked;
@@ -564,7 +565,7 @@ int main()
     RenderBackground();
     InitialElementGrid(form);
 
-    Rangebar rangebar = {"Effects:", 0, 100, 80, true,{0,0}};
+    Rangebar rangebar = {"FPS:", 10, 30, 24, false,{0,0}};
     Rangebar rangebar1 = {"Music:", 0, 100, 80, true,{0,1}};
     Checkbox checkbox = {"VSync", false,{1,0}};
     Checkbox checkbox1 = {"Motions", false,{1,1}};
