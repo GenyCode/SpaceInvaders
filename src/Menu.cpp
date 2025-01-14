@@ -68,7 +68,7 @@ void GeneralSettings()
     Checkbox MusicCheckbox = {"Music", false, {0, 1}};
     Checkbox SoundCheckbox = {"Sound", false, {0, 0}};
     Button KeyBindingsButton = {"Key Bindings", {1, 0}};
-    Rangebar FPSRangebar = {" FPS:", 10, 30, 24, false, {2, 0}};
+    Rangebar FPSRangebar = {" FPS:", 10, 300, 24, false, {2, 0}};
     Selectbox PrimaryColor ={{{"CYAN", 0}, {"BLUE", 1}, {"PURPLE", 2}, {"WHITE", 4}}, "Primary color", 4, -1, {3, 0}};
     Selectbox SecondaryColor ={{{"CYAN", 0}, {"BLUE", 1}, {"PURPLE", 2}, {"WHITE", 4}}, "Secondary color", 4, -1, {3, 1}};
     Button SaveChangesButton = {"Save Changes", {4, 0}};
