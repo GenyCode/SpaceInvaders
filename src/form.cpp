@@ -55,9 +55,98 @@ void DrawBox(int width, int height, string fg_color)
     }
     cout << FG_WHITE;
 }
+void RenderTable(Table &table, Display display)
+{
+    Coordinate elementPos = {start_area.x, start_area.y};
+    elementPos.y += (table.position.row - display.start_row) * 4;
+    elementPos.x += (table.position.col) * 54;
+    int remainingWidth = table.totalWidth;
+    int unassignedColsCount = 0;
+
+    for (int i = 0; i < table.cols_count; i++)
+    {
+        if (table.colsLength[i] == 0)
+        {
+            unassignedColsCount++;
+        }
+        remainingWidth -= table.colsLength[i] + 1;
+    }
+    remainingWidth--;
+
+    if (unassignedColsCount != 0)
+    {
+        int defaultColWidth = remainingWidth / unassignedColsCount;
+        for (int i = 0; i < table.cols_count; i++)
+        {
+            if (table.colsLength[i] == 0)
+            {
+                table.colsLength[i] = defaultColWidth;
+            }
+        }
+    }
+
+    for (int row = table.start_row; row - table.start_row < table.Showed_rows_count && row <= table.rows_count; row++)
+    {
+        Gotoxy(elementPos.x, elementPos.y + (row-table.start_row) * 2);
+
+        for (int col = 0; col < table.cols_count; col++)
+        {
+            if (col == 0)
+            {
+                cout << (row == table.start_row ? "╔" : "╠");
+            }
+            else
+            {
+                cout << (row == table.start_row ? "╦" : "╬");
+            }
+
+            for (int i = 0; i < table.colsLength[col]; i++)
+            {
+                cout << "═";
+            }
+        }
+        cout << (row == table.start_row ? "╗" : "╣");
+
+        if (row < table.rows_count)
+        {
+            Gotoxy(elementPos.x, elementPos.y + (row-table.start_row) * 2 + 1);
+            for (int col = 0; col < table.cols_count; col++)
+            {
+                if (col == 0)
+                {
+                    cout << "║";
+                }
+
+                int contentStart = CalculateCenterIndex(table.colsLength[col], table.Cells[row][col].content.length());
+                cout << string(contentStart, ' ') << table.Cells[row][col].content
+                     << string(table.colsLength[col] - contentStart - table.Cells[row][col].content.length(), ' ');
+                cout << "║";
+            }
+        }
+    }
+
+    Gotoxy(elementPos.x, elementPos.y + table.Showed_rows_count * 2);
+    for (int col = 0; col < table.cols_count; col++)
+    {
+        if (col == 0)
+        {
+            cout << "╚";
+        }
+        else
+        {
+            cout << "╩";
+        }
+        for (int i = 0; i < table.colsLength[col]; i++)
+        {
+            cout << "═";
+        }
+    }
+    cout << "╝";
+}
+
 void RenderBackground()
 {
-    Gotoxy(0,0);
+    Gotoxy(0, 0);
     cout << BG_BLACK << FG_WHITE << blank_form;
 }
 void RenderButton(Button button, Display display)
@@ -274,9 +363,12 @@ void RenderForm(Form &form, Display &display)
                 case BUTTON:
                     RenderButton(*((Button *)element.ptr), display);
                     break;
+                case TABLE:
+                    RenderTable(*((Table *)element.ptr), display);
+                    break;
                 }
             }
-            else
+            else if(form.renderNullElements)
             {
                 RenderNullElement({j, i}, display);
             }
@@ -379,6 +471,17 @@ void UpdateRangebarValue(Rangebar &Rangebar, int input)
     }
 }
 
+void ScrollTable(Table &table, int input)
+{
+    if (input == 5 && table.start_row > 0)
+    {
+        table.start_row--;
+    }
+    else if (input == 6 && table.rows_count - table.start_row >= table.Showed_rows_count)
+    {
+        table.start_row++;
+    }
+}
 void ToggleCheckboxState(Checkbox &checkbox)
 {
     checkbox.isChecked = !checkbox.isChecked;
@@ -494,6 +597,9 @@ void OnPress6(void *element, ElementType type, Display &display)
     case TEXTBOX:
         GetTextboxValue(*((Textbox *)element), display);
         break;
+    case TABLE:
+        ScrollTable(*((Table *)element), 6);
+        break;
     }
 }
 void OnPress5(void *element, ElementType type, Display &display)
@@ -505,6 +611,9 @@ void OnPress5(void *element, ElementType type, Display &display)
         break;
     case RANGEBAR:
         UpdateRangebarValue(*((Rangebar *)element), 5);
+        break;
+    case TABLE:
+        ScrollTable(*((Table *)element), 5);
         break;
     }
 }
@@ -602,7 +711,11 @@ void AddSelectboxToForm(Form &form, Selectbox *selectbox)
     Element element = {selectbox, SELECTBOX};
     AddElementToForm(form, element, (*selectbox).position);
 }
-
+void AddTableToForm(Form &form, Table *table)
+{
+    Element element = {table, TABLE};
+    AddElementToForm(form, element, (*table).position);
+}
 void InitialElementGrid(Form &form)
 {
     form.ElementsGrid = new Element *[form.rows_count];
@@ -628,7 +741,7 @@ void CloseForm(Form &form)
 {
     FreeElementGrid(form);
 }
-int main()
+/* int main()
 {
     system("cls");
     Form form = {"Main", 15, 2};
@@ -664,6 +777,34 @@ int main()
     AddSelectboxToForm(form, &selectbox);
     AddButtonToForm(form, &back);
     Messagebox msg = {"TITLE", {"loermro r r w e ew s gdss gdg sd", "loermro rdddddddw s gdss gdg sd", "loezsfdhdfhdfhw e ew s gdss gdg sd", "loesdfhsdhddhg sd"}, 4, INFORMATION};
+    while (true)
+    {
+        RenderForm(form, display);
+        Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
+        RenderFooter(GetKeyHints(SelectedElement.type));
+        char ch = getch();
+        HandleInput(ch, display, form);
+    }
+    CloseForm(form);
+    return 0;
+} */
+int main()
+{
+    system("cls");
+    Form form = {"Main", 15, 2,false};
+    Display display = {0, 4, 0, 1, {0, 0}};
+    SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+    HideCursor();
+    RenderBackground();
+    InitialElementGrid(form);
+
+    Checkbox checkbox = {"VSync", false, {0, 0}};
+    Selectbox selectbox = {{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}, {"Legend", 4}}, "Game Level", 4, 0, {0, 1}};
+    Table table = {
+        104, 17, 3, 0, 7, {0, 50, 0}, {{{"Id"}, {"Name"}, {"Family"}}, {{"1"}, {"mdi"}, {"os"}}, {{"2"}, {"33"}, {"343"}}, {{"3"}, {"mdi"}, {"os"}}, {{"4"}, {"33"}, {"343"}}, {{"5"}, {"mdi"}, {"os"}}, {{"6"}, {"33"}, {"343"}}, {{"7"}, {"mdi"}, {"os"}}, {{"8"}, {"33"}, {"343"}}, {{"9"}, {"mdi"}, {"os"}}, {{"10"}, {"33"}, {"343"}}, {{"11"}, {"mdi"}, {"os"}}, {{"12"}, {"33"}, {"343"}}, {{"13"}, {"mdi"}, {"os"}}, {{"14"}, {"33"}, {"343"}}, {{"15"}, {"mdi"}, {"os"}}, {{"16"}, {"33"}, {"343"}}}, {1, 0}};
+    AddCheckboxToForm(form, &checkbox);
+    AddSelectboxToForm(form, &selectbox);
+    AddTableToForm(form, &table);
     while (true)
     {
         RenderForm(form, display);

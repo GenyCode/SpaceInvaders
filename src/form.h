@@ -46,6 +46,7 @@ enum ElementType
     CHECKBOX,
     SELECTBOX,
     RANGEBAR,
+    TABLE,
     NULLELEMENT
 };
 enum MessageboxIcon {
@@ -57,6 +58,19 @@ enum MessageboxIcon {
 struct Position{
     int row;
     int col;
+};
+struct TableCell{
+    string content;
+};
+struct Table{
+    int totalWidth;
+    int rows_count;
+    int cols_count;
+    int start_row;
+    int Showed_rows_count;
+    int colsLength[5] = {0};
+    TableCell Cells[20][5];
+    Position position;
 };
 struct Display{
     int start_row = 0;
@@ -114,7 +128,9 @@ struct Form{
     string title;
     int rows_count = 5;
     int cols_count = 1;
+        bool renderNullElements = true;
     Element** ElementsGrid;
+
 };
 
 
