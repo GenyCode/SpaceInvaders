@@ -170,7 +170,7 @@ void RenderButton(Button button, Display display, Coordinate elementPos)
         fg_color = FG_WHITE;
     }
     elementPos.y += (button.position.row - display.start_row) * 4;
-    elementPos.x += (button.position.col) * 54;
+    elementPos.x += (button.position.col - display.start_cols) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
@@ -190,7 +190,7 @@ void RenderTextbox(Textbox &textbox, Display display, Coordinate elementPos)
         fg_color = FG_WHITE;
     }
     elementPos.y += (textbox.position.row - display.start_row) * 4;
-    elementPos.x += (textbox.position.col) * 54;
+    elementPos.x += (textbox.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
@@ -223,7 +223,7 @@ void RenderRangebar(Rangebar &Rangebar, Display display, Coordinate elementPos)
         fg_color = FG_WHITE;
     }
     elementPos.y += (Rangebar.position.row - display.start_row) * 4;
-    elementPos.x += (Rangebar.position.col) * 54;
+    elementPos.x += (Rangebar.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
@@ -269,7 +269,7 @@ void RenderFooter(string text)
 void RenderNullElement(Position position, Display display, Coordinate elementPos)
 {
     elementPos.y += (position.row - display.start_row) * 4;
-    elementPos.x += (position.col) * 54;
+    elementPos.x += (position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     for (int j = 0; j < height; j++)
@@ -293,7 +293,7 @@ void RenderCheckbox(Checkbox &checkbox, Display display, Coordinate elementPos)
         fg_color = FG_WHITE;
     }
     elementPos.y += (checkbox.position.row - display.start_row) * 4;
-    elementPos.x += (checkbox.position.col) * 54;
+    elementPos.x += (checkbox.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
@@ -322,7 +322,7 @@ void RenderSelectbox(Selectbox &selectbox, Display display, Coordinate elementPo
         fg_color = FG_WHITE;
     }
     elementPos.y += (selectbox.position.row - display.start_row) * 4;
-    elementPos.x += (selectbox.position.col) * 54;
+    elementPos.x += (selectbox.position.col- display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
@@ -751,15 +751,15 @@ void CloseForm(Form &form)
 int main()
 {
     system("cls");
-    Form form = {"Main", 15, 1,true,true};
-    Display display = {0, 4, 0, 0, {0, 0}};
+    Form form = {"Main", 15, 3,true,true};
+    Display display = {0, 4, 0, 1, {0, 0}};
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
     RenderBackground();
     InitialElementGrid(form);
 
     Rangebar rangebar = {"FPS:", 10, 30, 24, false, {0, 0}};
-    Rangebar rangebar1 = {"Music:", 0, 100, 80, true, {0, 1}};
+    Rangebar rangebar1 = {"Music:", 0, 100, 80, true, {0, 2}};
     Checkbox checkbox = {"VSync", false, {1, 0}};
     Checkbox checkbox1 = {"Motions", false, {1, 1}};
     Checkbox checkbox2 = {"CHeck1", false, {4, 0}};
