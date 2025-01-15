@@ -84,6 +84,11 @@ void RenderTable(Table &table, Display display)
             }
         }
     }
+    if(IsElementSelected(table.position, display)){
+            cout << FG_CYAN;
+    }else{
+         cout << FG_WHITE;
+    }
 
     for (int row = table.start_row; row - table.start_row < table.Showed_rows_count && row <= table.rows_count; row++)
     {
@@ -142,6 +147,7 @@ void RenderTable(Table &table, Display display)
         }
     }
     cout << "╝";
+     cout << FG_WHITE;
 }
 
 void RenderBackground()
