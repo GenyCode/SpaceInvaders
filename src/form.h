@@ -37,6 +37,8 @@ string blank_form = R"(
     ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
     ║                                                                                                                      ║
     ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝)";
+
+
 enum ElementType
 {
     BUTTON,
@@ -45,6 +47,12 @@ enum ElementType
     SELECTBOX,
     RANGEBAR,
     NULLELEMENT
+};
+enum MessageboxIcon {
+    NONE,   
+    INFORMATION, 
+    WARNING, 
+    CRITICAL,  
 };
 struct Position{
     int row;
@@ -109,6 +117,13 @@ struct Form{
     Element** ElementsGrid;
 };
 
+
+struct Messagebox{
+    string header = "";
+    string lines[10];
+    int linesCount = 0;
+    MessageboxIcon icon = NONE;
+};
 bool IsElementSelected(Position position, Display display);
 
 void DrawBox(int width, int height, string fg_color);
