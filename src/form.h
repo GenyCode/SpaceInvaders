@@ -70,9 +70,9 @@ struct SelectboxItem{
 };
 struct Selectbox{
     SelectboxItem Items[10];
-    string placeholder = "";
+    string title = "";
     int ItemsCount = 0;
-    int SelectedIndex = -1;
+    int SelectedIndex = 0;
     Position position;
 };
 struct Checkbox{
@@ -89,11 +89,12 @@ struct Rangebar{
     Position position;
 };
 struct Textbox{
+    string title;
     string placeholder;
-    bool IsNumberOnly = false;
-    string ValidationMessage;
+    string validationMessage;
     string value = "";
     bool CanEdit = true;
+    bool IsNumberOnly = false;
     Position position;
 };
 struct Element{

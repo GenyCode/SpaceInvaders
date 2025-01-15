@@ -1,9 +1,10 @@
 #include <iostream>
+#include <iomanip>
+#include <conio.h>
 #include <Windows.h>
 #include "color.h"
 #include "form.h"
 #include "utilities.cpp"
-#include <conio.h>
 using namespace std;
 bool IsElementSelected(Position position, Display display)
 {
@@ -91,14 +92,22 @@ void RenderTextbox(Textbox &textbox, Display display)
     Gotoxy(elementPos.x, elementPos.y);
     DrawBox(width, height, fg_color);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+
+    string title = textbox.title.substr(0, 10);
+    cout << fg_color << setw(10) << left << title;
+    string placeholder;
     if (!textbox.value.empty())
     {
-        RenderButton({textbox.value, textbox.position}, display);
+        placeholder = textbox.value;
     }
     else
     {
-        RenderButton({textbox.placeholder, textbox.position}, display);
+        placeholder = textbox.placeholder;
     }
+    placeholder = placeholder.substr(0, 28);
+    cout << fg_color << " " << setw(28) << left << placeholder << FG_WHITE;
+
+
 }
 void RenderRangebar(Rangebar &Rangebar, Display display)
 {
@@ -221,19 +230,18 @@ void RenderSelectbox(Selectbox &selectbox, Display display)
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
     DrawBox(width, height, fg_color);
-    Gotoxy(elementPos.x + 2, elementPos.y + 1);
+    Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+    string title = selectbox.title.substr(0, 12);
+    cout << fg_color << setw(12) << left << title;
+    Gotoxy(elementPos.x + 18, elementPos.y + 1);
     cout << fg_color << "<";
     Gotoxy(elementPos.x + width - 3, elementPos.y + 1);
     cout << fg_color << ">";
-    Gotoxy(elementPos.x + 4, elementPos.y + 1);
-    if (selectbox.SelectedIndex == -1)
-    {
-        cout << fg_color << selectbox.placeholder << FG_WHITE;
-    }
-    else
-    {
-        cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
-    }
+    string itemTitle = selectbox.Items[selectbox.SelectedIndex].text.substr(0, 20);
+    int x = (26 - itemTitle.length()) / 2 +20;
+    Gotoxy(elementPos.x + x, elementPos.y + 1);
+
+    cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
 }
 void RenderForm(Form &form, Display &display)
 {
@@ -401,8 +409,11 @@ void GetTextboxValue(Textbox &textbox, Display &display)
     DrawBox(width, height, fg_color);
     RenderFooter("[Enter]: Set Value");
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+     string title = textbox.title.substr(0, 10);
+    cout << fg_color << setw(10) << left << title;
+    Gotoxy(elementPos.x + 15, elementPos.y + (height / 2));
     ShowCursor();
-    textbox.value = GetInput(width - 4);
+    textbox.value = GetInput(30);
     HideCursor();
 }
 void OnPress6(void *element, ElementType type, Display &display)
@@ -574,8 +585,8 @@ int main()
     Checkbox checkbox4 = {"CHeck3", false,{6,0}};
     Checkbox checkbox5 = {"CHeck4", false,{7,0}};
     Checkbox checkbox6 = {"CHeck5", false,{8,0}};
-    Textbox textbox = {"Username", false, "Please Enter Your number", "", true,{2,0}};
-    Selectbox selectbox ={{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}, {"Legend", 4}}, "Game Level", 4, -1, {3, 0}};
+    Textbox textbox = {"Username:","12345678910111213wwwwwwwwwwwwwwwwwww141516171819", "Please Enter Your number", "",false, true,{2,0}};
+    Selectbox selectbox ={{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}, {"Legend", 4}}, "Game Level", 4, 0, {3, 0}};
     Button back = {"Back",{8,1}};
     AddRangebarToForm(form,&rangebar);
     AddRangebarToForm(form,&rangebar1);
