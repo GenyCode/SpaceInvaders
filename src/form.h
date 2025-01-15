@@ -129,10 +129,10 @@ struct Form{
     int rows_count = 5;
     int cols_count = 1;
         bool renderNullElements = true;
+        bool isCenter = true;
     Element** ElementsGrid;
 
 };
-
 
 struct Messagebox{
     string header = "";

@@ -84,15 +84,18 @@ void RenderTable(Table &table, Display display)
             }
         }
     }
-    if(IsElementSelected(table.position, display)){
-            cout << FG_CYAN;
-    }else{
-         cout << FG_WHITE;
+    if (IsElementSelected(table.position, display))
+    {
+        cout << FG_CYAN;
+    }
+    else
+    {
+        cout << FG_WHITE;
     }
 
     for (int row = table.start_row; row - table.start_row < table.Showed_rows_count && row <= table.rows_count; row++)
     {
-        Gotoxy(elementPos.x, elementPos.y + (row-table.start_row) * 2);
+        Gotoxy(elementPos.x, elementPos.y + (row - table.start_row) * 2);
 
         for (int col = 0; col < table.cols_count; col++)
         {
@@ -114,7 +117,7 @@ void RenderTable(Table &table, Display display)
 
         if (row < table.rows_count)
         {
-            Gotoxy(elementPos.x, elementPos.y + (row-table.start_row) * 2 + 1);
+            Gotoxy(elementPos.x, elementPos.y + (row - table.start_row) * 2 + 1);
             for (int col = 0; col < table.cols_count; col++)
             {
                 if (col == 0)
@@ -147,17 +150,16 @@ void RenderTable(Table &table, Display display)
         }
     }
     cout << "╝";
-     cout << FG_WHITE;
+    cout << FG_WHITE;
 }
-
 void RenderBackground()
 {
     Gotoxy(0, 0);
     cout << BG_BLACK << FG_WHITE << blank_form;
 }
-void RenderButton(Button button, Display display)
+
+void RenderButton(Button button, Display display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     if (IsElementSelected(button.position, display))
     {
@@ -176,9 +178,8 @@ void RenderButton(Button button, Display display)
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << button.text << FG_WHITE;
 }
-void RenderTextbox(Textbox &textbox, Display display)
+void RenderTextbox(Textbox &textbox, Display display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     if (IsElementSelected(textbox.position, display))
     {
@@ -210,9 +211,8 @@ void RenderTextbox(Textbox &textbox, Display display)
     placeholder = placeholder.substr(0, 28);
     cout << fg_color << " " << setw(28) << left << placeholder << FG_WHITE;
 }
-void RenderRangebar(Rangebar &Rangebar, Display display)
+void RenderRangebar(Rangebar &Rangebar, Display display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     if (IsElementSelected(Rangebar.position, display))
     {
@@ -266,9 +266,8 @@ void RenderFooter(string text)
         cout << " ";
     }
 }
-void RenderNullElement(Position position, Display display)
+void RenderNullElement(Position position, Display display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     elementPos.y += (position.row - display.start_row) * 4;
     elementPos.x += (position.col) * 54;
     int width = 50;
@@ -282,9 +281,8 @@ void RenderNullElement(Position position, Display display)
         }
     }
 }
-void RenderCheckbox(Checkbox &checkbox, Display display)
+void RenderCheckbox(Checkbox &checkbox, Display display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     if (IsElementSelected(checkbox.position, display))
     {
@@ -312,10 +310,8 @@ void RenderCheckbox(Checkbox &checkbox, Display display)
         cout << fg_color << "█░" << FG_WHITE;
     }
 }
-void RenderSelectbox(Selectbox &selectbox, Display display)
+void RenderSelectbox(Selectbox &selectbox, Display display, Coordinate elementPos)
 {
-
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     if (IsElementSelected(selectbox.position, display))
     {
@@ -345,6 +341,10 @@ void RenderSelectbox(Selectbox &selectbox, Display display)
 }
 void RenderForm(Form &form, Display &display)
 {
+    Coordinate Start_pos = start_area;
+    if(display.end_col - display.start_col == 0 && form.isCenter){
+        Start_pos.x += 26;
+    }
     for (int i = display.start_col; i <= display.end_col; i++)
     {
         for (int j = display.start_row; j <= display.end_row; j++)
@@ -355,32 +355,33 @@ void RenderForm(Form &form, Display &display)
                 switch (element.type)
                 {
                 case CHECKBOX:
-                    RenderCheckbox(*((Checkbox *)element.ptr), display);
+                    RenderCheckbox(*((Checkbox *)element.ptr), display, Start_pos);
                     break;
                 case SELECTBOX:
-                    RenderSelectbox(*((Selectbox *)element.ptr), display);
+                    RenderSelectbox(*((Selectbox *)element.ptr), display, Start_pos);
                     break;
                 case RANGEBAR:
-                    RenderRangebar(*((Rangebar *)element.ptr), display);
+                    RenderRangebar(*((Rangebar *)element.ptr), display, Start_pos);
                     break;
                 case TEXTBOX:
-                    RenderTextbox(*((Textbox *)element.ptr), display);
+                    RenderTextbox(*((Textbox *)element.ptr), display, Start_pos);
                     break;
                 case BUTTON:
-                    RenderButton(*((Button *)element.ptr), display);
+                    RenderButton(*((Button *)element.ptr), display, Start_pos);
                     break;
                 case TABLE:
                     RenderTable(*((Table *)element.ptr), display);
                     break;
                 }
             }
-            else if(form.renderNullElements)
+            else if (form.renderNullElements)
             {
-                RenderNullElement({j, i}, display);
+                RenderNullElement({j, i}, display,Start_pos);
             }
         }
     }
 }
+
 void ShowMessagebox(Messagebox &messagebox)
 {
     int width = 40;
@@ -747,11 +748,11 @@ void CloseForm(Form &form)
 {
     FreeElementGrid(form);
 }
-/* int main()
+int main()
 {
     system("cls");
-    Form form = {"Main", 15, 2};
-    Display display = {0, 4, 0, 1, {0, 0}};
+    Form form = {"Main", 15, 1,true,true};
+    Display display = {0, 4, 0, 0, {0, 0}};
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
     RenderBackground();
@@ -793,11 +794,11 @@ void CloseForm(Form &form)
     }
     CloseForm(form);
     return 0;
-} */
-int main()
+}
+/* int main()
 {
     system("cls");
-    Form form = {"Main", 15, 2,false};
+    Form form = {"Main", 15, 2, false};
     Display display = {0, 4, 0, 1, {0, 0}};
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
@@ -821,4 +822,4 @@ int main()
     }
     CloseForm(form);
     return 0;
-}
+} */
