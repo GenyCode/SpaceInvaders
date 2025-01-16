@@ -175,7 +175,6 @@ void RenderBackground()
     Gotoxy(0, 0);
     cout << BG_BLACK << FG_WHITE << blank_form;
 }
-
 void RenderButton(Button button, Display display, Coordinate elementPos)
 {
     string fg_color = "";
@@ -285,6 +284,20 @@ void RenderKeybox(Keybox &keybox, Display display, Coordinate elementPos)
     int x = CalculateCenterIndex(8, key.length()) + 38;
     Gotoxy(elementPos.x + x, elementPos.y + 1);
     cout << fg_color << key << FG_WHITE;
+}
+void RenderLabel(Label label, Display display, Coordinate elementPos)
+{
+    string fg_color = "";
+    fg_color = FG_WHITE;
+    elementPos.y += (label.position.row - display.start_row) * 4;
+    elementPos.x += (label.position.col - display.start_col) * 54;
+    int width = 50;
+    int height = 3;
+    Gotoxy(elementPos.x, elementPos.y);
+    DrawBox(width, height, fg_color,3);
+    int centerPos = CalculateCenterIndex(width - 4,label.text.length()) +2;
+    Gotoxy(elementPos.x + centerPos, elementPos.y + (height / 2));
+    cout << fg_color << label.text << FG_WHITE;
 }
 void RenderRangebar(Rangebar &Rangebar, Display display, Coordinate elementPos)
 {
@@ -452,6 +465,9 @@ void RenderForm(Form &form, Display &display)
                 case KEYBOX:
                     RenderKeybox(*((Keybox *)element.ptr), display, Start_pos);
                     break;
+                case LABEL:
+                    RenderLabel(*((Label *)element.ptr), display, Start_pos);
+                    break;
                 }
             }
             else if (form.renderNullElements)
@@ -573,6 +589,9 @@ void ToggleCheckboxState(Checkbox &checkbox)
 {
     checkbox.isChecked = !checkbox.isChecked;
 }
+bool CanSelect(Element element){
+    return element.ptr != nullptr && element.type != LABEL;
+}
 void HandleNavigation(char input, Form form, Display &display)
 {
     input = tolower(input);
@@ -585,7 +604,7 @@ void HandleNavigation(char input, Form form, Display &display)
         while (newUserPosition.row > 0)
         {
             newUserPosition.row--;
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            if (CanSelect(form.ElementsGrid[newUserPosition.row][newUserPosition.col]))
                 break;
         }
         break;
@@ -594,7 +613,7 @@ void HandleNavigation(char input, Form form, Display &display)
         while (newUserPosition.row < form.rows_count - 1)
         {
             newUserPosition.row++;
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            if (CanSelect(form.ElementsGrid[newUserPosition.row][newUserPosition.col]))
                 break;
         }
         break;
@@ -603,7 +622,7 @@ void HandleNavigation(char input, Form form, Display &display)
         while (newUserPosition.col > 0)
         {
             newUserPosition.col--;
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            if (CanSelect(form.ElementsGrid[newUserPosition.row][newUserPosition.col]))
                 break;
         }
         break;
@@ -612,7 +631,7 @@ void HandleNavigation(char input, Form form, Display &display)
         while (newUserPosition.col < form.cols_count - 1)
         {
             newUserPosition.col++;
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            if (CanSelect(form.ElementsGrid[newUserPosition.row][newUserPosition.col]))
                 break;
         }
         break;
@@ -890,6 +909,11 @@ void AddKeyboxToForm(Form &form, Keybox *keybox)
     Element element = {keybox, KEYBOX};
     AddElementToForm(form, element, (*keybox).position);
 }
+void AddLabelToForm(Form &form, Label *label)
+{
+    Element element = {label, LABEL};
+    AddElementToForm(form, element, (*label).position);
+}
 void InitialElementGrid(Form &form)
 {
     form.ElementsGrid = new Element *[form.rows_count];
@@ -919,7 +943,7 @@ int main()
 {
     system("cls");
     Form form = {"Main", 15, 2, true, true};
-    Display display = {0, 4, 0, 0, {0, 0}};
+    Display display = {0, 4, 0, 0, {1, 0}};
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
     RenderBackground();
@@ -928,6 +952,7 @@ int main()
     Rangebar rangebar = {"FPS:", 10, 30, 24, false, {0, 0}};
     Rangebar rangebar1 = {"Music:", 0, 100, 80, true, {0, 1}};
     Keybox keyb = {"Shoot", 'X', {1, 0}};
+    Label label = {"Player 1",{0,0}};
     // Checkbox checkbox = {"VSync", false, {1, 0}};
     Checkbox checkbox1 = {"Motions", false, {1, 1}};
     Checkbox checkbox2 = {"CHeck1", false, {4, 0}};
@@ -938,7 +963,7 @@ int main()
     Textbox textbox = {"Username:", "12345678910111213wwwwwwwwwwwwwwwwwww141516171819", "Please Enter Your number", "", false, true, {2, 0}};
     Selectbox selectbox = {{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}, {"Legend", 4}}, "Game Level", 4, 0, {3, 0}};
     Button back = {"Back", {8, 1}};
-    AddRangebarToForm(form, &rangebar);
+    //AddRangebarToForm(form, &rangebar);
     AddRangebarToForm(form, &rangebar1);
     AddKeyboxToForm(form, &keyb);
     AddCheckboxToForm(form, &checkbox1);
@@ -947,7 +972,7 @@ int main()
     AddCheckboxToForm(form, &checkbox4);
     AddCheckboxToForm(form, &checkbox5);
     AddCheckboxToForm(form, &checkbox6);
-
+    AddLabelToForm(form,&label);
     AddTextboxToForm(form, &textbox);
     AddSelectboxToForm(form, &selectbox);
     AddButtonToForm(form, &back);

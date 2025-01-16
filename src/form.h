@@ -47,6 +47,7 @@ enum ElementType
     RANGEBAR,
     TABLE,
     KEYBOX,
+    LABEL,
     NULLELEMENT
 };
 enum MessageboxIcon
@@ -64,6 +65,10 @@ struct Position
 struct TableCell
 {
     string content;
+};
+struct Label{
+    string text;
+    Position position;
 };
 struct Table
 {
@@ -88,10 +93,6 @@ struct Button
 {
     string text;
     Position position;
-};
-struct Label
-{
-    string text;
 };
 struct SelectboxItem
 {
@@ -152,6 +153,7 @@ struct Keybox
     char value;
     Position position;
 };
+
 struct Messagebox
 {
     string header = "";
