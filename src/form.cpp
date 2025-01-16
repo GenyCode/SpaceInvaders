@@ -630,9 +630,8 @@ void HandleNavigation(char input, Form form, Display &display)
     }
 }
 
-void GetTextboxValue(Textbox &textbox, Display &display)
+void GetTextboxValue(Textbox &textbox, Display &display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     fg_color = FG_YELLOW;
     int width = 50;
@@ -651,15 +650,8 @@ void GetTextboxValue(Textbox &textbox, Display &display)
     HideCursor();
 }
 
-#include <iostream>
-#include <conio.h>
-#include <windows.h> // برای GetAsyncKeyState
-#include <iomanip>
-using namespace std;
-
-void GetKeyboxValue(Keybox &keybox, Display &display)
+void GetKeyboxValue(Keybox &keybox, Display &display,Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = FG_YELLOW;
     elementPos.y += (keybox.position.row - display.start_row) * 4;
     elementPos.x += (keybox.position.col - display.start_col) * 54;
@@ -729,8 +721,13 @@ void GetKeyboxValue(Keybox &keybox, Display &display)
     }
 }
 
-void OnPress6(void *element, ElementType type, Display &display)
+void OnPress6(void *element, ElementType type, Display &display,Form &form)
 {
+    Coordinate Start_pos = start_area;
+    if (display.end_col - display.start_col == 0 && form.isCenter)
+    {
+        Start_pos.x += 26;
+    }
     switch (type)
     {
     case CHECKBOX:
@@ -743,13 +740,13 @@ void OnPress6(void *element, ElementType type, Display &display)
         UpdateRangebarValue(*((Rangebar *)element), 6);
         break;
     case TEXTBOX:
-        GetTextboxValue(*((Textbox *)element), display);
+        GetTextboxValue(*((Textbox *)element), display,Start_pos);
         break;
     case TABLE:
         ScrollTable(*((Table *)element), 6);
         break;
     case KEYBOX:
-        GetKeyboxValue(*((Keybox *)element), display);
+        GetKeyboxValue(*((Keybox *)element), display,Start_pos);
         break;
     }
 }
@@ -773,7 +770,7 @@ void HandleInput(char input, Display &display, Form form)
     Element element = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
     if (input == 'x')
     {
-        OnPress6(element.ptr, element.type, display);
+        OnPress6(element.ptr, element.type, display,form);
     }
     else if (input == 'z')
     {
@@ -796,10 +793,13 @@ string GetKeyHints(ElementType type)
         result = "[Z]: Previous Option  [X]: Next Option";
         break;
     case TEXTBOX:
-        result = "[X]: Enter Value";
+        result = "[X]: Edit Text";
         break;
     case RANGEBAR:
         result = "[Z]: Decrease Value  [X]: Increase Value";
+        break;
+    case KEYBOX:
+        result = "[X]: Edit Key";
         break;
     default:
         result = "Use [W], [A], [S], [D] to Navigate, [Enter] to Select.";
@@ -900,8 +900,8 @@ void CloseForm(Form &form)
 int main()
 {
     system("cls");
-    Form form = {"Main", 15, 3, true, true};
-    Display display = {0, 4, 0, 1, {0, 0}};
+    Form form = {"Main", 15, 1, true, true};
+    Display display = {0, 4, 0, 0, {0, 0}};
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
     RenderBackground();
