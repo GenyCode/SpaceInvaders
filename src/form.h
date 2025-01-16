@@ -158,6 +158,7 @@ struct Messagebox
     string lines[10];
     int linesCount = 0;
     MessageboxIcon icon = NONE;
+    bool Enabled = false;
 };
 bool IsElementSelected(Position position, Display display);
 

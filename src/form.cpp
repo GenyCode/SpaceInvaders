@@ -444,7 +444,7 @@ void RenderForm(Form &form, Display &display)
     }
 }
 
-void ShowMessagebox(Messagebox &messagebox)
+void ShowMessageBox(Messagebox &messagebox)
 {
     int width = 40;
     int height = 10 + messagebox.linesCount;
@@ -900,7 +900,7 @@ void CloseForm(Form &form)
 int main()
 {
     system("cls");
-    Form form = {"Main", 15, 1, true, true};
+    Form form = {"Main", 15, 2, true, true};
     Display display = {0, 4, 0, 0, {0, 0}};
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
@@ -908,7 +908,7 @@ int main()
     InitialElementGrid(form);
 
     Rangebar rangebar = {"FPS:", 10, 30, 24, false, {0, 0}};
-    Rangebar rangebar1 = {"Music:", 0, 100, 80, true, {0, 2}};
+    Rangebar rangebar1 = {"Music:", 0, 100, 80, true, {0, 1}};
     Keybox keyb = {"Shoot", 'X', {1, 0}};
     // Checkbox checkbox = {"VSync", false, {1, 0}};
     Checkbox checkbox1 = {"Motions", false, {1, 1}};
@@ -933,12 +933,18 @@ int main()
     AddTextboxToForm(form, &textbox);
     AddSelectboxToForm(form, &selectbox);
     AddButtonToForm(form, &back);
-    Messagebox msg = {"TITLE", {"loermro r r w e ew s gdss gdg sd", "loermro rdddddddw s gdss gdg sd", "loezsfdhdfhdfhw e ew s gdss gdg sd", "loesdfhsdhddhg sd"}, 4, INFORMATION};
+    Messagebox msg = {"TITLE", {"loermro r r w e ew s gdss gdg sd", "loermro rdddddddw s gdss gdg sd", "loezsfdhdfhdfhw e ew s gdss gdg sd", "loesdfhsdhddhg sd"}, 4, WARNING,true};
     while (true)
     {
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
         RenderFooter(GetKeyHints(SelectedElement.type));
+        if(msg.Enabled){
+            ShowMessageBox(msg);
+            msg.Enabled = false;
+            RenderBackground();
+            continue;
+        }
         char ch = getch();
         HandleInput(ch, display, form);
     }
@@ -972,4 +978,22 @@ int main()
     }
     CloseForm(form);
     return 0;
-} */
+}
+ */
+
+
+// Usage of some Elements
+
+/*
+    Messagebox msg = {"TITLE", {"loermro r r w e ew s gdss gdg sd", "loermro rdddddddw s gdss gdg sd", "loezsfdhdfhdfhw e ew s gdss gdg sd", "loesdfhsdhddhg sd"}, 4, WARNING,true};
+    
+    while (true)
+    {
+        if(msg.Enabled){
+            ShowMessageBox(msg);
+            msg.Enabled = false;
+            RenderBackground();
+            continue;
+        }
+    }
+*/
