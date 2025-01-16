@@ -18,8 +18,26 @@ Coordinate GetCenteredCoordinates(int width, int height)
     int y = CalculateCenterIndex(mainFormHeight, height) + 1;
     return {x, y};
 }
-void DrawBox(int width, int height, string fg_color)
+void DrawBox(int width, int height, string fg_color,int borderStyle)
 {
+    string borderCharacters1[6] = {"┐","┌","┘","└","─","│"};
+    string borderCharacters2[6] = {"┓","┏","┛","┗","━","┃"};
+    string borderCharacters3[6] = {"╗","╔","╝","╚","═","║"};
+    string* usageBorder = nullptr;
+    switch(borderStyle){
+        case 1:
+        usageBorder = borderCharacters1;
+        break;
+        case 2:
+        usageBorder = borderCharacters2;
+        break;       
+        case 3:
+        usageBorder = borderCharacters3;
+        break;  
+        default:
+        usageBorder = borderCharacters1;
+        break;
+    }
     Coordinate point = GetCursorPosition();
     for (int i = 0; i < height; i++)
     {
@@ -28,20 +46,20 @@ void DrawBox(int width, int height, string fg_color)
         string left;
         if (i == 0)
         {
-            right = "╗";
-            left = "╔";
-            inner = "═";
+            right = usageBorder[0];
+            left = usageBorder[1];
+            inner = usageBorder[4];
         }
         else if (i == height - 1)
         {
-            right = "╝";
-            left = "╚";
-            inner = "═";
+            right = usageBorder[2];
+            left = usageBorder[3];
+            inner = usageBorder[4];
         }
         else
         {
-            right = "║";
-            left = "║";
+            right = usageBorder[5];
+            left =  usageBorder[5];
             inner = " ";
         }
 
@@ -174,7 +192,7 @@ void RenderButton(Button button, Display display, Coordinate elementPos)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << button.text << FG_WHITE;
 }
@@ -194,7 +212,7 @@ void RenderTextbox(Textbox &textbox, Display display, Coordinate elementPos)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
 
     string title = textbox.title.substr(0, 10);
@@ -227,7 +245,7 @@ void RenderKeybox(Keybox &keybox, Display display, Coordinate elementPos)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
 
     string title = keybox.title.substr(0, 10);
@@ -284,7 +302,7 @@ void RenderRangebar(Rangebar &Rangebar, Display display, Coordinate elementPos)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << Rangebar.text << FG_WHITE;
     Gotoxy(elementPos.x + 14, elementPos.y + (height / 2));
@@ -354,7 +372,7 @@ void RenderCheckbox(Checkbox &checkbox, Display display, Coordinate elementPos)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << checkbox.text << FG_WHITE;
     Gotoxy(elementPos.x + width - 4, elementPos.y + (height / 2));
@@ -383,7 +401,7 @@ void RenderSelectbox(Selectbox &selectbox, Display display, Coordinate elementPo
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     string title = selectbox.title.substr(0, 12);
     cout << fg_color << setw(12) << left << title;
@@ -451,7 +469,7 @@ void ShowMessageBox(Messagebox &messagebox)
     int centerIndex;
     Coordinate elementPos = GetCenteredCoordinates(width, height);
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, FG_WHITE);
+    DrawBox(width, height, FG_WHITE,3);
     switch (messagebox.icon)
     {
     case INFORMATION:
@@ -639,7 +657,7 @@ void GetTextboxValue(Textbox &textbox, Display &display, Coordinate elementPos)
     elementPos.y += (textbox.position.row - display.start_row) * 4;
     elementPos.x += (textbox.position.col) * 54;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     RenderFooter("[Enter]: Set Value");
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     string title = textbox.title.substr(0, 10);
@@ -658,7 +676,7 @@ void GetKeyboxValue(Keybox &keybox, Display &display,Coordinate elementPos)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
 
     string title = keybox.title.substr(0, 10);
