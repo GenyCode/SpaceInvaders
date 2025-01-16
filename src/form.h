@@ -3,9 +3,9 @@
 #include "utilities.h"
 #include "color.h"
 using namespace std;
-const Coordinate start_area = {12,8};
-const Coordinate end_area = {116,25};
-const Coordinate footer_area = {12,29};
+const Coordinate start_area = {12, 8};
+const Coordinate end_area = {116, 25};
+const Coordinate footer_area = {12, 29};
 string blank_form = R"(
     ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
     ║       _______  _____  _______ _______ _______      _____ __   _ _    _ _______ ______  _______  ______ _______       ║
@@ -38,7 +38,6 @@ string blank_form = R"(
     ║                                                                                                                      ║
     ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝)";
 
-
 enum ElementType
 {
     BUTTON,
@@ -47,22 +46,27 @@ enum ElementType
     SELECTBOX,
     RANGEBAR,
     TABLE,
+    KEYBOX,
     NULLELEMENT
 };
-enum MessageboxIcon {
-    NONE,   
-    INFORMATION, 
-    WARNING, 
-    CRITICAL,  
+enum MessageboxIcon
+{
+    NONE,
+    INFORMATION,
+    WARNING,
+    CRITICAL,
 };
-struct Position{
+struct Position
+{
     int row;
     int col;
 };
-struct TableCell{
+struct TableCell
+{
     string content;
 };
-struct Table{
+struct Table
+{
     int totalWidth;
     int rows_count;
     int cols_count;
@@ -72,37 +76,44 @@ struct Table{
     TableCell Cells[20][5];
     Position position;
 };
-struct Display{
+struct Display
+{
     int start_row = 0;
     int end_row = 4;
     int start_col = 0;
     int end_col = 1;
     Position userPosition = {0, 0};
 };
-struct Button{
+struct Button
+{
     string text;
     Position position;
 };
-struct Label{
+struct Label
+{
     string text;
 };
-struct SelectboxItem{
+struct SelectboxItem
+{
     string text;
     int value;
 };
-struct Selectbox{
+struct Selectbox
+{
     SelectboxItem Items[10];
     string title = "";
     int ItemsCount = 0;
     int SelectedIndex = 0;
     Position position;
 };
-struct Checkbox{
+struct Checkbox
+{
     string text;
     bool isChecked;
     Position position;
 };
-struct Rangebar{
+struct Rangebar
+{
     string text;
     int min = 0;
     int max = 100;
@@ -110,7 +121,8 @@ struct Rangebar{
     bool UsePercentage = false;
     Position position;
 };
-struct Textbox{
+struct Textbox
+{
     string title;
     string placeholder;
     string validationMessage;
@@ -119,22 +131,29 @@ struct Textbox{
     bool IsNumberOnly = false;
     Position position;
 };
-struct Element{
-    void* ptr;
+struct Element
+{
+    void *ptr;
     ElementType type;
 };
 
-struct Form{
+struct Form
+{
     string title;
     int rows_count = 5;
     int cols_count = 1;
-        bool renderNullElements = true;
-        bool isCenter = true;
-    Element** ElementsGrid;
-
+    bool renderNullElements = true;
+    bool isCenter = true;
+    Element **ElementsGrid;
 };
-
-struct Messagebox{
+struct Keybox
+{
+    string title;
+    char value;
+    Position position;
+};
+struct Messagebox
+{
     string header = "";
     string lines[10];
     int linesCount = 0;
