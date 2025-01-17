@@ -142,3 +142,6 @@ string IntToString(int number)
     }
     return result;
 }
+int CalculateCenterIndex(int totalLength,int itemLength){
+    return (totalLength-itemLength)/2;
+}

@@ -1,17 +1,43 @@
 #include <iostream>
+#include <iomanip>
+#include <conio.h>
 #include <Windows.h>
 #include "color.h"
 #include "form.h"
 #include "utilities.cpp"
-#include <conio.h>
 using namespace std;
 bool IsElementSelected(Position position, Display display)
 {
     return position.row == display.userPosition.row && position.col == display.userPosition.col;
 }
-
-void DrawBox(int width, int height, string fg_color)
+Coordinate GetCenteredCoordinates(int width, int height)
 {
+    const int mainFormWidth = 120;
+    const int mainFormHeight = 30;
+    int x = CalculateCenterIndex(mainFormWidth, width) + 3;
+    int y = CalculateCenterIndex(mainFormHeight, height) + 1;
+    return {x, y};
+}
+void DrawBox(int width, int height, string fg_color,int borderStyle)
+{
+    string borderCharacters1[6] = {"┐","┌","┘","└","─","│"};
+    string borderCharacters2[6] = {"┓","┏","┛","┗","━","┃"};
+    string borderCharacters3[6] = {"╗","╔","╝","╚","═","║"};
+    string* usageBorder = nullptr;
+    switch(borderStyle){
+        case 1:
+        usageBorder = borderCharacters1;
+        break;
+        case 2:
+        usageBorder = borderCharacters2;
+        break;       
+        case 3:
+        usageBorder = borderCharacters3;
+        break;  
+        default:
+        usageBorder = borderCharacters1;
+        break;
+    }
     Coordinate point = GetCursorPosition();
     for (int i = 0; i < height; i++)
     {
@@ -20,20 +46,20 @@ void DrawBox(int width, int height, string fg_color)
         string left;
         if (i == 0)
         {
-            right = "╗";
-            left = "╔";
-            inner = "═";
+            right = usageBorder[0];
+            left = usageBorder[1];
+            inner = usageBorder[4];
         }
         else if (i == height - 1)
         {
-            right = "╝";
-            left = "╚";
-            inner = "═";
+            right = usageBorder[2];
+            left = usageBorder[3];
+            inner = usageBorder[4];
         }
         else
         {
-            right = "║";
-            left = "║";
+            right = usageBorder[5];
+            left =  usageBorder[5];
             inner = " ";
         }
 
@@ -47,13 +73,110 @@ void DrawBox(int width, int height, string fg_color)
     }
     cout << FG_WHITE;
 }
-void RenderBackground()
-{
-    cout << BG_BLACK << FG_WHITE << blank_form;
-}
-void RenderButton(Button button, Display display)
+void RenderTable(Table &table, Display display)
 {
     Coordinate elementPos = {start_area.x, start_area.y};
+    elementPos.y += (table.position.row - display.start_row) * 4;
+    elementPos.x += (table.position.col) * 54;
+    int remainingWidth = table.totalWidth;
+    int unassignedColsCount = 0;
+
+    for (int i = 0; i < table.cols_count; i++)
+    {
+        if (table.colsLength[i] == 0)
+        {
+            unassignedColsCount++;
+        }
+        remainingWidth -= table.colsLength[i] + 1;
+    }
+    remainingWidth--;
+
+    if (unassignedColsCount != 0)
+    {
+        int defaultColWidth = remainingWidth / unassignedColsCount;
+        for (int i = 0; i < table.cols_count; i++)
+        {
+            if (table.colsLength[i] == 0)
+            {
+                table.colsLength[i] = defaultColWidth;
+            }
+        }
+    }
+    if (IsElementSelected(table.position, display))
+    {
+        cout << FG_CYAN;
+    }
+    else
+    {
+        cout << FG_WHITE;
+    }
+
+    for (int row = table.start_row; row - table.start_row < table.Showed_rows_count && row <= table.rows_count; row++)
+    {
+        Gotoxy(elementPos.x, elementPos.y + (row - table.start_row) * 2);
+
+        for (int col = 0; col < table.cols_count; col++)
+        {
+            if (col == 0)
+            {
+                cout << (row == table.start_row ? "╔" : "╠");
+            }
+            else
+            {
+                cout << (row == table.start_row ? "╦" : "╬");
+            }
+
+            for (int i = 0; i < table.colsLength[col]; i++)
+            {
+                cout << "═";
+            }
+        }
+        cout << (row == table.start_row ? "╗" : "╣");
+
+        if (row < table.rows_count)
+        {
+            Gotoxy(elementPos.x, elementPos.y + (row - table.start_row) * 2 + 1);
+            for (int col = 0; col < table.cols_count; col++)
+            {
+                if (col == 0)
+                {
+                    cout << "║";
+                }
+
+                int contentStart = CalculateCenterIndex(table.colsLength[col], table.Cells[row][col].content.length());
+                cout << string(contentStart, ' ') << table.Cells[row][col].content
+                     << string(table.colsLength[col] - contentStart - table.Cells[row][col].content.length(), ' ');
+                cout << "║";
+            }
+        }
+    }
+
+    Gotoxy(elementPos.x, elementPos.y + table.Showed_rows_count * 2);
+    for (int col = 0; col < table.cols_count; col++)
+    {
+        if (col == 0)
+        {
+            cout << "╚";
+        }
+        else
+        {
+            cout << "╩";
+        }
+        for (int i = 0; i < table.colsLength[col]; i++)
+        {
+            cout << "═";
+        }
+    }
+    cout << "╝";
+    cout << FG_WHITE;
+}
+void RenderBackground()
+{
+    Gotoxy(0, 0);
+    cout << BG_BLACK << FG_WHITE << blank_form;
+}
+void RenderButton(Button button, Display display, Coordinate elementPos)
+{
     string fg_color = "";
     if (IsElementSelected(button.position, display))
     {
@@ -64,17 +187,16 @@ void RenderButton(Button button, Display display)
         fg_color = FG_WHITE;
     }
     elementPos.y += (button.position.row - display.start_row) * 4;
-    elementPos.x += (button.position.col) * 54;
+    elementPos.x += (button.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << button.text << FG_WHITE;
 }
-void RenderTextbox(Textbox &textbox, Display display)
+void RenderTextbox(Textbox &textbox, Display display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     if (IsElementSelected(textbox.position, display))
     {
@@ -85,24 +207,100 @@ void RenderTextbox(Textbox &textbox, Display display)
         fg_color = FG_WHITE;
     }
     elementPos.y += (textbox.position.row - display.start_row) * 4;
-    elementPos.x += (textbox.position.col) * 54;
+    elementPos.x += (textbox.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+
+    string title = textbox.title.substr(0, 10);
+    cout << fg_color << setw(10) << left << title;
+    string placeholder;
     if (!textbox.value.empty())
     {
-        RenderButton({textbox.value, textbox.position}, display);
+        placeholder = textbox.value;
     }
     else
     {
-        RenderButton({textbox.placeholder, textbox.position}, display);
+        placeholder = textbox.placeholder;
     }
+    placeholder = placeholder.substr(0, 28);
+    cout << fg_color << " " << setw(28) << left << placeholder << FG_WHITE;
 }
-void RenderRangebar(Rangebar &Rangebar, Display display)
+void RenderKeybox(Keybox &keybox, Display display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
+    string fg_color = "";
+    if (IsElementSelected(keybox.position, display))
+    {
+        fg_color = FG_CYAN;
+    }
+    else
+    {
+        fg_color = FG_WHITE;
+    }
+    elementPos.y += (keybox.position.row - display.start_row) * 4;
+    elementPos.x += (keybox.position.col - display.start_col) * 54;
+    int width = 50;
+    int height = 3;
+    Gotoxy(elementPos.x, elementPos.y);
+    DrawBox(width, height, fg_color,2);
+    Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+
+    string title = keybox.title.substr(0, 10);
+    cout << fg_color << setw(10) << left << title;
+    Gotoxy(elementPos.x + 37, elementPos.y + 1);
+    cout << fg_color << "<";
+    Gotoxy(elementPos.x + width - 5, elementPos.y + 1);
+    cout << fg_color << ">";
+    string key = " ";
+    switch (keybox.value)
+    {
+    case '^':
+        key = "UP ";
+        break;
+    case '/':
+        key = "DOWN ";
+        break;
+    case '>':
+        key = "LEFT ";
+        break;
+    case '<':
+        key = "RIGHT";
+        break;
+    case '\r':
+        key = "ENTER";
+        break;
+    case ' ':
+        key = "SPACE";
+        break;
+    case '*':
+        key = "ESC";
+        break;
+    default:
+        key[0] = keybox.value;
+        break;
+    }
+    int x = CalculateCenterIndex(8, key.length()) + 38;
+    Gotoxy(elementPos.x + x, elementPos.y + 1);
+    cout << fg_color << key << FG_WHITE;
+}
+void RenderLabel(Label label, Display display, Coordinate elementPos)
+{
+    string fg_color = "";
+    fg_color = FG_WHITE;
+    elementPos.y += (label.position.row - display.start_row) * 4;
+    elementPos.x += (label.position.col - display.start_col) * 54;
+    int width = 50;
+    int height = 3;
+    Gotoxy(elementPos.x, elementPos.y);
+    DrawBox(width, height, fg_color,3);
+    int centerPos = CalculateCenterIndex(width - 4,label.text.length()) +2;
+    Gotoxy(elementPos.x + centerPos, elementPos.y + (height / 2));
+    cout << fg_color << label.text << FG_WHITE;
+}
+void RenderRangebar(Rangebar &Rangebar, Display display, Coordinate elementPos)
+{
     string fg_color = "";
     if (IsElementSelected(Rangebar.position, display))
     {
@@ -113,11 +311,11 @@ void RenderRangebar(Rangebar &Rangebar, Display display)
         fg_color = FG_WHITE;
     }
     elementPos.y += (Rangebar.position.row - display.start_row) * 4;
-    elementPos.x += (Rangebar.position.col) * 54;
+    elementPos.x += (Rangebar.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << Rangebar.text << FG_WHITE;
     Gotoxy(elementPos.x + 14, elementPos.y + (height / 2));
@@ -156,11 +354,10 @@ void RenderFooter(string text)
         cout << " ";
     }
 }
-void RenderNullElement(Position position, Display display)
+void RenderNullElement(Position position, Display display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     elementPos.y += (position.row - display.start_row) * 4;
-    elementPos.x += (position.col) * 54;
+    elementPos.x += (position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     for (int j = 0; j < height; j++)
@@ -172,9 +369,8 @@ void RenderNullElement(Position position, Display display)
         }
     }
 }
-void RenderCheckbox(Checkbox &checkbox, Display display)
+void RenderCheckbox(Checkbox &checkbox, Display display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     if (IsElementSelected(checkbox.position, display))
     {
@@ -185,11 +381,11 @@ void RenderCheckbox(Checkbox &checkbox, Display display)
         fg_color = FG_WHITE;
     }
     elementPos.y += (checkbox.position.row - display.start_row) * 4;
-    elementPos.x += (checkbox.position.col) * 54;
+    elementPos.x += (checkbox.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     cout << fg_color << checkbox.text << FG_WHITE;
     Gotoxy(elementPos.x + width - 4, elementPos.y + (height / 2));
@@ -202,10 +398,8 @@ void RenderCheckbox(Checkbox &checkbox, Display display)
         cout << fg_color << "█░" << FG_WHITE;
     }
 }
-void RenderSelectbox(Selectbox &selectbox, Display display)
+void RenderSelectbox(Selectbox &selectbox, Display display, Coordinate elementPos)
 {
-
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     if (IsElementSelected(selectbox.position, display))
     {
@@ -216,27 +410,30 @@ void RenderSelectbox(Selectbox &selectbox, Display display)
         fg_color = FG_WHITE;
     }
     elementPos.y += (selectbox.position.row - display.start_row) * 4;
-    elementPos.x += (selectbox.position.col) * 54;
+    elementPos.x += (selectbox.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
-    Gotoxy(elementPos.x + 2, elementPos.y + 1);
+    DrawBox(width, height, fg_color,2);
+    Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+    string title = selectbox.title.substr(0, 12);
+    cout << fg_color << setw(12) << left << title;
+    Gotoxy(elementPos.x + 18, elementPos.y + 1);
     cout << fg_color << "<";
     Gotoxy(elementPos.x + width - 3, elementPos.y + 1);
     cout << fg_color << ">";
-    Gotoxy(elementPos.x + 4, elementPos.y + 1);
-    if (selectbox.SelectedIndex == -1)
-    {
-        cout << fg_color << selectbox.placeholder << FG_WHITE;
-    }
-    else
-    {
-        cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
-    }
+    string itemTitle = selectbox.Items[selectbox.SelectedIndex].text.substr(0, 20);
+    int x = CalculateCenterIndex(26, itemTitle.length()) + 20;
+    Gotoxy(elementPos.x + x, elementPos.y + 1);
+    cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
 }
 void RenderForm(Form &form, Display &display)
 {
+    Coordinate Start_pos = start_area;
+    if (display.end_col - display.start_col == 0 && form.isCenter)
+    {
+        Start_pos.x += 26;
+    }
     for (int i = display.start_col; i <= display.end_col; i++)
     {
         for (int j = display.start_row; j <= display.end_row; j++)
@@ -247,28 +444,96 @@ void RenderForm(Form &form, Display &display)
                 switch (element.type)
                 {
                 case CHECKBOX:
-                    RenderCheckbox(*((Checkbox *)element.ptr), display);
+                    RenderCheckbox(*((Checkbox *)element.ptr), display, Start_pos);
                     break;
                 case SELECTBOX:
-                    RenderSelectbox(*((Selectbox *)element.ptr), display);
+                    RenderSelectbox(*((Selectbox *)element.ptr), display, Start_pos);
                     break;
                 case RANGEBAR:
-                    RenderRangebar(*((Rangebar *)element.ptr), display);
+                    RenderRangebar(*((Rangebar *)element.ptr), display, Start_pos);
                     break;
                 case TEXTBOX:
-                    RenderTextbox(*((Textbox *)element.ptr), display);
+                    RenderTextbox(*((Textbox *)element.ptr), display, Start_pos);
                     break;
                 case BUTTON:
-                    RenderButton(*((Button *)element.ptr), display);
+                    RenderButton(*((Button *)element.ptr), display, Start_pos);
+                    break;
+                case TABLE:
+                    RenderTable(*((Table *)element.ptr), display);
+                    break;
+
+                case KEYBOX:
+                    RenderKeybox(*((Keybox *)element.ptr), display, Start_pos);
+                    break;
+                case LABEL:
+                    RenderLabel(*((Label *)element.ptr), display, Start_pos);
                     break;
                 }
             }
-            else
+            else if (form.renderNullElements)
             {
-                RenderNullElement({j, i}, display);
+                RenderNullElement({j, i}, display, Start_pos);
             }
         }
     }
+}
+
+void ShowMessageBox(Messagebox &messagebox)
+{
+    int width = 40;
+    int height = 10 + messagebox.linesCount;
+    int centerIndex;
+    Coordinate elementPos = GetCenteredCoordinates(width, height);
+    Gotoxy(elementPos.x, elementPos.y);
+    DrawBox(width, height, FG_WHITE,3);
+    switch (messagebox.icon)
+    {
+    case INFORMATION:
+        centerIndex = CalculateCenterIndex(width - 2, 20);
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 1);
+        cout << FG_BLUE << R"( ___ _  _ ___ ___  )";
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 2);
+        cout << FG_BLUE << R"(|_ _| \| | __/ _ \ )";
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 3);
+        cout << FG_BLUE << R"( | || .` | _| (_) |)";
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 4);
+        cout << FG_BLUE << R"(|___|_|\_|_| \___/ )";
+        break;
+    case WARNING:
+        centerIndex = CalculateCenterIndex(width - 2, 37);
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 1);
+        cout << FG_YELLOW << R"(__      ___   ___ _  _ ___ _  _  ___ )" << FG_WHITE;
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 2);
+        cout << FG_YELLOW << R"(\ \    / /_\ | _ \ \| |_ _| \| |/ __|)" << FG_WHITE;
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 3);
+        cout << FG_YELLOW << R"( \ \/\/ / _ \|   / .` || || .` | (_ |)" << FG_WHITE;
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 4);
+        cout << FG_YELLOW << R"(  \_/\_/_/ \_\_|_\_|\_|___|_|\_|\___|)" << FG_WHITE;
+        break;
+    case CRITICAL:
+        centerIndex = CalculateCenterIndex(width - 2, 23);
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 1);
+        cout << FG_RED << R"( ___ ___ ___  ___  ___ )" << FG_WHITE;
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 2);
+        cout << FG_RED << R"(| __| _ \ _ \/ _ \| _ \)" << FG_WHITE;
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 3);
+        cout << FG_RED << R"(| _||   /   / (_) |   /)" << FG_WHITE;
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 4);
+        cout << FG_RED << R"(|___|_|_\_|_\\___/|_|_\)" << FG_WHITE;
+        break;
+    }
+    centerIndex = CalculateCenterIndex(width - 2, messagebox.header.length());
+    Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 6);
+    cout << FG_WHITE << messagebox.header << FG_WHITE;
+    for (int i = 0; i < messagebox.linesCount; i++)
+    {
+        string text = messagebox.lines[i];
+        centerIndex = CalculateCenterIndex(width - 2, text.length());
+        Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 8 + i);
+        cout << FG_WHITE << text << FG_WHITE;
+    }
+    RenderFooter("[Any Key]: Close Messagebox");
+    char ch = getch();
 }
 bool CanAccess(Form &form, Position position)
 {
@@ -294,23 +559,38 @@ void UpdateSelectBoxSelection(Selectbox &selectbox, int input)
 void UpdateRangebarValue(Rangebar &Rangebar, int input)
 {
     int dis = Rangebar.max - Rangebar.min;
-    int step = dis / 28;
-    if (input == 5 && Rangebar.value != 0)
+    int step = (dis < 28) ? 1 : dis / 28;
+    if (input == 5 && Rangebar.value > Rangebar.min)
     {
         Rangebar.value -= step;
-        if (Rangebar.value < 0)
-            Rangebar.value = 0;
+        if (Rangebar.value < Rangebar.min)
+            Rangebar.value = Rangebar.min;
     }
-    else if (input == 6 && Rangebar.value != Rangebar.max)
+    else if (input == 6 && Rangebar.value < Rangebar.max)
     {
         Rangebar.value += step;
         if (Rangebar.value > Rangebar.max)
             Rangebar.value = Rangebar.max;
     }
 }
+
+void ScrollTable(Table &table, int input)
+{
+    if (input == 5 && table.start_row > 0)
+    {
+        table.start_row--;
+    }
+    else if (input == 6 && table.rows_count - table.start_row >= table.Showed_rows_count)
+    {
+        table.start_row++;
+    }
+}
 void ToggleCheckboxState(Checkbox &checkbox)
 {
     checkbox.isChecked = !checkbox.isChecked;
+}
+bool CanSelect(Element element){
+    return element.ptr != nullptr && element.type != LABEL;
 }
 void HandleNavigation(char input, Form form, Display &display)
 {
@@ -320,11 +600,11 @@ void HandleNavigation(char input, Form form, Display &display)
     Position newUserPosition = display.userPosition;
     switch (input)
     {
-    case 'w': 
+    case 'w':
         while (newUserPosition.row > 0)
         {
             newUserPosition.row--;
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            if (CanSelect(form.ElementsGrid[newUserPosition.row][newUserPosition.col]))
                 break;
         }
         break;
@@ -333,7 +613,7 @@ void HandleNavigation(char input, Form form, Display &display)
         while (newUserPosition.row < form.rows_count - 1)
         {
             newUserPosition.row++;
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            if (CanSelect(form.ElementsGrid[newUserPosition.row][newUserPosition.col]))
                 break;
         }
         break;
@@ -342,7 +622,7 @@ void HandleNavigation(char input, Form form, Display &display)
         while (newUserPosition.col > 0)
         {
             newUserPosition.col--;
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            if (CanSelect(form.ElementsGrid[newUserPosition.row][newUserPosition.col]))
                 break;
         }
         break;
@@ -351,7 +631,7 @@ void HandleNavigation(char input, Form form, Display &display)
         while (newUserPosition.col < form.cols_count - 1)
         {
             newUserPosition.col++;
-            if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+            if (CanSelect(form.ElementsGrid[newUserPosition.row][newUserPosition.col]))
                 break;
         }
         break;
@@ -359,7 +639,7 @@ void HandleNavigation(char input, Form form, Display &display)
     default:
         return;
     }
-    if (form.ElementsGrid[newUserPosition.row][newUserPosition.col].ptr != nullptr)
+    if (CanSelect(form.ElementsGrid[newUserPosition.row][newUserPosition.col]))
     {
         if (newUserPosition.row < display.start_row)
         {
@@ -387,9 +667,8 @@ void HandleNavigation(char input, Form form, Display &display)
     }
 }
 
-void GetTextboxValue(Textbox &textbox, Display &display)
+void GetTextboxValue(Textbox &textbox, Display &display, Coordinate elementPos)
 {
-    Coordinate elementPos = {start_area.x, start_area.y};
     string fg_color = "";
     fg_color = FG_YELLOW;
     int width = 50;
@@ -397,15 +676,95 @@ void GetTextboxValue(Textbox &textbox, Display &display)
     elementPos.y += (textbox.position.row - display.start_row) * 4;
     elementPos.x += (textbox.position.col) * 54;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color);
+    DrawBox(width, height, fg_color,2);
     RenderFooter("[Enter]: Set Value");
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+    string title = textbox.title.substr(0, 10);
+    cout << fg_color << setw(10) << left << title;
+    Gotoxy(elementPos.x + 15, elementPos.y + (height / 2));
     ShowCursor();
-    textbox.value = GetInput(width - 4);
+    textbox.value = GetInput(30);
     HideCursor();
 }
-void OnPress6(void *element, ElementType type, Display &display)
+
+void GetKeyboxValue(Keybox &keybox, Display &display,Coordinate elementPos)
 {
+    string fg_color = FG_YELLOW;
+    elementPos.y += (keybox.position.row - display.start_row) * 4;
+    elementPos.x += (keybox.position.col - display.start_col) * 54;
+    int width = 50;
+    int height = 3;
+    Gotoxy(elementPos.x, elementPos.y);
+    DrawBox(width, height, fg_color,2);
+    Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
+
+    string title = keybox.title.substr(0, 10);
+    cout << fg_color << setw(10) << left << title;
+    Gotoxy(elementPos.x + 37, elementPos.y + 1);
+    cout << fg_color << "<";
+    Gotoxy(elementPos.x + width - 5, elementPos.y + 1);
+    cout << fg_color << ">";
+    Gotoxy(elementPos.x + 39, elementPos.y + 1);
+
+    while (true)
+    {
+        unsigned char ch = getch();
+
+        if (ch == 0xE0 || ch == 0x00)
+        {
+            unsigned char arrow = getch();
+            switch (arrow)
+            {
+            case 72:
+                keybox.value = '^';
+                return;
+            case 80:
+                keybox.value = '/';
+                return;
+            case 77:
+                keybox.value = '>';
+                return;
+            case 75:
+                keybox.value = '<';
+                return;
+            default:
+                continue;
+            }
+        }
+        else if (ch == 27)
+        {
+            keybox.value = '*';
+            return;
+        }
+        else if (ch == 13)
+        {
+            keybox.value = '\r';
+            return;
+        }
+        else if (ch == 32)
+        {
+            keybox.value = ' ';
+            return;
+        }
+        else if (isalnum(ch))
+        {
+            keybox.value = toupper(ch);
+            return;
+        }
+        else
+        {
+            continue;
+        }
+    }
+}
+
+void OnPress6(void *element, ElementType type, Display &display,Form &form)
+{
+    Coordinate Start_pos = start_area;
+    if (display.end_col - display.start_col == 0 && form.isCenter)
+    {
+        Start_pos.x += 26;
+    }
     switch (type)
     {
     case CHECKBOX:
@@ -418,7 +777,13 @@ void OnPress6(void *element, ElementType type, Display &display)
         UpdateRangebarValue(*((Rangebar *)element), 6);
         break;
     case TEXTBOX:
-        GetTextboxValue(*((Textbox *)element), display);
+        GetTextboxValue(*((Textbox *)element), display,Start_pos);
+        break;
+    case TABLE:
+        ScrollTable(*((Table *)element), 6);
+        break;
+    case KEYBOX:
+        GetKeyboxValue(*((Keybox *)element), display,Start_pos);
         break;
     }
 }
@@ -432,18 +797,24 @@ void OnPress5(void *element, ElementType type, Display &display)
     case RANGEBAR:
         UpdateRangebarValue(*((Rangebar *)element), 5);
         break;
+    case TABLE:
+        ScrollTable(*((Table *)element), 5);
+        break;
     }
 }
-void HandleInput(char input, Display &display, Form form)
+void HandleInput(char input, Display &display, Form &form)
 {
     Element element = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
     if (input == 'x')
     {
-        OnPress6(element.ptr, element.type, display);
+        OnPress6(element.ptr, element.type, display,form);
     }
     else if (input == 'z')
     {
         OnPress5(element.ptr, element.type, display);
+    }
+    else if(input == 27){
+form.isRunning = false;
     }
     else
     {
@@ -462,10 +833,13 @@ string GetKeyHints(ElementType type)
         result = "[Z]: Previous Option  [X]: Next Option";
         break;
     case TEXTBOX:
-        result = "[X]: Enter Value";
+        result = "[X]: Edit Text";
         break;
     case RANGEBAR:
         result = "[Z]: Decrease Value  [X]: Increase Value";
+        break;
+    case KEYBOX:
+        result = "[X]: Edit Key";
         break;
     default:
         result = "Use [W], [A], [S], [D] to Navigate, [Enter] to Select.";
@@ -528,7 +902,21 @@ void AddSelectboxToForm(Form &form, Selectbox *selectbox)
     Element element = {selectbox, SELECTBOX};
     AddElementToForm(form, element, (*selectbox).position);
 }
-
+void AddTableToForm(Form &form, Table *table)
+{
+    Element element = {table, TABLE};
+    AddElementToForm(form, element, (*table).position);
+}
+void AddKeyboxToForm(Form &form, Keybox *keybox)
+{
+    Element element = {keybox, KEYBOX};
+    AddElementToForm(form, element, (*keybox).position);
+}
+void AddLabelToForm(Form &form, Label *label)
+{
+    Element element = {label, LABEL};
+    AddElementToForm(form, element, (*label).position);
+}
 void InitialElementGrid(Form &form)
 {
     form.ElementsGrid = new Element *[form.rows_count];
@@ -557,38 +945,75 @@ void CloseForm(Form &form)
 /* int main()
 {
     system("cls");
-    Form form = {"Main", 15, 2};
+    Form form = {"Main", 15, 2, true, true};
+    Display display = {0, 4, 0, 0, {1, 0}};
+    SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+    HideCursor();
+    RenderBackground();
+    InitialElementGrid(form);
+
+    Rangebar rangebar = {"FPS:", 10, 30, 24, false, {0, 0}};
+    Rangebar rangebar1 = {"Music:", 0, 100, 80, true, {0, 1}};
+    Keybox keyb = {"Shoot", 'X', {1, 0}};
+    Label label = {"Player 1",{0,0}};
+    // Checkbox checkbox = {"VSync", false, {1, 0}};
+    Checkbox checkbox1 = {"Motions", false, {1, 1}};
+    Checkbox checkbox2 = {"CHeck1", false, {4, 0}};
+    Checkbox checkbox3 = {"CHeck2", false, {5, 0}};
+    Checkbox checkbox4 = {"CHeck3", false, {6, 0}};
+    Checkbox checkbox5 = {"CHeck4", false, {7, 0}};
+    Checkbox checkbox6 = {"CHeck5", false, {8, 0}};
+    Textbox textbox = {"Username:", "12345678910111213wwwwwwwwwwwwwwwwwww141516171819", "Please Enter Your number", "", false, true, {2, 0}};
+    Selectbox selectbox = {{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}, {"Legend", 4}}, "Game Level", 4, 0, {3, 0}};
+    Button back = {"Back", {8, 1}};
+    //AddRangebarToForm(form, &rangebar);
+    AddRangebarToForm(form, &rangebar1);
+    AddKeyboxToForm(form, &keyb);
+    AddCheckboxToForm(form, &checkbox1);
+    // AddCheckboxToForm(form,&checkbox2);
+    // AddCheckboxToForm(form,&checkbox3);
+    AddCheckboxToForm(form, &checkbox4);
+    AddCheckboxToForm(form, &checkbox5);
+    AddCheckboxToForm(form, &checkbox6);
+    AddLabelToForm(form,&label);
+    AddTextboxToForm(form, &textbox);
+    AddSelectboxToForm(form, &selectbox);
+    AddButtonToForm(form, &back);
+    Messagebox msg = {"TITLE", {"loermro r r w e ew s gdss gdg sd", "loermro rdddddddw s gdss gdg sd", "loezsfdhdfhdfhw e ew s gdss gdg sd", "loesdfhsdhddhg sd"}, 4, WARNING,true};
+    while (true)
+    {
+        RenderForm(form, display);
+        Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
+        RenderFooter(GetKeyHints(SelectedElement.type));
+        if(msg.Enabled){
+            ShowMessageBox(msg);
+            msg.Enabled = false;
+            RenderBackground();
+            continue;
+        }
+        char ch = getch();
+        HandleInput(ch, display, form);
+    }
+    CloseForm(form);
+    return 0;
+}
+/* int main()
+{
+    system("cls");
+    Form form = {"Main", 15, 2, false};
     Display display = {0, 4, 0, 1, {0, 0}};
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     HideCursor();
     RenderBackground();
     InitialElementGrid(form);
 
-    Rangebar rangebar = {"Effects:", 0, 100, 80, true,{0,0}};
-    Rangebar rangebar1 = {"Music:", 0, 100, 80, true,{0,1}};
-    Checkbox checkbox = {"VSync", false,{1,0}};
-    Checkbox checkbox1 = {"Motions", false,{1,1}};
-    Checkbox checkbox2 = {"CHeck1", false,{4,0}};
-    Checkbox checkbox3 = {"CHeck2", false,{5,0}};
-    Checkbox checkbox4 = {"CHeck3", false,{6,0}};
-    Checkbox checkbox5 = {"CHeck4", false,{7,0}};
-    Checkbox checkbox6 = {"CHeck5", false,{8,0}};
-    Textbox textbox = {"Username", false, "Please Enter Your number", "", true,{2,0}};
-    Selectbox selectbox ={{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}, {"Legend", 4}}, "Game Level", 4, -1, {3, 0}};
-    Button back = {"Back",{8,1}};
-    AddRangebarToForm(form,&rangebar);
-    AddRangebarToForm(form,&rangebar1);
-    AddCheckboxToForm(form,&checkbox);
-    AddCheckboxToForm(form,&checkbox1);
-    //AddCheckboxToForm(form,&checkbox2);
-    //AddCheckboxToForm(form,&checkbox3);
-    AddCheckboxToForm(form,&checkbox4);
-    AddCheckboxToForm(form,&checkbox5);
-    AddCheckboxToForm(form,&checkbox6);
-
-    AddTextboxToForm(form,&textbox);
-    AddSelectboxToForm(form,&selectbox);
-    AddButtonToForm(form,&back);
+    Checkbox checkbox = {"VSync", false, {0, 0}};
+    Selectbox selectbox = {{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}, {"Legend", 4}}, "Game Level", 4, 0, {0, 1}};
+    Table table = {
+        104, 17, 3, 0, 7, {0, 50, 0}, {{{"Id"}, {"Name"}, {"Family"}}, {{"1"}, {"mdi"}, {"os"}}, {{"2"}, {"33"}, {"343"}}, {{"3"}, {"mdi"}, {"os"}}, {{"4"}, {"33"}, {"343"}}, {{"5"}, {"mdi"}, {"os"}}, {{"6"}, {"33"}, {"343"}}, {{"7"}, {"mdi"}, {"os"}}, {{"8"}, {"33"}, {"343"}}, {{"9"}, {"mdi"}, {"os"}}, {{"10"}, {"33"}, {"343"}}, {{"11"}, {"mdi"}, {"os"}}, {{"12"}, {"33"}, {"343"}}, {{"13"}, {"mdi"}, {"os"}}, {{"14"}, {"33"}, {"343"}}, {{"15"}, {"mdi"}, {"os"}}, {{"16"}, {"33"}, {"343"}}}, {1, 0}};
+    AddCheckboxToForm(form, &checkbox);
+    AddSelectboxToForm(form, &selectbox);
+    AddTableToForm(form, &table);
     while (true)
     {
         RenderForm(form, display);
