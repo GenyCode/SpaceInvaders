@@ -11,5 +11,6 @@ const string FG_BLUE = "\033[38;5;21m";
 const string FG_MAGENTA = "\033[38;5;54m";
 const string FG_ULTERARED ="\033[38;5;52m";
 const string FG_DARK_GRAY = "\033[38;5;237m";
+const string FG_GRAY = "\033[38;5;242m";
 const string FG_LIGHT_GRAY = "\033[38;5;251m";
 const string FG_DARK_BLUE ="\033[38;5;17m";

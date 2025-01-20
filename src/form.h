@@ -48,7 +48,8 @@ enum ElementType
     TABLE,
     KEYBOX,
     LABEL,
-    NULLELEMENT
+    NULLELEMENT,
+    NONRENDER
 };
 enum MessageboxIcon
 {
@@ -66,12 +67,22 @@ struct TableCell
 {
     string content;
 };
-struct Label{
+struct Line{
     string text;
+    int length = 0;
+};
+struct Label
+{
+    Line lines[10];
+    int linesCount;
     Position position;
+    int row = 1;
+    bool IsEnabled = true;
+    int id = 0;
 };
 struct Table
 {
+
     int totalWidth;
     int rows_count;
     int cols_count;
@@ -79,39 +90,53 @@ struct Table
     int Showed_rows_count;
     int colsLength[5] = {0};
     TableCell Cells[20][5];
+    bool IsEnabled = true;
     Position position;
+    int id = 0;
 };
 struct Display
 {
+
     int start_row = 0;
     int end_row = 4;
     int start_col = 0;
     int end_col = 1;
     Position userPosition = {0, 0};
+    int id = 0;
 };
 struct Button
 {
+
     string text;
     Position position;
+    bool IsEnabled = true;
+    int id = 0;
 };
 struct SelectboxItem
 {
+
     string text;
     int value;
 };
 struct Selectbox
 {
+
     SelectboxItem Items[10];
     string title = "";
     int ItemsCount = 0;
     int SelectedIndex = 0;
+
     Position position;
+    bool IsEnabled = true;
+    int id = 0;
 };
 struct Checkbox
 {
     string text;
     bool isChecked;
     Position position;
+    bool IsEnabled = true;
+    int id = 0;
 };
 struct Rangebar
 {
@@ -121,6 +146,8 @@ struct Rangebar
     int value;
     bool UsePercentage = false;
     Position position;
+    bool IsEnabled = true;
+    int id = 0;
 };
 struct Textbox
 {
@@ -131,6 +158,8 @@ struct Textbox
     bool CanEdit = true;
     bool IsNumberOnly = false;
     Position position;
+    bool IsEnabled = true;
+    int id = 0;
 };
 struct Element
 {
@@ -140,6 +169,7 @@ struct Element
 
 struct Form
 {
+
     string title;
     int rows_count = 5;
     int cols_count = 1;
@@ -149,19 +179,25 @@ struct Form
 };
 struct Keybox
 {
+
     string title;
     char value;
+
     Position position;
+    bool IsEnabled = true;
+    int id = 0;
 };
 
 struct Messagebox
 {
+
     string header = "";
     string lines[10];
     int linesCount = 0;
     MessageboxIcon icon = NONE;
-    bool Enabled = false;
-};
+    bool IsEnabled = false;
+ int id = 0;
+ };
 bool IsElementSelected(Position position, Display display);
 
 void DrawBox(int width, int height, string fg_color);
