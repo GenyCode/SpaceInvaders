@@ -177,6 +177,7 @@ struct Form
     bool isCenter = true;
     bool isRunning = true;
     bool renderBackground = true;
+    bool isSoundEnabled = true;
     Element **ElementsGrid;
 };
 struct Keybox

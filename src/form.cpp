@@ -7,6 +7,7 @@
 #include "form.h"
 #include "settings.h"
 #include "utilities.cpp"
+#include "Audio.h"
 using namespace std;
 bool IsElementSelected(Position position, Display display)
 {
@@ -747,8 +748,12 @@ void HandleNavigation(char input, Form &form, Display &display)
             isChange = true;
         }
         form.renderBackground = isChange;
+        if((newUserPosition.col != display.userPosition.col || newUserPosition.row != display.userPosition.row) && form.isSoundEnabled){
+            PlayNavigateSound();
+        }
         display.userPosition = newUserPosition;
     }
+    
 }
 
 void GetTextboxValue(Textbox &textbox, Display &display, Coordinate elementPos)
@@ -925,6 +930,9 @@ string GetKeyHints(ElementType type)
         break;
     case KEYBOX:
         result = "[X]: Edit Key";
+        break;
+    case BUTTON:
+        result = "[ENTER]: Press Button";
         break;
     default:
         result = "Use [W], [A], [S], [D] to Navigate, [Enter] to Select.";

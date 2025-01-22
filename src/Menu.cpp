@@ -3,12 +3,16 @@
 #include "form.cpp"
 #include "utilities.h"
 #include "Settings.h"
+#include "Audio.h"
 using namespace std;
 
 void LoadGameMenu()
 {
     int GameId = 0;
     Form form = {"Load Game", 20, 2};
+    Generalsettings generalsettings;
+    LoadSettings(generalsettings);
+    form.isSoundEnabled = generalsettings.Sound;
     Display display = {0, 4, 0, 1, {0, 0}};
     InitialDisplay(display);
     InitialElementGrid(form);
@@ -24,7 +28,7 @@ void LoadGameMenu()
     {
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
+        RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
         {
@@ -43,6 +47,9 @@ void LoadGameMenu()
 void SurvivalGameplaySettings()
 {
     Form form = {"Gameplay Settings", 7, 2};
+    Generalsettings generalsettings;
+    LoadSettings(generalsettings);
+    form.isSoundEnabled = generalsettings.Sound;
     Display display = {0, 4, 0, 1, {0, 0}};
     InitialDisplay(display);
     Textbox PlayerName = {"Name:", "Enter Your Name", "", "", true, false, {0, 0}};
@@ -84,7 +91,7 @@ void SurvivalGameplaySettings()
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
+        RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
         char ch = getch();
         HandleInput(ch, display, form);
     }
@@ -93,6 +100,9 @@ void SurvivalGameplaySettings()
 void CoopGameplaySettings()
 {
     Form form = {"Gameplay Settings", 6, 2};
+    Generalsettings generalsettings;
+    LoadSettings(generalsettings);
+    form.isSoundEnabled = generalsettings.Sound;
     Display display = {0, 4, 0, 1, {0, 0}};
     InitialDisplay(display);
     Selectbox Level = {{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}}, "Level:", 3, 0, {0, 0}};
@@ -125,7 +135,7 @@ void CoopGameplaySettings()
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
+        RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
         char ch = getch();
         HandleInput(ch, display, form);
     }
@@ -134,6 +144,9 @@ void CoopGameplaySettings()
 void CustomGameplaySettings()
 {
     Form form = {"Gameplay Settings", 8, 2};
+    Generalsettings generalsettings;
+    LoadSettings(generalsettings);
+    form.isSoundEnabled = generalsettings.Sound;
     Display display = {0, 4, 0, 1, {0, 0}};
     InitialDisplay(display);
     Textbox PlayerName = {"Name:", "Enter Your Name", "", "", true, false, {0, 0}};
@@ -164,7 +177,7 @@ void CustomGameplaySettings()
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
+        RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
         char ch = getch();
         HandleInput(ch, display, form);
     }
@@ -174,6 +187,9 @@ void GameModesMenu()
 {
     Form form = {"Game Modes", 5, 2};
     Display display = {0, 4, 0, 1, {0, 0}};
+    Generalsettings generalsettings;
+    LoadSettings(generalsettings);
+    form.isSoundEnabled = generalsettings.Sound;
     InitialDisplay(display);
     Button SurvivalButton = {"Survival", {0, 0}, true, 0};
     Button CustomGameButton = {"Custom Game", {1, 0}, true, 1};
@@ -192,7 +208,7 @@ void GameModesMenu()
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
+        RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
         {
@@ -219,9 +235,11 @@ void GameModesMenu()
         }
     }
 }
-void KeyBindings(Keybindings &keybindings)
+void KeyBindings(Generalsettings &settings)
 {
     Form form = {"Key Bindings", 5, 2};
+    Keybindings &keybindings = settings.keybindings;
+    form.isSoundEnabled = settings.Sound;
     Label Player1 = {{"Player1", 7}, 1, {0, 0}};
     Label Player2 = {{"Player2", 7}, 1, {0, 1}};
     Display display = {0, 4, 0, 1, {1, 0}};
@@ -252,7 +270,7 @@ void KeyBindings(Keybindings &keybindings)
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
+        RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
         {
@@ -275,6 +293,7 @@ void GeneralSettings()
     Generalsettings generalsettings;
     LoadSettings(generalsettings);
     Form form = {"Settings", 10, 2};
+    form.isSoundEnabled = generalsettings.Sound;
     Display display = {0, 4, 0, 1, {1, 0}};
     InitialDisplay(display);
     Label AudioSettings = {{"Audio Settings", 14}, 1, {0, 0}};
@@ -310,7 +329,7 @@ void GeneralSettings()
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
+        RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
         {
@@ -318,7 +337,7 @@ void GeneralSettings()
             switch ((*button).id)
             {
             case 0:
-                KeyBindings(generalsettings.keybindings);
+                KeyBindings(generalsettings);
                 break;
             case 1:
                 generalsettings.Music = MusicCheckbox.isChecked;
@@ -353,13 +372,17 @@ void HowToPlay(Display display)
                             4,
                             INFORMATION,
                             true};
-    ShowMessageBox(howToPlay,display.secondaryColor);
+    ShowMessageBox(howToPlay, display.secondaryColor);
 }
 void MainMenu()
 {
+    bool MusicIsPlay = false;
     Form form = {"Main Menu", 5, 2};
     Display display = {0, 4, 0, 1, {0, 0}};
     InitialDisplay(display);
+    Generalsettings generalsettings;
+    LoadSettings(generalsettings);
+    form.isSoundEnabled = generalsettings.Sound;
     Button NewGameButton = {"New Game", {0, 0}, true, 0};
     Button LoadGameButton = {"Load Game", {1, 0}, true, 1};
     Button SettingsButton = {"Settings", {2, 0}, true, 2};
@@ -373,6 +396,16 @@ void MainMenu()
     AddButtonToForm(form, &ExitButton);
     while (form.isRunning)
     {
+        if (!MusicIsPlay && generalsettings.Music)
+        {
+            PlayBackgroundMusic();
+            MusicIsPlay = true;
+        }
+        else if (MusicIsPlay && !generalsettings.Music)
+        {
+            StopBackgroundMusic();
+            MusicIsPlay = false;
+        }
         if (form.renderBackground)
         {
             RenderBackground(display);
@@ -380,7 +413,7 @@ void MainMenu()
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
+        RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
 
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
@@ -399,9 +432,15 @@ void MainMenu()
             case 2:
                 GeneralSettings();
                 InitialDisplay(display);
+                LoadSettings(generalsettings);
+                form.isSoundEnabled = generalsettings.Sound;
                 form.renderBackground = true;
                 break;
             case 3:
+                if (generalsettings.Sound)
+                {
+                    PlayAlertSound();
+                }
                 HowToPlay(display);
                 form.renderBackground = true;
                 break;
