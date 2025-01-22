@@ -102,6 +102,8 @@ struct Display
     int start_col = 0;
     int end_col = 1;
     Position userPosition = {0, 0};
+    string primaryColor = FG_CYAN;
+    string secondaryColor = FG_WHITE;   
     int id = 0;
 };
 struct Button
@@ -200,12 +202,13 @@ struct Messagebox
  };
 bool IsElementSelected(Position position, Display display);
 
-void DrawBox(int width, int height, string fg_color);
+void DrawBox(int width, int height, string fg_color,string rest_color, int borderStyle);
 void RenderBackground();
 void RenderButton(Button button, Display display);
 void RenderTextbox(Textbox &textbox, Display display);
 void RenderRangebar(Rangebar &Rangebar, Display display);
-void RenderFooter(string text);
+
+void RenderFooter(string text,string fg_color);
 void RenderNullElement(Position position, Display display);
 void RenderCheckbox(Checkbox &checkbox, Display display);
 void RenderSelectbox(Selectbox &selectbox, Display display);

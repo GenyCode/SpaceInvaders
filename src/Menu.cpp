@@ -3,7 +3,6 @@
 #include "form.cpp"
 #include "utilities.h"
 #include "Settings.h"
-#include "Settings.cpp"
 using namespace std;
 
 void LoadGameMenu()
@@ -11,6 +10,7 @@ void LoadGameMenu()
     int GameId = 0;
     Form form = {"Load Game", 20, 2};
     Display display = {0, 4, 0, 1, {0, 0}};
+    InitialDisplay(display);
     InitialElementGrid(form);
     Button LoadGameButtons[20];
     for (int i = 0; i < 20; i++)
@@ -19,12 +19,12 @@ void LoadGameMenu()
         LoadGameButtons[i] = {text, {i, 0}, true, i};
         AddButtonToForm(form, &LoadGameButtons[i]);
     }
-    RenderBackground();
+    RenderBackground(display);
     while (form.isRunning)
     {
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type));
+        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
         {
@@ -44,6 +44,7 @@ void SurvivalGameplaySettings()
 {
     Form form = {"Gameplay Settings", 7, 2};
     Display display = {0, 4, 0, 1, {0, 0}};
+    InitialDisplay(display);
     Textbox PlayerName = {"Name:", "Enter Your Name", "", "", true, false, {0, 0}};
     Selectbox Level = {{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}}, "Level:", 3, 0, {1, 0}};
     Label SpaceshipLabel = {{"Spaceship Settings", 18}, 1, {2, 0}};
@@ -66,7 +67,7 @@ void SurvivalGameplaySettings()
     {
         if (form.renderBackground)
         {
-            RenderBackground();
+            RenderBackground(display);
             form.renderBackground = false;
         }
         switch (SpaceshipType.SelectedIndex)
@@ -83,7 +84,7 @@ void SurvivalGameplaySettings()
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type));
+        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
         char ch = getch();
         HandleInput(ch, display, form);
     }
@@ -93,6 +94,7 @@ void CoopGameplaySettings()
 {
     Form form = {"Gameplay Settings", 6, 2};
     Display display = {0, 4, 0, 1, {0, 0}};
+    InitialDisplay(display);
     Selectbox Level = {{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}}, "Level:", 3, 0, {0, 0}};
     Label Spaceship1 = {{"Player1", 7}, 1, {1, 0}};
     Selectbox SpaceshipType1 = {{{"A", 0}, {"B", 1}, {"C", 2}}, "Type:", 3, 0, {3, 0}};
@@ -118,12 +120,12 @@ void CoopGameplaySettings()
     {
         if (form.renderBackground)
         {
-            RenderBackground();
+            RenderBackground(display);
             form.renderBackground = false;
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type));
+        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
         char ch = getch();
         HandleInput(ch, display, form);
     }
@@ -133,6 +135,7 @@ void CustomGameplaySettings()
 {
     Form form = {"Gameplay Settings", 8, 2};
     Display display = {0, 4, 0, 1, {0, 0}};
+    InitialDisplay(display);
     Textbox PlayerName = {"Name:", "Enter Your Name", "", "", true, false, {0, 0}};
     Label Spaceship = {{"Spaceship Settings", 18}, 1, {1, 0}};
     Selectbox SpaceshipType = {{{"A", 0}, {"B", 1}, {"C", 2}}, "Type:", 3, 0, {2, 0}};
@@ -156,12 +159,12 @@ void CustomGameplaySettings()
     {
         if (form.renderBackground)
         {
-            RenderBackground();
+            RenderBackground(display);
             form.renderBackground = false;
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type));
+        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
         char ch = getch();
         HandleInput(ch, display, form);
     }
@@ -171,6 +174,7 @@ void GameModesMenu()
 {
     Form form = {"Game Modes", 5, 2};
     Display display = {0, 4, 0, 1, {0, 0}};
+    InitialDisplay(display);
     Button SurvivalButton = {"Survival", {0, 0}, true, 0};
     Button CustomGameButton = {"Custom Game", {1, 0}, true, 1};
     Button CoopButton = {"Co-op", {2, 0}, true, 2};
@@ -183,12 +187,12 @@ void GameModesMenu()
     {
         if (form.renderBackground)
         {
-            RenderBackground();
+            RenderBackground(display);
             form.renderBackground = false;
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type));
+        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
         {
@@ -221,6 +225,7 @@ void KeyBindings(Keybindings &keybindings)
     Label Player1 = {{"Player1", 7}, 1, {0, 0}};
     Label Player2 = {{"Player2", 7}, 1, {0, 1}};
     Display display = {0, 4, 0, 1, {1, 0}};
+    InitialDisplay(display);
     Keybox Left_Player1 = {"Move Left:", keybindings.Left_Player1, {1, 0}};
     Keybox Right_Player1 = {"Move Right:", keybindings.Right_Player1, {2, 0}};
     Keybox Shoot_Player1 = {"Shoot:", keybindings.Shoot_Player1, {3, 0}};
@@ -242,12 +247,12 @@ void KeyBindings(Keybindings &keybindings)
     {
         if (form.renderBackground)
         {
-            RenderBackground();
+            RenderBackground(display);
             form.renderBackground = false;
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type));
+        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
         {
@@ -271,13 +276,14 @@ void GeneralSettings()
     LoadSettings(generalsettings);
     Form form = {"Settings", 10, 2};
     Display display = {0, 4, 0, 1, {1, 0}};
+    InitialDisplay(display);
     Label AudioSettings = {{"Audio Settings", 14}, 1, {0, 0}};
     Checkbox MusicCheckbox = {"Music", false, {1, 1}};
     Checkbox SoundCheckbox = {"Sound", false, {1, 0}};
     Button KeyBindingsButton = {"Key Bindings", {2, 0}, true, 0};
     Label Colors = {{"Colors", 6}, 1, {3, 0}};
-    Selectbox PrimaryColor = {{{"CYAN", 0}, {"BLUE", 1}, {"PURPLE", 2}, {"WHITE", 3}}, "Primary", 4, 0, {4, 0}};
-    Selectbox SecondaryColor = {{{"CYAN", 0}, {"BLUE", 1}, {"PURPLE", 2}, {"WHITE", 3}}, "Secondary", 4, 0, {4, 1}};
+    Selectbox PrimaryColor = {{{"CYAN", 333}, {"BLUE", 213}, {"PURPLE", 543}, {"WHITE", 2553}}, "Primary", 4, 0, {4, 0}};
+    Selectbox SecondaryColor = {{{"CYAN", 333}, {"BLUE", 213}, {"PURPLE", 543}, {"WHITE", 2553}}, "Secondary", 4, 0, {4, 1}};
     Button SaveChangesButton = {"Save Changes", {5, 0}, true, 1};
     Button ResetSettingsButton = {"ResetSettings", {5, 1}, true, 2};
     MusicCheckbox.isChecked = generalsettings.Music;
@@ -299,12 +305,12 @@ void GeneralSettings()
     {
         if (form.renderBackground)
         {
-            RenderBackground();
+            RenderBackground(display);
             form.renderBackground = false;
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type));
+        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
         {
@@ -337,7 +343,7 @@ void GeneralSettings()
 
     CloseForm(form);
 }
-void HowToPlay()
+void HowToPlay(Display display)
 {
     Messagebox howToPlay = {"How To Play",
                             {"Objective: Shoot all aliens before they reach you.",
@@ -347,12 +353,13 @@ void HowToPlay()
                             4,
                             INFORMATION,
                             true};
-    ShowMessageBox(howToPlay);
+    ShowMessageBox(howToPlay,display.secondaryColor);
 }
 void MainMenu()
 {
     Form form = {"Main Menu", 5, 2};
     Display display = {0, 4, 0, 1, {0, 0}};
+    InitialDisplay(display);
     Button NewGameButton = {"New Game", {0, 0}, true, 0};
     Button LoadGameButton = {"Load Game", {1, 0}, true, 1};
     Button SettingsButton = {"Settings", {2, 0}, true, 2};
@@ -368,12 +375,12 @@ void MainMenu()
     {
         if (form.renderBackground)
         {
-            RenderBackground();
+            RenderBackground(display);
             form.renderBackground = false;
         }
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
-        RenderFooter(GetKeyHints(SelectedElement.type));
+        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
 
         char ch = getch();
         if (SelectedElement.type == BUTTON && ch == '\r')
@@ -391,10 +398,11 @@ void MainMenu()
                 break;
             case 2:
                 GeneralSettings();
+                InitialDisplay(display);
                 form.renderBackground = true;
                 break;
             case 3:
-                HowToPlay();
+                HowToPlay(display);
                 form.renderBackground = true;
                 break;
             case 4:

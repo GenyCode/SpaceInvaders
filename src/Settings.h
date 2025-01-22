@@ -14,7 +14,10 @@ struct Keybindings {
 struct Generalsettings {
     bool Music = true;
     bool Sound = true;
-    int PrimaryColor = 0;
-    int SecondaryColor = 4;
+    int PrimaryColor = 333;
+    int SecondaryColor = 2553;
     Keybindings keybindings;
 };
+
+void SaveSettings(const Generalsettings &settings);
+void LoadSettings(Generalsettings &settings);

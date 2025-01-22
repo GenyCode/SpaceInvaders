@@ -5,6 +5,7 @@
 #include <math.h>
 #include "color.h"
 #include "form.h"
+#include "settings.h"
 #include "utilities.cpp"
 using namespace std;
 bool IsElementSelected(Position position, Display display)
@@ -13,12 +14,15 @@ bool IsElementSelected(Position position, Display display)
 }
 int GetItemIndexByValue(Selectbox selectbox, int value)
 {
+    int index = 0;
     for (int i = 0; i < selectbox.ItemsCount; i++)
     {
-        if (selectbox.Items[i].value == value)
-            return i;
+        if (selectbox.Items[i].value == value){
+            index = i;
+            break;
+        }
     }
-    return 0;
+    return index;
 }
 Coordinate GetCenteredCoordinates(int width, int height)
 {
@@ -28,7 +32,7 @@ Coordinate GetCenteredCoordinates(int width, int height)
     int y = CalculateCenterIndex(mainFormHeight, height) + 1;
     return {x, y};
 }
-void DrawBox(int width, int height, string fg_color, int borderStyle)
+void DrawBox(int width, int height, string fg_color,string rest_color, int borderStyle)
 {
     string borderCharacters1[6] = {"┐", "┌", "┘", "└", "─", "│"};
     string borderCharacters2[6] = {"┓", "┏", "┛", "┗", "━", "┃"};
@@ -82,7 +86,7 @@ void DrawBox(int width, int height, string fg_color, int borderStyle)
         cout << right;
         Gotoxy(point.x, point.y + i + 1);
     }
-    cout << FG_WHITE;
+    cout << rest_color;
 }
 void RenderTable(Table &table, Display display)
 {
@@ -115,7 +119,7 @@ void RenderTable(Table &table, Display display)
     }
     if (IsElementSelected(table.position, display))
     {
-        cout << FG_CYAN;
+        cout << display.primaryColor;
     }
     else if (!table.IsEnabled)
     {
@@ -123,7 +127,7 @@ void RenderTable(Table &table, Display display)
     }
     else
     {
-        cout << FG_WHITE;
+        cout << display.secondaryColor;
     }
 
     for (int row = table.start_row; row - table.start_row < table.Showed_rows_count && row <= table.rows_count; row++)
@@ -183,19 +187,19 @@ void RenderTable(Table &table, Display display)
         }
     }
     cout << "╝";
-    cout << FG_WHITE;
+    cout << display.secondaryColor;
 }
-void RenderBackground()
+void RenderBackground(Display display)
 {
     Gotoxy(0, 0);
-    cout << BG_BLACK << FG_WHITE << blank_form;
+    cout << BG_BLACK << display.secondaryColor << blank_form;
 }
 void RenderButton(Button button, Display display, Coordinate elementPos)
 {
     string fg_color = "";
     if (IsElementSelected(button.position, display))
     {
-        fg_color = FG_CYAN;
+        fg_color = display.primaryColor;
     }
     else if (!button.IsEnabled)
     {
@@ -203,23 +207,23 @@ void RenderButton(Button button, Display display, Coordinate elementPos)
     }
     else
     {
-        fg_color = FG_WHITE;
+        fg_color = display.secondaryColor;
     }
     elementPos.y += (button.position.row - display.start_row) * 4;
     elementPos.x += (button.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color, 2);
+    DrawBox(width, height, fg_color,display.secondaryColor, 2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
-    cout << fg_color << button.text << FG_WHITE;
+    cout << fg_color << button.text << display.secondaryColor;
 }
 void RenderTextbox(Textbox &textbox, Display display, Coordinate elementPos)
 {
     string fg_color = "";
     if (IsElementSelected(textbox.position, display))
     {
-        fg_color = FG_CYAN;
+        fg_color = display.primaryColor;
     }
     else if (!textbox.IsEnabled)
     {
@@ -227,14 +231,14 @@ void RenderTextbox(Textbox &textbox, Display display, Coordinate elementPos)
     }
     else
     {
-        fg_color = FG_WHITE;
+        fg_color = display.secondaryColor;
     }
     elementPos.y += (textbox.position.row - display.start_row) * 4;
     elementPos.x += (textbox.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color, 2);
+    DrawBox(width, height, fg_color,display.secondaryColor, 2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
 
     string title = textbox.title.substr(0, 10);
@@ -249,14 +253,14 @@ void RenderTextbox(Textbox &textbox, Display display, Coordinate elementPos)
         placeholder = textbox.placeholder;
     }
     placeholder = placeholder.substr(0, 28);
-    cout << fg_color << " " << setw(28) << left << placeholder << FG_WHITE;
+    cout << fg_color << " " << setw(28) << left << placeholder << display.secondaryColor;
 }
 void RenderKeybox(Keybox &keybox, Display display, Coordinate elementPos)
 {
     string fg_color = "";
     if (IsElementSelected(keybox.position, display))
     {
-        fg_color = FG_CYAN;
+       fg_color = display.primaryColor;
     }
     else if (!keybox.IsEnabled)
     {
@@ -264,14 +268,14 @@ void RenderKeybox(Keybox &keybox, Display display, Coordinate elementPos)
     }
     else
     {
-        fg_color = FG_WHITE;
+        fg_color = display.secondaryColor;
     }
     elementPos.y += (keybox.position.row - display.start_row) * 4;
     elementPos.x += (keybox.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color, 2);
+    DrawBox(width, height, fg_color,display.secondaryColor, 2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
 
     string title = keybox.title.substr(0, 10);
@@ -310,25 +314,25 @@ void RenderKeybox(Keybox &keybox, Display display, Coordinate elementPos)
     }
     int x = CalculateCenterIndex(8, key.length()) + 38;
     Gotoxy(elementPos.x + x, elementPos.y + 1);
-    cout << fg_color << key << FG_WHITE;
+    cout << fg_color << key << display.secondaryColor;
 }
 void RenderLabel(Label label, Display display, Coordinate elementPos)
 {
     string fg_color = "";
-    fg_color = FG_WHITE;
+    fg_color = display.secondaryColor;
     elementPos.y += (label.position.row - display.start_row) * 4;
     elementPos.x += (label.position.col - display.start_col) * 54;
     int width = 50;
     int height = label.row * 4 - 1;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color, 3);
+    DrawBox(width, height, fg_color,display.secondaryColor, 3);
     for (int i = 0; i < label.linesCount; i++)
     {
         Line line = label.lines[i];
         int x_centerIndex = CalculateCenterIndex(width - 2, line.length);
         int y_centerIndex = CalculateCenterIndex(height - 2, label.linesCount);
         Gotoxy(elementPos.x + x_centerIndex + 1, elementPos.y + y_centerIndex + i + 1);
-        cout << fg_color << line.text << FG_WHITE;
+        cout << fg_color << line.text << display.secondaryColor;
     }
 }
 void RenderRangebar(Rangebar &Rangebar, Display display, Coordinate elementPos)
@@ -336,7 +340,7 @@ void RenderRangebar(Rangebar &Rangebar, Display display, Coordinate elementPos)
     string fg_color = "";
     if (IsElementSelected(Rangebar.position, display))
     {
-        fg_color = FG_CYAN;
+        fg_color = display.primaryColor;
     }
     else if (!Rangebar.IsEnabled)
     {
@@ -344,16 +348,16 @@ void RenderRangebar(Rangebar &Rangebar, Display display, Coordinate elementPos)
     }
     else
     {
-        fg_color = FG_WHITE;
+        fg_color = display.secondaryColor;
     }
     elementPos.y += (Rangebar.position.row - display.start_row) * 4;
     elementPos.x += (Rangebar.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color, 2);
+    DrawBox(width, height, fg_color,display.secondaryColor, 2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
-    cout << fg_color << Rangebar.text << FG_WHITE;
+    cout << fg_color << Rangebar.text << display.secondaryColor;
     Gotoxy(elementPos.x + 14, elementPos.y + (height / 2));
     int dis = Rangebar.max - Rangebar.min;
     float ProgressRate = (Rangebar.value - Rangebar.min) * 1.0 / dis;
@@ -369,22 +373,23 @@ void RenderRangebar(Rangebar &Rangebar, Display display, Coordinate elementPos)
         else
             cout << "░";
     }
-    cout << FG_WHITE;
+    cout << display.secondaryColor;
     Gotoxy(elementPos.x + width - 6, elementPos.y + (height / 2));
     if (Rangebar.UsePercentage)
     {
         int percentage = ProgressRate * 100;
-        cout << fg_color << percentage << "%" << FG_WHITE;
+        cout << fg_color << percentage << "%" << display.secondaryColor;
     }
     else
     {
-        cout << fg_color << Rangebar.value << FG_WHITE;
+        cout << fg_color << Rangebar.value << display.secondaryColor;
     }
 }
-void RenderFooter(string text)
+
+void RenderFooter(string text,string fg_color)
 {
     Gotoxy(footer_area.x, footer_area.y);
-    cout << FG_WHITE << text;
+    cout << fg_color << text;
     for (int i = footer_area.x + text.length(); i < end_area.x; i++)
     {
         cout << " ";
@@ -410,7 +415,7 @@ void RenderCheckbox(Checkbox &checkbox, Display display, Coordinate elementPos)
     string fg_color = "";
     if (IsElementSelected(checkbox.position, display))
     {
-        fg_color = FG_CYAN;
+       fg_color = display.primaryColor;
     }
     else if (!checkbox.IsEnabled)
     {
@@ -418,24 +423,24 @@ void RenderCheckbox(Checkbox &checkbox, Display display, Coordinate elementPos)
     }
     else
     {
-        fg_color = FG_WHITE;
+        fg_color = display.secondaryColor;
     }
     elementPos.y += (checkbox.position.row - display.start_row) * 4;
     elementPos.x += (checkbox.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color, 2);
+    DrawBox(width, height, fg_color,display.secondaryColor, 2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
-    cout << fg_color << checkbox.text << FG_WHITE;
+    cout << fg_color << checkbox.text << display.secondaryColor;
     Gotoxy(elementPos.x + width - 4, elementPos.y + (height / 2));
     if (checkbox.isChecked)
     {
-        cout << fg_color << "▒█" << FG_WHITE;
+        cout << fg_color << "▒█" << display.secondaryColor;
     }
     else
     {
-        cout << fg_color << "█░" << FG_WHITE;
+        cout << fg_color << "█░" << display.secondaryColor;
     }
 }
 void RenderSelectbox(Selectbox &selectbox, Display display, Coordinate elementPos)
@@ -443,7 +448,7 @@ void RenderSelectbox(Selectbox &selectbox, Display display, Coordinate elementPo
     string fg_color = "";
     if (IsElementSelected(selectbox.position, display))
     {
-        fg_color = FG_CYAN;
+        fg_color = display.primaryColor;
     }
     else if (!selectbox.IsEnabled)
     {
@@ -451,14 +456,14 @@ void RenderSelectbox(Selectbox &selectbox, Display display, Coordinate elementPo
     }
     else
     {
-        fg_color = FG_WHITE;
+        fg_color = display.secondaryColor;
     }
     elementPos.y += (selectbox.position.row - display.start_row) * 4;
     elementPos.x += (selectbox.position.col - display.start_col) * 54;
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color, 2);
+    DrawBox(width, height, fg_color,display.secondaryColor, 2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     string title = selectbox.title.substr(0, 12);
     cout << fg_color << setw(12) << left << title;
@@ -469,7 +474,7 @@ void RenderSelectbox(Selectbox &selectbox, Display display, Coordinate elementPo
     string itemTitle = selectbox.Items[selectbox.SelectedIndex].text.substr(0, 20);
     int x = CalculateCenterIndex(26, itemTitle.length()) + 20;
     Gotoxy(elementPos.x + x, elementPos.y + 1);
-    cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << FG_WHITE;
+    cout << fg_color << selectbox.Items[selectbox.SelectedIndex].text << display.secondaryColor;
 }
 void RenderForm(Form &form, Display &display)
 {
@@ -523,7 +528,7 @@ void RenderForm(Form &form, Display &display)
     }
 }
 
-void ShowMessageBox(Messagebox &messagebox)
+void ShowMessageBox(Messagebox &messagebox,string sec_color)
 {
     int maxLineLength = 40;
     for (int i = 0; i < messagebox.linesCount; i++)
@@ -535,7 +540,7 @@ void ShowMessageBox(Messagebox &messagebox)
     int centerIndex;
     Coordinate elementPos = GetCenteredCoordinates(width, height);
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, FG_WHITE, 3);
+    DrawBox(width, height, sec_color,sec_color, 3);
     switch (messagebox.icon)
     {
     case INFORMATION:
@@ -552,37 +557,37 @@ void ShowMessageBox(Messagebox &messagebox)
     case WARNING:
         centerIndex = CalculateCenterIndex(width - 2, 37);
         Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 1);
-        cout << FG_YELLOW << R"(__      ___   ___ _  _ ___ _  _  ___ )" << FG_WHITE;
+        cout << FG_YELLOW << R"(__      ___   ___ _  _ ___ _  _  ___ )" << sec_color;
         Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 2);
-        cout << FG_YELLOW << R"(\ \    / /_\ | _ \ \| |_ _| \| |/ __|)" << FG_WHITE;
+        cout << FG_YELLOW << R"(\ \    / /_\ | _ \ \| |_ _| \| |/ __|)" << sec_color;
         Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 3);
-        cout << FG_YELLOW << R"( \ \/\/ / _ \|   / .` || || .` | (_ |)" << FG_WHITE;
+        cout << FG_YELLOW << R"( \ \/\/ / _ \|   / .` || || .` | (_ |)" << sec_color;
         Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 4);
-        cout << FG_YELLOW << R"(  \_/\_/_/ \_\_|_\_|\_|___|_|\_|\___|)" << FG_WHITE;
+        cout << FG_YELLOW << R"(  \_/\_/_/ \_\_|_\_|\_|___|_|\_|\___|)" << sec_color;
         break;
     case CRITICAL:
         centerIndex = CalculateCenterIndex(width - 2, 23);
         Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 1);
-        cout << FG_RED << R"( ___ ___ ___  ___  ___ )" << FG_WHITE;
+        cout << FG_RED << R"( ___ ___ ___  ___  ___ )" << sec_color;
         Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 2);
-        cout << FG_RED << R"(| __| _ \ _ \/ _ \| _ \)" << FG_WHITE;
+        cout << FG_RED << R"(| __| _ \ _ \/ _ \| _ \)" << sec_color;
         Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 3);
-        cout << FG_RED << R"(| _||   /   / (_) |   /)" << FG_WHITE;
+        cout << FG_RED << R"(| _||   /   / (_) |   /)" << sec_color;
         Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 4);
-        cout << FG_RED << R"(|___|_|_\_|_\\___/|_|_\)" << FG_WHITE;
+        cout << FG_RED << R"(|___|_|_\_|_\\___/|_|_\)" << sec_color;
         break;
     }
     centerIndex = CalculateCenterIndex(width - 2, messagebox.header.length());
     Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 6);
-    cout << FG_WHITE << messagebox.header << FG_WHITE;
+    cout << sec_color << messagebox.header << sec_color;
     for (int i = 0; i < messagebox.linesCount; i++)
     {
         string text = messagebox.lines[i];
         centerIndex = CalculateCenterIndex(width - 2, text.length());
         Gotoxy(elementPos.x + centerIndex + 1, elementPos.y + 8 + i);
-        cout << FG_WHITE << text << FG_WHITE;
-    }
-    RenderFooter("[Any Key]: Close Messagebox");
+        cout << sec_color << text << sec_color;
+    }    
+    RenderFooter("[Any Key]: Close Messagebox",sec_color);
     char ch = getch();
 }
 bool CanAccess(Form &form, Position position)
@@ -755,8 +760,8 @@ void GetTextboxValue(Textbox &textbox, Display &display, Coordinate elementPos)
     elementPos.y += (textbox.position.row - display.start_row) * 4;
     elementPos.x += (textbox.position.col) * 54;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color, 2);
-    RenderFooter("[Enter]: Set Value");
+    DrawBox(width, height, fg_color,display.secondaryColor, 2);
+    RenderFooter("[Enter]: Set Value",display.secondaryColor);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
     string title = textbox.title.substr(0, 10);
     cout << fg_color << setw(10) << left << title;
@@ -774,7 +779,7 @@ void GetKeyboxValue(Keybox &keybox, Display &display, Coordinate elementPos)
     int width = 50;
     int height = 3;
     Gotoxy(elementPos.x, elementPos.y);
-    DrawBox(width, height, fg_color, 2);
+    DrawBox(width, height, fg_color,display.secondaryColor, 2);
     Gotoxy(elementPos.x + 4, elementPos.y + (height / 2));
 
     string title = keybox.title.substr(0, 10);
@@ -1034,6 +1039,12 @@ void FreeElementGrid(Form &form)
 void CloseForm(Form &form)
 {
     FreeElementGrid(form);
+}
+void InitialDisplay(Display &display){
+    Generalsettings settings;
+    LoadSettings(settings);
+    display.primaryColor =  GenerateANSI(settings.PrimaryColor);
+    display.secondaryColor =  GenerateANSI(settings.SecondaryColor);
 }
 /* int main()
 {
