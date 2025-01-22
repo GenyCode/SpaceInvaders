@@ -102,11 +102,12 @@ struct Display
     int start_col = 0;
     int end_col = 1;
     Position userPosition = {0, 0};
+    string primaryColor = FG_CYAN;
+    string secondaryColor = FG_WHITE;   
     int id = 0;
 };
 struct Button
 {
-
     string text;
     Position position;
     bool IsEnabled = true;
@@ -166,7 +167,6 @@ struct Element
     void *ptr;
     ElementType type;
 };
-
 struct Form
 {
 
@@ -175,6 +175,9 @@ struct Form
     int cols_count = 1;
     bool renderNullElements = true;
     bool isCenter = true;
+    bool isRunning = true;
+    bool renderBackground = true;
+    bool isSoundEnabled = true;
     Element **ElementsGrid;
 };
 struct Keybox
@@ -200,12 +203,13 @@ struct Messagebox
  };
 bool IsElementSelected(Position position, Display display);
 
-void DrawBox(int width, int height, string fg_color);
+void DrawBox(int width, int height, string fg_color,string rest_color, int borderStyle);
 void RenderBackground();
 void RenderButton(Button button, Display display);
 void RenderTextbox(Textbox &textbox, Display display);
 void RenderRangebar(Rangebar &Rangebar, Display display);
-void RenderFooter(string text);
+
+void RenderFooter(string text,string fg_color);
 void RenderNullElement(Position position, Display display);
 void RenderCheckbox(Checkbox &checkbox, Display display);
 void RenderSelectbox(Selectbox &selectbox, Display display);
@@ -215,12 +219,12 @@ bool CanAccess(Form &form, Position position);
 void UpdateSelectBoxSelection(Selectbox &selectbox, int input);
 void UpdateRangebarValue(Rangebar &Rangebar, int input);
 void ToggleCheckboxState(Checkbox &checkbox);
-void HandleNavigation(char input, Form form, Display &display);
+void HandleNavigation(char input, Form &form, Display &display);
 void GetTextboxValue(Textbox &textbox, Display &display);
 void OnPress6(void *element, ElementType type, Display &display);
 void OnPress5(void *element, ElementType type, Display &display);
 
-void HandleInput(char input, Display &display, Form form);
+void HandleInput(char input, Display &display, Form &form);
 string GetKeyHints(ElementType type);
 
 void DeleteElement(Form &form, Position position);

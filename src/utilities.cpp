@@ -145,3 +145,14 @@ string IntToString(int number)
 int CalculateCenterIndex(int totalLength,int itemLength){
     return (totalLength-itemLength)/2;
 }
+string GenerateANSI(int code) {
+    if ((code % 10 != 3 && code % 10 != 4)) {
+        return FG_WHITE;
+    }
+
+    int colorCode = code / 10; 
+    int mode = code % 10;   
+
+    string ansiCode = "\033[" + to_string((mode == 3 ? 38 : 48)) + ";5;" + to_string(colorCode) + "m";
+    return ansiCode;
+}
