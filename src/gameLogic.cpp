@@ -50,7 +50,8 @@ struct EnemiesData
 	int dir = 1;
 	int effectdir = 1;
 };
-struct Shield{
+struct Shield
+{
 	bool entity[5][12];
 	int PositionX;
 	int PositionY;
@@ -82,8 +83,8 @@ ship feisty = {2, 2, {{"≶ ⭻ ≷"}, {"█▒█▒█"}}, 'b', 58};
 ship horned = {1, 3, {{"█🙪🙪🙪█"}, {"█▅▅▅█"}}, 'm', 58};
 ship selected;
 
-Enemy normalEnemy = {0, {{1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}}, {{"█████"}, {"█▄█▄█"},{" █ █ "}}, true};
-Shield normalShield = {{{0,0,1,1,1,1,1,1,1,1,0,0},{1,1,1,1,1,1,1,1,1,1,1,1},{0,1,1,1,0,0,0,0,1,1,1,0},{1,1,1,0,0,0,0,0,0,1,1,1},{1,1,1,0,0,0,0,0,0,1,1,1}}};
+Enemy normalEnemy = {0, {{1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}}, {{"█████"}, {"█▄█▄█"}, {" █ █ "}}, true};
+Shield normalShield = {{{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0}, {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1}, {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1}}};
 Shield shields[4];
 void SetRightestEnemy(EnemiesData &data)
 {
@@ -136,14 +137,18 @@ void initialShields(Shield Shields[4])
 		Shields[i].PositionY = lengthScreen - 10;
 	}
 }
-void printShields(Shield Shields[4]){
+void printShields(Shield Shields[4])
+{
 	for (int i = 0; i < 4; i++)
 	{
-		for(int j = 0;j<5;j++){
-			for(int k = 0;k<12;k++){
-				if(Shields[i].entity[j][k]){
-					gotoXY(Shields[i].PositionY+j,Shields[i].PositionX+k);
-					cout <<"█";
+		for (int j = 0; j < 5; j++)
+		{
+			for (int k = 0; k < 12; k++)
+			{
+				gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
+				if (Shields[i].entity[j][k])
+				{
+					cout << "█";
 				}
 			}
 		}
@@ -182,9 +187,10 @@ void eraseEnemies(EnemiesData &data)
 	{
 		for (int j = 0; j < 10; j++)
 		{
-			for(int k = 0;k<3;k++){
-			gotoXY(data.enemies[i][j].positionY+k, data.enemies[i][j].positionX);
-			cout << "     ";
+			for (int k = 0; k < 3; k++)
+			{
+				gotoXY(data.enemies[i][j].positionY + k, data.enemies[i][j].positionX);
+				cout << "     ";
 			}
 		}
 	}
@@ -195,15 +201,51 @@ void printEnemies(EnemiesData &data)
 	{
 		for (int j = 0; j < 10; j++)
 		{
-			for(int k = 0;k<3;k++){
-			gotoXY(data.enemies[i][j].positionY+k, data.enemies[i][j].positionX);
-			cout << data.enemies[i][j].shape[k];
+			for (int k = 0; k < 3; k++)
+			{
+				gotoXY(data.enemies[i][j].positionY + k, data.enemies[i][j].positionX);
+				cout << data.enemies[i][j].shape[k];
 			}
 		}
 	}
 }
 string shipEraser[3] = {{"     "}, {"     "}, {"     "}};
 
+void CheckShieldCollision(Shield Shields[4])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			for (int k = 0; k < 12; k++)
+			{
+				if (Shields[i].entity[j][k] && Shields[i].PositionX + k == MainBullet.positionX && Shields[i].PositionY + j == MainBullet.positionY)
+				{
+					MainBullet.isActive = false;
+					Shields[i].entity[j][k] = false;
+					if (k + 1 < 12)
+					{
+						gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
+						cout << " ";
+						Shields[i].entity[j][k + 1] = false;
+					}
+					if (k - 1 > 0)
+					{
+						gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
+						cout << " ";
+						Shields[i].entity[j][k - 1] = false;
+					}
+					if (j - 1 > 0)
+					{
+						gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
+						cout << " ";
+						Shields[i].entity[j][k] = false;
+					}
+				}
+			}
+		}
+	}
+}
 int main()
 {
 	system("cls");
@@ -271,7 +313,12 @@ int main()
 	while (1)
 	{
 		shipControl();
-		movePlayerBullet();
+		if (clock() % 50 == 0)
+		{
+			movePlayerBullet();
+			CheckShieldCollision(shields);
+		}
+
 		if (clock() % 500 == 0)
 		{
 			eraseEnemies(data);
@@ -378,22 +425,19 @@ void firePlayerBullet()
 }
 void movePlayerBullet()
 {
-	if (clock() % 50 == 0)
+	if (MainBullet.isActive)
 	{
-		if (MainBullet.isActive)
+		gotoXY(MainBullet.positionY, MainBullet.positionX);
+		cout << " ";
+		MainBullet.positionY--;
+		if (MainBullet.positionY > 0)
 		{
 			gotoXY(MainBullet.positionY, MainBullet.positionX);
-			cout << " ";
-			MainBullet.positionY--;
-			if (MainBullet.positionY > 0)
-			{
-				gotoXY(MainBullet.positionY, MainBullet.positionX);
-				cout << MainBullet.shape;
-			}
-			else
-			{
-				MainBullet.isActive = false;
-			}
+			cout << MainBullet.shape;
+		}
+		else
+		{
+			MainBullet.isActive = false;
 		}
 	}
 }
