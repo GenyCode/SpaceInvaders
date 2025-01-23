@@ -37,20 +37,21 @@ struct Enemy
 {
 	unsigned short int speed;
 	bool entity[2][5];
-	string shape[2];
+	string shape[3];
 	bool isAlive;
 	int positionX;
 	int positionY;
 };
 struct EnemiesData
 {
-	Enemy enemies[4][10];
+	Enemy enemies[3][10];
 	Enemy *leftestEnemy = nullptr;
 	Enemy *rightestEnemy = nullptr;
 	int dir = 1;
+	int effectdir = 1;
 };
 struct Shield{
-	bool entity[5][6];
+	bool entity[5][12];
 	int PositionX;
 	int PositionY;
 };
@@ -81,14 +82,14 @@ ship feisty = {2, 2, {{"≶ ⭻ ≷"}, {"█▒█▒█"}}, 'b', 58};
 ship horned = {1, 3, {{"█🙪🙪🙪█"}, {"█▅▅▅█"}}, 'm', 58};
 ship selected;
 
-Enemy normalEnemy = {0, {{1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}}, {{"█████"}, {"█▄█▄█"}}, true};
-Shield normalShield = {{{1,1,1,1,1,1},{1,1,1,1,1,1},{1,1,0,0,1,1},{1,1,0,0,1,1},{1,1,0,0,1,1}}};
+Enemy normalEnemy = {0, {{1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}}, {{"█████"}, {"█▄█▄█"},{" █ █ "}}, true};
+Shield normalShield = {{{0,0,1,1,1,1,1,1,1,1,0,0},{1,1,1,1,1,1,1,1,1,1,1,1},{0,1,1,1,0,0,0,0,1,1,1,0},{1,1,1,0,0,0,0,0,0,1,1,1},{1,1,1,0,0,0,0,0,0,1,1,1}}};
 Shield shields[4];
 void SetRightestEnemy(EnemiesData &data)
 {
 	for (int i = 9; i >= 0; i--)
 	{
-		for (int j = 0; j < 4; j++)
+		for (int j = 0; j < 3; j++)
 		{
 			if (data.enemies[j][i].isAlive)
 			{
@@ -102,7 +103,7 @@ void SetLeftestEnemy(EnemiesData &data)
 {
 	for (int i = 0; i < 10; i++)
 	{
-		for (int j = 0; j < 4; j++)
+		for (int j = 0; j < 3; j++)
 		{
 			if (data.enemies[j][i].isAlive)
 			{
@@ -114,13 +115,13 @@ void SetLeftestEnemy(EnemiesData &data)
 }
 void initialEnemies(EnemiesData &data)
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 10; j++)
 		{
 			data.enemies[i][j] = normalEnemy;
 			data.enemies[i][j].positionX = 5 + j * 10;
-			data.enemies[i][j].positionY = 5 + i * 4;
+			data.enemies[i][j].positionY = 5 + i * 6;
 		}
 	}
 	SetRightestEnemy(data);
@@ -131,7 +132,7 @@ void initialShields(Shield Shields[4])
 	for (int i = 0; i < 4; i++)
 	{
 		Shields[i] = normalShield;
-		Shields[i].PositionX = 5 + i * 12;
+		Shields[i].PositionX = 8 + i * 30;
 		Shields[i].PositionY = lengthScreen - 10;
 	}
 }
@@ -139,9 +140,9 @@ void printShields(Shield Shields[4]){
 	for (int i = 0; i < 4; i++)
 	{
 		for(int j = 0;j<5;j++){
-			for(int k = 0;k<6;k++){
-				if(Shields[i].entity){
-								gotoXY(Shields[i].PositionY+k,Shields[i].PositionX+j);
+			for(int k = 0;k<12;k++){
+				if(Shields[i].entity[j][k]){
+					gotoXY(Shields[i].PositionY+j,Shields[i].PositionX+k);
 					cout <<"█";
 				}
 			}
@@ -158,13 +159,14 @@ void moveEnemies(EnemiesData &data)
 		data.dir = -data.dir;
 	}
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 10; j++)
 		{
 			if (!goDown)
 			{
 				data.enemies[i][j].positionX += data.dir;
+				data.enemies[i][j].positionY += data.effectdir;
 			}
 			else
 			{
@@ -172,15 +174,16 @@ void moveEnemies(EnemiesData &data)
 			}
 		}
 	}
+	data.effectdir = -data.effectdir;
 }
 void eraseEnemies(EnemiesData &data)
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 10; j++)
 		{
-			for(int k = 0;k<2;k++){
-			gotoXY(data.enemies[i][j].positionY, data.enemies[i][j].positionX);
+			for(int k = 0;k<3;k++){
+			gotoXY(data.enemies[i][j].positionY+k, data.enemies[i][j].positionX);
 			cout << "     ";
 			}
 		}
@@ -188,12 +191,12 @@ void eraseEnemies(EnemiesData &data)
 }
 void printEnemies(EnemiesData &data)
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 10; j++)
 		{
-			for(int k = 0;k<2;k++){
-			gotoXY(data.enemies[i][j].positionY, data.enemies[i][j].positionX);
+			for(int k = 0;k<3;k++){
+			gotoXY(data.enemies[i][j].positionY+k, data.enemies[i][j].positionX);
 			cout << data.enemies[i][j].shape[k];
 			}
 		}
@@ -269,7 +272,7 @@ int main()
 	{
 		shipControl();
 		movePlayerBullet();
-		if (clock() % 200 == 0)
+		if (clock() % 500 == 0)
 		{
 			eraseEnemies(data);
 			moveEnemies(data);
