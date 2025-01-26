@@ -33,6 +33,7 @@ struct ship
 	char color;
 	unsigned short int leftSide;
 };
+
 struct Enemy
 {
 	unsigned short int speed;
@@ -42,6 +43,7 @@ struct Enemy
 	int positionX;
 	int positionY;
 };
+
 struct EnemiesData
 {
 	Enemy enemies[3][10];
@@ -50,6 +52,7 @@ struct EnemiesData
 	int dir = 1;
 	int effectdir = 1;
 };
+
 struct Shield
 {
 	bool entity[5][12];
@@ -68,8 +71,20 @@ void unicode(int, int);
 void color(char);
 void setColor(const string &);
 
+void SetRightestEnemy(EnemiesData &) ;
+void SetLeftestEnemy(EnemiesData &) ;
+void initialEnemies(EnemiesData &) ;
+void initialShields(Shield Shields[4]);
+void printShields(Shield Shields[4]);
+void moveEnemies(EnemiesData &);
+void eraseEnemies(EnemiesData &) ;
+void printEnemies(EnemiesData &) ;
+void CheckShieldCollision(Shield Shields[4]);
+void CheckEnemyCollision(EnemiesData &) ;
+
 char back[lengthScreen][widthScreen];
 char front[lengthScreen][widthScreen];
+string shipEraser[3] = {{"     "}, {"     "}, {"     "}};
 
 bullets Normal = {0, 'n', false, true, false};
 bullets Reverse = {0, 'r', false, false, false};
@@ -86,166 +101,7 @@ ship selected;
 Enemy normalEnemy = {0, {{1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}}, {{"█████"}, {"█▄█▄█"}, {" █ █ "}}, true};
 Shield normalShield = {{{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0}, {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1}, {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1}}};
 Shield shields[4];
-void SetRightestEnemy(EnemiesData &data)
-{
-	for (int i = 9; i >= 0; i--)
-	{
-		for (int j = 0; j < 3; j++)
-		{
-			if (data.enemies[j][i].isAlive)
-			{
-				data.rightestEnemy = &data.enemies[j][i];
-				break;
-			}
-		}
-	}
-}
-void SetLeftestEnemy(EnemiesData &data)
-{
-	for (int i = 0; i < 10; i++)
-	{
-		for (int j = 0; j < 3; j++)
-		{
-			if (data.enemies[j][i].isAlive)
-			{
-				data.leftestEnemy = &data.enemies[j][i];
-				break;
-			}
-		}
-	}
-}
-void initialEnemies(EnemiesData &data)
-{
-	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 10; j++)
-		{
-			data.enemies[i][j] = normalEnemy;
-			data.enemies[i][j].positionX = 5 + j * 10;
-			data.enemies[i][j].positionY = 5 + i * 6;
-		}
-	}
-	SetRightestEnemy(data);
-	SetLeftestEnemy(data);
-}
-void initialShields(Shield Shields[4])
-{
-	for (int i = 0; i < 4; i++)
-	{
-		Shields[i] = normalShield;
-		Shields[i].PositionX = 8 + i * 30;
-		Shields[i].PositionY = lengthScreen - 10;
-	}
-}
-void printShields(Shield Shields[4])
-{
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
-			for (int k = 0; k < 12; k++)
-			{
-				gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
-				if (Shields[i].entity[j][k])
-				{
-					cout << "█";
-				}
-			}
-		}
-	}
-}
-void moveEnemies(EnemiesData &data)
-{
-	bool goDown = false;
 
-	if (((data.dir == 1) && (*data.leftestEnemy).positionX >= 110) || ((data.dir == -1) && (*data.rightestEnemy).positionX <= 5))
-	{
-		goDown = true;
-		data.dir = -data.dir;
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 10; j++)
-		{
-			if (!goDown)
-			{
-				data.enemies[i][j].positionX += data.dir;
-				data.enemies[i][j].positionY += data.effectdir;
-			}
-			else
-			{
-				data.enemies[i][j].positionY += 1;
-			}
-		}
-	}
-	data.effectdir = -data.effectdir;
-}
-void eraseEnemies(EnemiesData &data)
-{
-	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 10; j++)
-		{
-			for (int k = 0; k < 3; k++)
-			{
-				gotoXY(data.enemies[i][j].positionY + k, data.enemies[i][j].positionX);
-				cout << "     ";
-			}
-		}
-	}
-}
-void printEnemies(EnemiesData &data)
-{
-	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 10; j++)
-		{
-			for (int k = 0; k < 3; k++)
-			{
-				gotoXY(data.enemies[i][j].positionY + k, data.enemies[i][j].positionX);
-				cout << data.enemies[i][j].shape[k];
-			}
-		}
-	}
-}
-string shipEraser[3] = {{"     "}, {"     "}, {"     "}};
-
-void CheckShieldCollision(Shield Shields[4])
-{
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 5; j++)
-		{
-			for (int k = 0; k < 12; k++)
-			{
-				if (Shields[i].entity[j][k] && Shields[i].PositionX + k == MainBullet.positionX && Shields[i].PositionY + j == MainBullet.positionY)
-				{
-					MainBullet.isActive = false;
-					Shields[i].entity[j][k] = false;
-					if (k + 1 < 12)
-					{
-						gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
-						cout << " ";
-						Shields[i].entity[j][k + 1] = false;
-					}
-					if (k - 1 > 0)
-					{
-						gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
-						cout << " ";
-						Shields[i].entity[j][k - 1] = false;
-					}
-					if (j - 1 > 0)
-					{
-						gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
-						cout << " ";
-						Shields[i].entity[j][k] = false;
-					}
-				}
-			}
-		}
-	}
-}
 int main()
 {
 	system("cls");
@@ -295,30 +151,26 @@ int main()
 		cout << selected.shape[1 - i];
 	}
 
-	// for (i = lengthScreen - 3; i < lengthScreen - 1; i++)
-	// 	for (j = widthScreen / 2 - 2; j < widthScreen / 2 + 3; j++)
-	// 		back[i][j] = '1';
-	/*
-	gotoXY ( 0 , 0 ) ;
-	for ( i = 0 ; i < lengthScreen ; i++ )
-	{
-		for ( j = 0 ; j < widthScreen ; j++ )
-			cout << back [ i ] [ j ] ;
-		cout << endl ;
-	}
-	*/
 	initialShields(shields);
 	printShields(shields);
 	MainBullet.isActive = false;
 	while (1)
 	{
 		shipControl();
-		if (clock() % 50 == 0)
+		if (clock() % 100 == 0)
 		{
+			//moveEnemyBullet(); 
 			movePlayerBullet();
 			CheckShieldCollision(shields);
+			CheckEnemyCollision(data);
 		}
-
+		
+		//if ( clock() % 2000 == 0 )
+		//{
+		//	enemyFireBullet ( data ) ;
+		//}
+		
+		
 		if (clock() % 500 == 0)
 		{
 			eraseEnemies(data);
@@ -413,6 +265,7 @@ void moveShip(char moveOrder)
 		}
 	}
 }
+
 void firePlayerBullet()
 {
 	if (!MainBullet.isActive)
@@ -423,6 +276,7 @@ void firePlayerBullet()
 		MainBullet.isActive = true;
 	}
 }
+
 void movePlayerBullet()
 {
 	if (MainBullet.isActive)
@@ -441,6 +295,7 @@ void movePlayerBullet()
 		}
 	}
 }
+
 void setColor(const string &colorCode)
 {
 	cout << "\033[" << colorCode << "m";
@@ -559,3 +414,196 @@ void hideCursor()
 {
 	cout << "\033[?25l";
 }
+
+void SetRightestEnemy(EnemiesData &data)
+{
+	for (int i = 9; i >= 0; i--)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (data.enemies[j][i].isAlive)
+			{
+				data.rightestEnemy = &data.enemies[j][i];
+				break;
+			}
+		}
+	}
+}
+
+void SetLeftestEnemy(EnemiesData &data)
+{
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (data.enemies[j][i].isAlive)
+			{
+				data.leftestEnemy = &data.enemies[j][i];
+				break;
+			}
+		}
+	}
+}
+
+void initialEnemies(EnemiesData &data)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			data.enemies[i][j] = normalEnemy;
+			data.enemies[i][j].positionX = 5 + j * 10;
+			data.enemies[i][j].positionY = 5 + i * 6;
+		}
+	}
+	SetRightestEnemy(data);
+	SetLeftestEnemy(data);
+}
+
+void initialShields(Shield Shields[4])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		Shields[i] = normalShield;
+		Shields[i].PositionX = 8 + i * 30;
+		Shields[i].PositionY = lengthScreen - 10;
+	}
+}
+
+void printShields(Shield Shields[4])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			for (int k = 0; k < 12; k++)
+			{
+				gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
+				if (Shields[i].entity[j][k])
+				{
+					cout << "█";
+				}
+			}
+		}
+	}
+}
+
+void moveEnemies(EnemiesData &data)
+{
+	bool goDown = false;
+
+	if (((data.dir == 1) && (*data.leftestEnemy).positionX >= 110) || ((data.dir == -1) && (*data.rightestEnemy).positionX <= 5))
+	{
+		goDown = true;
+		data.dir = -data.dir;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			if (!goDown)
+			{
+				data.enemies[i][j].positionX += data.dir;
+				data.enemies[i][j].positionY += data.effectdir;
+			}
+			else
+			{
+				data.enemies[i][j].positionY += 1;
+			}
+		}
+	}
+	data.effectdir = -data.effectdir;
+}
+
+void eraseEnemies(EnemiesData &data)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				gotoXY(data.enemies[i][j].positionY + k, data.enemies[i][j].positionX);
+				cout << "     ";
+			}
+		}
+	}
+}
+
+void printEnemies(EnemiesData &data)
+{
+    for (int i = 0; i < 3; i++)
+	{
+        for (int j = 0; j < 10; j++)
+		{
+            if (data.enemies[i][j].isAlive)
+			{
+                for (int k = 0; k < 3; k++)
+				{
+                    gotoXY(data.enemies[i][j].positionY + k, data.enemies[i][j].positionX);
+                    cout << data.enemies[i][j].shape[k];
+                }
+            }
+        }
+    }
+}
+
+void CheckShieldCollision(Shield Shields[4])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			for (int k = 0; k < 12; k++)
+			{
+				if (Shields[i].entity[j][k] && Shields[i].PositionX + k == MainBullet.positionX && Shields[i].PositionY + j == MainBullet.positionY)
+				{
+					MainBullet.isActive = false;
+					Shields[i].entity[j][k] = false;
+					if (k + 1 < 12)
+					{
+						gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
+						cout << " ";
+						Shields[i].entity[j][k + 1] = false;
+					}
+					if (k - 1 > 0)
+					{
+						gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
+						cout << " ";
+						Shields[i].entity[j][k - 1] = false;
+					}
+					if (j - 1 > 0)
+					{
+						gotoXY(Shields[i].PositionY + j, Shields[i].PositionX + k);
+						cout << " ";
+						Shields[i].entity[j][k] = false;
+					}
+				}
+			}
+		}
+	}
+}
+
+void CheckEnemyCollision(EnemiesData &data)
+{
+    if (!MainBullet.isActive) {
+        return;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 10; j++) {
+            Enemy &enemy = data.enemies[i][j];
+            if (enemy.isAlive &&
+                MainBullet.positionX >= enemy.positionX &&
+                MainBullet.positionX < enemy.positionX + 5 && 
+                MainBullet.positionY >= enemy.positionY &&
+                MainBullet.positionY < enemy.positionY + 3) { 
+                enemy.isAlive = false;
+                MainBullet.isActive = false;
+                return;
+            }
+        }
+    }
+}
+
