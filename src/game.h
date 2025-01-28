@@ -60,7 +60,7 @@ struct Ship
 
 struct Enemy
 {
-	unsigned short int speed;
+	unsigned short int health;
 	int entity1[3][5];
 	int entity2[3][5];
 	bool IsOne = 0;
