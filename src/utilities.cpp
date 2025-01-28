@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <conio.h>
 #include "utilities.h"
-
+#include "color.h"
 using namespace std;
 void HideCursor()
 {

@@ -13,3 +13,4 @@ void MoveCursorToTopLeft();
 string GetNumberInput(int maxLength, int cursorX, int cursorY);
 string GetInput(int maxLength);
 string IntToString(int number);
+string GenerateANSI(int code);
