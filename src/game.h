@@ -26,7 +26,10 @@ struct LevelOptions{
     int enemyShotsPerSec;
     int wallIndex;
 };
-
+struct Player{
+	int name;
+	int score;
+};
 struct GameOptions{
     string playerName;
     GameDifficulty difficulty;
@@ -72,8 +75,11 @@ struct Enemy
 struct EnemiesData
 {
 	Enemy enemies[3][10];
+	Enemy *bottomEnemy[10] = {nullptr};
+	Enemy *bottomestEnemy = nullptr;
 	Enemy *leftestEnemy = nullptr;
 	Enemy *rightestEnemy = nullptr;
+	int aliveEnemyCount = 0;
 	int dir = 1;
 	int effectdir = 1;
 	int speed = 500;
@@ -86,11 +92,13 @@ struct Wall
 	int entity[5][100];
 	int positionX;
 	int positionY;
+	bool isActive;
 };
 
 struct GameObjects{
     Ship playerShip;
     Bullet playerBullet;
+	Bullet EnemyBullet;
     EnemiesData enemiesData;
     Wall wall;
 };

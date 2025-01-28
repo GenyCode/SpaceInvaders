@@ -16,9 +16,10 @@
 void DrawEnemies(EnemiesData &data);
 Generalsettings settings;
 Enemy normalEnemy = {5, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {0, 1973, 0, 1973, 0}}, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {1973, 0, 0, 0, 1973}}, true, true};
-Bullet Normal = {50, 5, "╿", 1963, false, true, false};
-Ship horned = {1, 3, {{0, 213, 333, 333, 213, 0}, {213, 213, 213, 213, 213, 213}}, 58, 38};
-Wall wall = {403, 1123, {{0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}}, 14, 30};
+Bullet EnemyBullet = {50, 5, "╽", 2023, false, true, false};
+Bullet NormalBullet = {50, 5, "╿", 1963, false, true, false};
+Ship horned = {10, 3, {{0, 213, 333, 333, 213, 0}, {213, 213, 213, 213, 213, 213}}, 58, 38};
+Wall wall = {403, 1123, {{0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}}, 14, 30, true};
 void EraseFill(int row, int col, int cursorX, int cursorY)
 {
     for (int i = 0; i < row; i++)
@@ -137,6 +138,39 @@ void SetLeftestEnemy(EnemiesData &data)
         }
     }
 }
+void SetBottomEnemies(EnemiesData &data)
+{
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 2; j >= -1; j--)
+        {
+            if (j == -1)
+                data.bottomEnemy[i] = nullptr;
+            else
+            {
+                if (data.enemies[j][i].isAlive)
+                {
+                    data.bottomEnemy[i] = &data.enemies[j][i];
+                    break;
+                }
+            }
+        }
+    }
+}
+void SetBottomestEnemy(EnemiesData &data)
+{
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 2; j >=0; j--)
+        {
+            if (data.enemies[j][i].isAlive)
+            {
+                data.bottomestEnemy = &data.enemies[j][i];
+                break;
+            }
+        }
+    }
+}
 void initialEnemies(EnemiesData &data)
 {
     for (int i = 0; i < 3; i++)
@@ -146,21 +180,27 @@ void initialEnemies(EnemiesData &data)
             data.enemies[i][j] = normalEnemy;
             data.enemies[i][j].positionX = 5 + j * 10;
             data.enemies[i][j].positionY = 5 + i * 6;
-            if (j == 0 || j == 1 || j == 9)
+            data.aliveEnemyCount++;
+            /*if (!(i == 2))
             {
                 data.enemies[i][j].isAlive = false;
-            }
+                data.aliveEnemyCount--;
+            }*/
         }
     }
     SetRightestEnemy(data);
     SetLeftestEnemy(data);
+    SetBottomestEnemy(data);
+    SetBottomEnemies(data);
 }
 GameObjects InitializeGameObjects(GameOptions &game)
 {
     GameObjects gameObjects;
     gameObjects.playerShip = horned;
-    gameObjects.playerBullet = Normal;
+    gameObjects.playerBullet = NormalBullet;
+    gameObjects.EnemyBullet = EnemyBullet;
     gameObjects.wall = wall;
+    gameObjects.wall.isActive = false;
     initialEnemies(gameObjects.enemiesData);
     // Set Spaceship
     // set Enemies
@@ -223,7 +263,6 @@ void DrawWall(GameObjects &gameObjects)
 }
 void Draw(GameObjects &gameObjects)
 {
-    PrintScreen();
     DrawShip(gameObjects);
     DrawWall(gameObjects);
     DrawEnemies(gameObjects.enemiesData);
@@ -231,23 +270,23 @@ void Draw(GameObjects &gameObjects)
 void MoveShip(GameObjects &gameObjects, bool left)
 {
     int i;
-        if (left)
-        {
-            EraseRight(2, 6, gameObjects.playerShip.positionX, gameObjects.playerShip.positionY);
-            gameObjects.playerShip.positionX--;
-        }
-        else if(!left)
-        {
-            EraseLeft(2, 6, gameObjects.playerShip.positionX, gameObjects.playerShip.positionY);
-            gameObjects.playerShip.positionX++;
-        }
-        DrawEntity((int *)gameObjects.playerShip.entity, 2, 6, gameObjects.playerShip.positionX, gameObjects.playerShip.positionY, false);
+    if (left)
+    {
+        EraseRight(2, 6, gameObjects.playerShip.positionX, gameObjects.playerShip.positionY);
+        gameObjects.playerShip.positionX--;
+    }
+    else if (!left)
+    {
+        EraseLeft(2, 6, gameObjects.playerShip.positionX, gameObjects.playerShip.positionY);
+        gameObjects.playerShip.positionX++;
+    }
+    DrawEntity((int *)gameObjects.playerShip.entity, 2, 6, gameObjects.playerShip.positionX, gameObjects.playerShip.positionY, false);
 }
 void FirePlayerBullet(GameObjects &gameObjects)
 {
     if (!gameObjects.playerBullet.isActive)
     {
-        gameObjects.playerBullet = Normal;
+        gameObjects.playerBullet = NormalBullet;
         gameObjects.playerBullet.positionX = gameObjects.playerShip.positionX + 2;
         gameObjects.playerBullet.positionY = gameObjects.playerShip.positionY - 1;
         gameObjects.playerBullet.isActive = true;
@@ -260,7 +299,7 @@ void PlayerMovement(GameObjects &gameObjects)
         char order;
         order = getch();
         order = toupper(order);
-        if (order == settings.keybindings.Left_Player1 && gameObjects.playerShip.positionX > 6 )
+        if (order == settings.keybindings.Left_Player1 && gameObjects.playerShip.positionX > 6)
         {
             MoveShip(gameObjects, true);
         }
@@ -306,36 +345,35 @@ void CollisionWallEntity(Wall &wall, int row, int col)
         cout << GenerateANSI(wall.entity[row][col]) << "█" << FG_WHITE;
     }
 }
-void CheckWallCollision(GameObjects &gameObjects)
+void CheckShipCollision(GameObjects &gameObjects)
 {
-    int j = gameObjects.playerBullet.positionX - gameObjects.wall.positionX;
-    int i = gameObjects.playerBullet.positionY - gameObjects.wall.positionY;
-
-    if ((i > 0 && j > 0 && j < 100 && i < 5) && gameObjects.wall.entity[i][j])
+    int j = gameObjects.EnemyBullet.positionX - gameObjects.playerShip.positionX;
+    int i = gameObjects.EnemyBullet.positionY - gameObjects.playerShip.positionY;
+    cout << j << "-" << i;
+    if ((i >= 0 && j >= 0 && j < 5 && i < 2) && gameObjects.playerShip.entity[i][j])
     {
-        gameObjects.playerBullet.isActive = false;
+        gameObjects.EnemyBullet.isActive = false;
+        gameObjects.playerShip.health -= gameObjects.EnemyBullet.damage;
+        cout << gameObjects.playerShip.health;
+    }
+}
+void CheckWallCollision(GameObjects &gameObjects, Bullet &bullet)
+{
+    int j = bullet.positionX - gameObjects.wall.positionX;
+    int i = bullet.positionY - gameObjects.wall.positionY;
+
+    if (gameObjects.wall.isActive && (i >= 0 && j >= 0 && j < 100 && i < 5) && gameObjects.wall.entity[i][j])
+    {
+        bullet.isActive = false;
         gameObjects.wall.entity[i][j] = 0;
-        Gotoxy(gameObjects.wall.positionX + j, gameObjects.wall.positionY + i);
-        cout << " " << FG_WHITE;
-        if (j + 1 < 100)
-        {
-            CollisionWallEntity(gameObjects.wall, i, j + 1);
-        }
-        if (j - 1 > 0)
-        {
-            CollisionWallEntity(gameObjects.wall, i, j - 1);
-        }
-        if (i - 1 > 0)
-        {
-            CollisionWallEntity(gameObjects.wall, i - 1, j);
-        }
+        CollisionWallEntity(gameObjects.wall, i, j);
     }
 }
 
-void MoveEnemies(EnemiesData &data)
+void MoveEnemies(GameObjects &gameObjects)
 {
     bool goDown = false;
-
+    EnemiesData &data = gameObjects.enemiesData;
     if (((data.dir == 1) && (*data.leftestEnemy).positionX >= 110) || ((data.dir == -1) && (*data.rightestEnemy).positionX <= 11))
     {
         goDown = true;
@@ -353,6 +391,11 @@ void MoveEnemies(EnemiesData &data)
             else
             {
                 data.enemies[i][j].positionY += 1;
+                if (gameObjects.wall.isActive && data.enemies[i][j].positionY >= gameObjects.wall.positionY)
+                {
+                    gameObjects.wall.isActive = false;
+                    EraseFill(5, 100, gameObjects.wall.positionX, gameObjects.wall.positionY);
+                }
             }
             data.enemies[i][j].positionY += data.effectdir;
             data.enemies[i][j].IsOne = !data.enemies[i][j].IsOne;
@@ -432,50 +475,152 @@ void CheckEnemyCollision(GameObjects &gameObjects)
                 if (enemy.health <= 0)
                 {
                     enemy.isAlive = false;
+                    gameObjects.enemiesData.aliveEnemyCount--;
                     EraseFill(3, 5, enemy.positionX, enemy.positionY);
                 }
+                if (!(*gameObjects.enemiesData.rightestEnemy).isAlive)
+                {
+                    SetRightestEnemy(gameObjects.enemiesData);
+                }
+                if (!(*gameObjects.enemiesData.leftestEnemy).isAlive)
+                {
+                    SetLeftestEnemy(gameObjects.enemiesData);
+                }
+                if (!(*gameObjects.enemiesData.bottomestEnemy).isAlive)
+                {
+                        SetBottomestEnemy(gameObjects.enemiesData);
+                }
+                SetBottomEnemies(gameObjects.enemiesData);
                 return;
             }
         }
     }
 }
+bool WinCheck(GameObjects &gameObjects)
+{
+    return gameObjects.enemiesData.aliveEnemyCount == 0;
+}
 
-void PlayLevel(GameOptions &game)
+void FireEnemyBullet(GameObjects &gameObjects)
+{
+    EnemiesData &data = gameObjects.enemiesData;
+    if (!gameObjects.EnemyBullet.isActive)
+    {
+        srand(static_cast<unsigned int>(time(NULL)));
+        int i = rand() % 10;
+        gameObjects.EnemyBullet = EnemyBullet;
+        while (data.bottomEnemy[i] == nullptr)
+        {
+            i = rand() % 10;
+        }
+        gameObjects.EnemyBullet.positionX = (*data.bottomEnemy[i]).positionX + 2;
+        gameObjects.EnemyBullet.positionY = (*data.bottomEnemy[i]).positionY + 3;
+        gameObjects.EnemyBullet.isActive = true;
+    }
+}
+void MoveEnemyBullet(GameObjects &gameObjects)
+{
+    Gotoxy(gameObjects.EnemyBullet.positionX, gameObjects.EnemyBullet.positionY);
+    cout << " ";
+    gameObjects.EnemyBullet.positionY++;
+    if (gameObjects.EnemyBullet.positionY < lengthScreen - 1)
+    {
+        Gotoxy(gameObjects.EnemyBullet.positionX, gameObjects.EnemyBullet.positionY);
+        cout << gameObjects.EnemyBullet.shape;
+    }
+    else
+    {
+        gameObjects.EnemyBullet.isActive = false;
+    }
+}
+bool CheckEnemyCatchShip(GameObjects &gameObjects)
+{
+    return (*gameObjects.enemiesData.bottomestEnemy).positionY+3 >= gameObjects.playerShip.positionY;
+}
+bool CheckShipAlive(GameObjects &gameObjects)
+{
+    return gameObjects.playerShip.health <= 0;
+}
+bool PlayLevel(GameOptions &game)
 {
     GameObjects gameObjects = InitializeGameObjects(game);
     int totalTime = 1;
     Draw(gameObjects);
-    bool gameOver = false;
-    while (!gameOver)
+    bool isRunning = true;
+    bool isWin = false;
+    bool isLose = false;
+    while (isRunning)
     {
 
         PlayerMovement(gameObjects);
 
-        // if (clock() % 2000 == 0)
-        //{
-        //	enemyFireBullet ( data ) ;
-        // }
+        if (clock() % 100 == 0)
+        {
+            FireEnemyBullet(gameObjects);
+        }
 
         if (clock() % gameObjects.enemiesData.speed == 0)
         {
             EraseEnemies(gameObjects.enemiesData);
-            MoveEnemies(gameObjects.enemiesData);
+            MoveEnemies(gameObjects);
             DrawEnemies(gameObjects.enemiesData);
+            isLose = CheckEnemyCatchShip(gameObjects);
+        }
+        if (gameObjects.EnemyBullet.isActive && clock() % gameObjects.EnemyBullet.speed == 0)
+        {
+            MoveEnemyBullet(gameObjects);
+            CheckWallCollision(gameObjects, gameObjects.EnemyBullet);
+            CheckShipCollision(gameObjects);
+            isLose = CheckShipAlive(gameObjects);
+
         }
         if (gameObjects.playerBullet.isActive && clock() % gameObjects.playerBullet.speed == 0)
         {
             MovePlayerBullet(gameObjects);
-            CheckWallCollision(gameObjects);
+            CheckWallCollision(gameObjects, gameObjects.playerBullet);
             CheckEnemyCollision(gameObjects);
+            isWin = WinCheck(gameObjects);
+
+
         }
+                    if (isWin)
+                isRunning = false;
+                    if (isLose)
+                isRunning = false;
     }
+    return isWin;
+}
+void NextLevel(GameOptions &game)
+{
+    LevelOptions startLevel;
+    switch (game.difficulty)
+    {
+    case EASY:
+        break;
+    case MEDIUM:
+        break;
+    case HARD:
+        break;
+    case CUSTOM:
+        break;
+    }
+    game.currentLevel = startLevel;
 }
 void RunGame(GameOptions &game)
 {
     HideCursor();
     LoadSettings(settings);
+    PrintScreen();
     CreateLevel(game);
-    PlayLevel(game);
+    while (1)
+    {
+
+        bool levelRusult = PlayLevel(game);
+        if (levelRusult)
+            NextLevel(game);
+        else
+            break;
+    }
 }
 int main()
 {
