@@ -17,9 +17,10 @@
 void DrawEnemies(EnemiesData &data);
 Generalsettings settings;
 EnemySpaceship enemyspaceship = {1, 1, {{0, 20230, 19730, 19730, 19730, 19730, 20230, 0}, {20230, 20230, 20230, 20230, 20230, 20230, 20230, 20230}}, 500, 5, 5};
-//Enemy normalEnemy1 = {5, {{ 7236 , 0 , 7236 , 0 , 7236 } , { 7232 , 7235 , 7232 , 7235 , 7232 } , { 7235 , 7236 , 7235 , 7236 , 7235 } } , { { 7236 , 0 , 7236 , 0 , 7236 } , { 7233 , 7235 , 7233 , 7235 , 7233 } , { 7235 , 7236 , 7235 , 7236 , 7235 }} ,true ,true , 100 } ;
-//Enemy normalEnemy2 = { 5 , { { 7532 , 7536 , 7536 , 7536 , 7533 } , { 7530 , 7532 , 0 , 7533 , 7530 } , { 7536 , 7535 , 7535 , 7535 , 7536 } } , { { 7532 , 7536 , 7536 , 7536 , 7533 } , { 7530 , 7532 , 19630 , 7533 , 7530 } , { 7536 , 7535 , 7535 , 7535 , 7536 }} ,true , true , 100 } ;
-Enemy normalEnemy = {5, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {0, 19730, 0, 19730, 0}}, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {19730, 0, 0, 0, 19730}}, true, true, 100};
+Enemy EnemyType3 = {10, {{7236, 0, 7236, 0, 7236}, {7232, 7235, 7232, 7235, 7232}, {7235, 7236, 7235, 7236, 7235}}, {{7236, 0, 7236, 0, 7236}, {7233, 7235, 7233, 7235, 7233}, {7235, 7236, 7235, 7236, 7235}}, true, true, 200};
+Enemy EnemyType2 = {10, {{7532, 7536, 7536, 7536, 7533}, {7530, 7532, 0, 7533, 7530}, {7536, 7535, 7535, 7535, 7536}}, {{7532, 7536, 7536, 7536, 7533}, {7530, 7532, 19630, 7533, 7530}, {7536, 7535, 7535, 7535, 7536}}, true, true, 150};
+Enemy EnemyType1 = {5, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {0, 19730, 0, 19730, 0}}, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {19730, 0, 0, 0, 19730}}, true, true, 100};
+Enemy Enemies[3] = {EnemyType1, EnemyType2, EnemyType3};
 Bullet EnemyBullet = {50, 5, "╽", 333, false, true, false};
 Bullet NormalBullet = {50, 5, "╿", 1963, false, true, false};
 Ship horned = {0, 30, {{0, 2130, 3330, 3330, 2130, 0}, {2130, 2130, 2130, 2130, 2130, 2130}}, 58, 38};
@@ -109,7 +110,7 @@ void DrawEntity(int *entity, int row, int col, int cursorX, int cursorY, bool is
             if (!isErase && value > 0)
             {
                 string character = GenenrateCharacter((value % 10));
-                string color = GenerateANSI(value /10);
+                string color = GenerateANSI(value / 10);
                 if (color != lastColor)
                 {
                     lastColor = color;
@@ -131,15 +132,27 @@ void CreateLevel(GameOptions &game)
     switch (game.difficulty)
     {
     case EASY:
+        startLevel.enemyShotDelay = 500;
+        startLevel.enemySpaceshipDelay = 5000;
+        game.maxHealth = 50;
         break;
     case MEDIUM:
+        startLevel.enemyShotDelay = 300;
+        startLevel.enemySpaceshipDelay = 8000;
+        game.maxHealth = 40;
         break;
     case HARD:
+        startLevel.enemyShotDelay = 150;
+        startLevel.enemySpaceshipDelay = 10000;
+        game.maxHealth = 30;
         break;
     case CUSTOM:
+        startLevel.enemyShotDelay = 200;
+        startLevel.enemySpaceshipDelay = 10000;
+        game.maxHealth = 20;
         break;
     }
-    game.maxHealth = 20;
+
     game.currentLevel = startLevel;
 }
 void SetRightestEnemy(EnemiesData &data)
@@ -208,17 +221,17 @@ void SetBottomestEnemy(EnemiesData &data)
 }
 void initialEnemies(EnemiesData &data)
 {
+    srand(static_cast<unsigned int>(time(NULL)));
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 10; j++)
         {
-            data.enemies[i][j] = normalEnemy;
+            data.enemies[i][j] = Enemies[2 - i];
             data.enemies[i][j].positionX = 15 + j * 10;
             data.enemies[i][j].positionY = 8 + i * 6;
             data.aliveEnemyCount++;
             /*if (!(i == 2))
             {
-                data.enemies[i][j].isAlive = false;
                 data.aliveEnemyCount--;
             }*/
         }
@@ -238,6 +251,7 @@ GameObjects InitializeGameObjects(GameOptions &game)
     gameObjects.wall = wall;
     gameObjects.wall.isActive = false;
     gameObjects.EnemySpaceship = enemyspaceship;
+
     initialEnemies(gameObjects.enemiesData);
     // Set Spaceship
     // set Enemies
@@ -263,7 +277,7 @@ void DrawWall(GameObjects &gameObjects)
 void DrawLevel(GameOptions &game)
 {
     Gotoxy(14, 2);
-    cout << FG_WHITE << game.currentLevel.number << "-" << game.currentLevel.subNumber;
+    cout << FG_WHITE << game.currentLevel.number;
 }
 void DrawHealth(GameObjects &gameObjects, GameOptions &game)
 {
@@ -672,10 +686,12 @@ void MoveEnemySpaceship(GameObjects &gameObjects)
         }
     }
 }
-void SaveGame(const GameOptions &game) {
+void SaveGame(const GameOptions &game)
+{
     string filename = "usersave.bin";
     ofstream file(filename, ios::binary);
-    if (file.is_open()) {
+    if (file.is_open())
+    {
         size_t nameLength = game.playerName.size();
         file.write(reinterpret_cast<const char *>(&nameLength), sizeof(nameLength));
         file.write(game.playerName.c_str(), nameLength);
@@ -689,10 +705,12 @@ void SaveGame(const GameOptions &game) {
     }
 }
 
-void LoadGame(GameOptions &game) {
+void LoadGame(GameOptions &game)
+{
     string filename = "usersave.bin";
     ifstream file(filename, ios::binary);
-    if (file.is_open()) {
+    if (file.is_open())
+    {
         size_t nameLength;
         file.read(reinterpret_cast<char *>(&nameLength), sizeof(nameLength));
         game.playerName.resize(nameLength);
@@ -715,13 +733,12 @@ bool PlayLevel(GameOptions &game)
     bool isLose = false;
     while (isRunning)
     {
-
         InputHandle(gameObjects, game);
         if (game.status != RUNNINGGAME)
         {
             isRunning = false;
         }
-        if (clock() % 100 == 0)
+        if (clock() % game.currentLevel.enemyShotDelay == 0)
         {
             FireEnemyBullet(gameObjects);
         }
@@ -733,7 +750,7 @@ bool PlayLevel(GameOptions &game)
             DrawEnemies(gameObjects.enemiesData);
             isLose = CheckEnemyCatchShip(gameObjects);
         }
-        if (clock() % 20000 == 0)
+        if (clock() % game.currentLevel.enemySpaceshipDelay == 0)
         {
             gameObjects.EnemySpaceship = enemyspaceship;
         }
@@ -767,20 +784,37 @@ bool PlayLevel(GameOptions &game)
 }
 void NextLevel(GameOptions &game)
 {
-    LevelOptions startLevel;
+    LevelOptions startLevel = game.currentLevel;
+    startLevel.number++;
     switch (game.difficulty)
     {
     case EASY:
+        startLevel.enemyShotDelay *= 0.9;
+        startLevel.enemySpaceshipDelay *= 1.1;
         break;
     case MEDIUM:
+        startLevel.enemyShotDelay *= 0.8;
+        startLevel.enemySpaceshipDelay *= 1.2;
         break;
     case HARD:
+        startLevel.enemyShotDelay *= 0.5;
+        startLevel.enemySpaceshipDelay *= 1.5;
         break;
     case CUSTOM:
+        startLevel.enemyShotDelay *= 0.85;
+        startLevel.enemySpaceshipDelay *= 1.1;
         break;
     }
     game.currentLevel = startLevel;
 }
+void LoadLevel(GameOptions &game, int number)
+{
+    CreateLevel(game);
+    for (int i = 0; i < number; i++)
+    {
+        NextLevel(game);
+    }
+};
 void ShowGameOver(int fgcolor, int bgcolor)
 {
     int x = 35;
@@ -819,15 +853,19 @@ void LoseAnimation()
     }
     Sleep(1000);
 }
-void RunGame(GameOptions &game,bool loadGame)
+void RunGame(GameOptions &game, bool loadGame)
 {
     HideCursor();
+    game.difficulty = HARD;
+    //GameOptions maingame = game;
     LoadSettings(settings);
     CreateLevel(game);
     int Score = 0;
     bool isLose = false;
-    if(loadGame){
+    if (loadGame)
+    {
         LoadGame(game);
+        LoadLevel(game, game.currentLevel.number);
     }
     while (1)
     {
@@ -845,7 +883,12 @@ void RunGame(GameOptions &game,bool loadGame)
             break;
         }
         if (game.isWin)
+        {
+            system("cls");
             NextLevel(game);
+            continue;
+        }
+
         else
         {
             isLose = true;
@@ -853,13 +896,15 @@ void RunGame(GameOptions &game,bool loadGame)
             break;
         }
     }
-    if(!isLose){
+    if (!isLose)
+    {
         SaveGame(game);
-    }else{
-        Player player = {};
-        UpdateLeaderboard(GetDefaultFileName(),);
     }
-
+    else
+    {
+        Player player = {game.playerName, Score};
+        UpdateLeaderboard(GetDefaultFileName(), player);
+    }
 }
 int main()
 {
@@ -867,6 +912,6 @@ int main()
     HideCursor();
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     GameOptions game;
-    RunGame(game,true);
+    RunGame(game, true);
     return 0;
 }

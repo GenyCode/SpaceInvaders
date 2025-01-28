@@ -31,9 +31,9 @@ struct EnemySpaceship
 };
 struct LevelOptions{
     int number = 1;
-    int enemyShotsPerSec = 100;
+    int enemyShotDelay = 100;
+	int enemySpaceshipDelay = 100;
     int wallIndex = 0;
-	int subNumber = 1;
 	int health = 0;
 };
 enum GameStatus{
