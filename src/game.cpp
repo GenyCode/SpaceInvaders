@@ -19,6 +19,15 @@ Enemy normalEnemy = {0, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 
 Bullet Normal = {50, 5, "╿", 1963, false, true, false};
 Ship horned = {1, 3, {{0, 213, 333, 333, 213, 0}, {213, 213, 213, 213, 213, 213}}, 58, 38};
 Wall wall = {403, 1123, {{0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}}, 9, 28};
+void EraseFill(int row, int col, int cursorX, int cursorY)
+{
+    for(int i=0;i<row;i++){
+        Gotoxy(cursorX, cursorY + i);
+        for(int j=0;j<col;j++){
+            cout << " " << FG_WHITE;
+        }
+    }
+}
 void EraseDown(int row, int col, int cursorX, int cursorY)
 {
     Gotoxy(cursorX, cursorY + row - 1);
@@ -424,6 +433,27 @@ void DrawEnemies(EnemiesData &data)
         }
     }
 }
+void CheckEnemyCollision(GameObjects &gameObjects)
+{
+    if (!gameObjects.playerBullet.isActive) {
+        return;
+    }
+    for (int i = 2; i >=0; i--) {
+        for (int j = 0; j < 10; j++) {
+            Enemy &enemy = gameObjects.enemiesData.enemies[i][j];
+            if (enemy.isAlive &&
+                gameObjects.playerBullet.positionX >= enemy.positionX &&
+                gameObjects.playerBullet.positionX < enemy.positionX + 5 && 
+                gameObjects.playerBullet.positionY >= enemy.positionY &&
+                gameObjects.playerBullet.positionY < enemy.positionY + 3) { 
+                enemy.isAlive = false;
+                gameObjects.playerBullet.isActive = false;
+                EraseFill(3,5,enemy.positionX,enemy.positionY);
+                return;
+            }
+        }
+    }
+}
 
 void PlayLevel(GameOptions &game)
 {
@@ -435,14 +465,9 @@ void PlayLevel(GameOptions &game)
     {
 
         PlayerMovement(gameObjects);
-        if (clock() % gameObjects.playerBullet.speed == 0)
-        {
-            MovePlayerBullet(gameObjects);
-            CheckWallCollision(gameObjects);
-            // CheckEnemyCollision(data);
-        }
 
-        // if (clock() % 2000 == 0)
+
+        //if (clock() % 2000 == 0)
         //{
         //	enemyFireBullet ( data ) ;
         //}
@@ -453,10 +478,17 @@ void PlayLevel(GameOptions &game)
             MoveEnemies(gameObjects.enemiesData);
             DrawEnemies(gameObjects.enemiesData);
         }
+        if (clock() % gameObjects.playerBullet.speed == 0)
+        {
+            MovePlayerBullet(gameObjects);
+            CheckWallCollision(gameObjects);
+            CheckEnemyCollision(gameObjects);
+        }
     }
 }
 void RunGame(GameOptions &game)
 {
+    HideCursor();
     LoadSettings(settings);
     CreateLevel(game);
     PlayLevel(game);
