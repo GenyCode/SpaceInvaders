@@ -8,17 +8,18 @@
 #include <string>
 #include <fstream>
 #include <chrono>
-#include "utilities.cpp"
+//#include "utilities.cpp"
 #include "game.h"
 #include "color.h"
 #include "settings.cpp"
-
+#include "form.cpp"
 void DrawEnemies(EnemiesData &data);
 Generalsettings settings;
+EnemySpaceship enemyspaceship = {1, 1, {{0, 2023, 1973, 1973, 1973, 1973, 2023, 0}, {2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023}}, 500, 5, 5};
 Enemy normalEnemy = {5, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {0, 1973, 0, 1973, 0}}, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {1973, 0, 0, 0, 1973}}, true, true, 100};
 Bullet EnemyBullet = {50, 5, "╽", 333, false, true, false};
 Bullet NormalBullet = {50, 5, "╿", 1963, false, true, false};
-Ship horned = {10, 3, {{0, 213, 333, 333, 213, 0}, {213, 213, 213, 213, 213, 213}}, 58, 38};
+Ship horned = {0, 3, {{0, 213, 333, 333, 213, 0}, {213, 213, 213, 213, 213, 213}}, 58, 38};
 Wall wall = {403, 1123, {{0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}}, 14, 30, true};
 void EraseFill(int row, int col, int cursorX, int cursorY)
 {
@@ -140,11 +141,12 @@ void SetLeftestEnemy(EnemiesData &data)
         }
     }
 }
-void SetBottomEnemies(EnemiesData &data)
+void SetBottomEnemies(EnemiesData &data,bool initialMode)
 {
     for (int i = 0; i < 10; i++)
     {
-        for (int j = 2; j >= -1; j--)
+        bool check = (initialMode || data.bottomEnemy[i] != nullptr) && (data.bottomEnemy[i] == nullptr || data.bottomEnemy[i]->isAlive) ;
+        for (int j = 2; j >= -1 && check; j--)
         {
             if (j == -1)
                 data.bottomEnemy[i] = nullptr;
@@ -181,7 +183,7 @@ void initialEnemies(EnemiesData &data)
         {
             data.enemies[i][j] = normalEnemy;
             data.enemies[i][j].positionX = 15 + j * 10;
-            data.enemies[i][j].positionY = 5 + i * 6;
+            data.enemies[i][j].positionY = 8 + i * 6;
             data.aliveEnemyCount++;
             /*if (!(i == 2))
             {
@@ -193,16 +195,18 @@ void initialEnemies(EnemiesData &data)
     SetRightestEnemy(data);
     SetLeftestEnemy(data);
     SetBottomestEnemy(data);
-    SetBottomEnemies(data);
+    SetBottomEnemies(data,true);
 }
 GameObjects InitializeGameObjects(GameOptions &game)
 {
     GameObjects gameObjects;
     gameObjects.playerShip = horned;
+    gameObjects.playerShip.health = game.maxHealth;
     gameObjects.playerBullet = NormalBullet;
     gameObjects.EnemyBullet = EnemyBullet;
     gameObjects.wall = wall;
     gameObjects.wall.isActive = false;
+    gameObjects.EnemySpaceship = enemyspaceship;
     initialEnemies(gameObjects.enemiesData);
     // Set Spaceship
     // set Enemies
@@ -213,45 +217,7 @@ void PrintScreen()
 {
     string screen = R"(
     ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
-    ║  Level:      Health:      Score:                                                                                     ║
-    ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
-    ║                                                                                                                      ║
+    ║   Level:      Health:      Score:                                                                                    ║  
     ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝)";
     cout << screen;
 }
@@ -272,7 +238,9 @@ void DrawHealth(GameObjects &gameObjects, GameOptions &game)
 {
     Gotoxy(27, 2);
     string health = IntToString((gameObjects.playerShip.health * 100) / game.maxHealth) + "%";
-    cout << FG_WHITE << setw(3) << left << health;
+    cout << FG_WHITE << "    ";
+        Gotoxy(27, 2);
+    cout << FG_WHITE << health;
 }
 void DrawScore(GameObjects &gameObjects)
 {
@@ -313,7 +281,59 @@ void FirePlayerBullet(GameObjects &gameObjects)
         gameObjects.playerBullet.isActive = true;
     }
 }
-void PlayerMovement(GameObjects &gameObjects)
+void ShowPauseMenu(){
+bool MusicIsPlay = false;
+    Form form = {"Main Menu", 5, 2};
+    Display display = {0, 4, 0, 0, {0, 0}};
+    InitialDisplay(display);
+    RenderMinimalBackground(display);
+    Generalsettings generalsettings;
+    LoadSettings(generalsettings);
+    form.isSoundEnabled = generalsettings.Sound;
+    Button NewGameButton = {"New Game", {0, 0}, true, 0};
+    Button LoadGameButton = {"Load Game", {1, 0}, true, 1};
+    Button SettingsButton = {"Settings", {2, 0}, true, 2};
+    Button HowToPlayButton = {"How to play", {3, 0}, true, 3};
+    Button ExitButton = {"Exit", {4, 0}, true, 4};
+    InitialElementGrid(form);
+    AddButtonToForm(form, &NewGameButton);
+    AddButtonToForm(form, &LoadGameButton);
+    AddButtonToForm(form, &SettingsButton);
+    AddButtonToForm(form, &HowToPlayButton);
+    AddButtonToForm(form, &ExitButton);
+    while (form.isRunning)
+    {
+        RenderForm(form, display);
+        Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
+        RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
+
+        char ch = getch();
+        if (SelectedElement.type == BUTTON && ch == '\r')
+        {
+            Button *button = (Button *)(SelectedElement.ptr);
+            switch ((*button).id)
+            {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                form.isRunning = false;
+                break;
+            }
+        }
+        else
+        {
+            HandleInput(ch, display, form);
+        }
+    }
+    CloseForm(form);
+}
+void InputHandle(GameObjects &gameObjects)
 {
     if (_kbhit())
     {
@@ -331,6 +351,10 @@ void PlayerMovement(GameObjects &gameObjects)
         else if (order == settings.keybindings.Shoot_Player1)
         {
             FirePlayerBullet(gameObjects);
+        }
+        else if (order == 27){
+            ShowPauseMenu();
+            EraseFill(25,112,8,6);
         }
     }
 }
@@ -375,6 +399,7 @@ void CheckShipCollision(GameObjects &gameObjects, GameOptions &game)
         gameObjects.EnemyBullet.isActive = false;
         gameObjects.playerShip.health -= gameObjects.EnemyBullet.damage;
         DrawHealth(gameObjects, game);
+        DrawEntity((int *)gameObjects.playerShip.entity, 2, 6, gameObjects.playerShip.positionX, gameObjects.playerShip.positionY, false);
     }
 }
 void CheckWallCollision(GameObjects &gameObjects, Bullet &bullet)
@@ -496,7 +521,7 @@ void CheckEnemyCollision(GameObjects &gameObjects)
                 {
                     enemy.isAlive = false;
                     gameObjects.enemiesData.aliveEnemyCount--;
-                    
+
                     gameObjects.Score += enemy.Score;
                     DrawScore(gameObjects);
                     EraseFill(3, 5, enemy.positionX, enemy.positionY);
@@ -513,7 +538,7 @@ void CheckEnemyCollision(GameObjects &gameObjects)
                 {
                     SetBottomestEnemy(gameObjects.enemiesData);
                 }
-                SetBottomEnemies(gameObjects.enemiesData);
+                SetBottomEnemies(gameObjects.enemiesData,false);
 
                 return;
             }
@@ -566,18 +591,62 @@ bool CheckShipAlive(GameObjects &gameObjects)
 {
     return gameObjects.playerShip.health <= 0;
 }
+void CheckEnemySpaceshipCollision(GameObjects &gameObjects)
+{
+    int j = gameObjects.playerBullet.positionX - gameObjects.EnemySpaceship.positionX;
+    int i = gameObjects.playerBullet.positionY - gameObjects.EnemySpaceship.positionY;
+    if ((i >= 0 && j >= 0 && j < 8 && i < 2) && gameObjects.EnemySpaceship.entity[i][j])
+    {
+        gameObjects.EnemySpaceship.isAlive = false;
+        gameObjects.Score += gameObjects.EnemySpaceship.Score;
+        DrawScore(gameObjects);
+                    EraseFill(2, 8, gameObjects.EnemySpaceship.positionX, gameObjects.EnemySpaceship.positionY);
+    }
+}
+void MoveEnemySpaceship(GameObjects &gameObjects)
+{
+    if (gameObjects.EnemySpaceship.direction)
+        if (gameObjects.EnemySpaceship.positionX - 7 < widthScreen - 4)
+        {
+            EraseLeft(2, 6, gameObjects.EnemySpaceship.positionX, gameObjects.EnemySpaceship.positionY);
+            gameObjects.EnemySpaceship.positionX++;
+            DrawEntity((int *)gameObjects.EnemySpaceship.entity, 2, 8, gameObjects.EnemySpaceship.positionX, gameObjects.EnemySpaceship.positionY, false);
+        }
+        else
+        {
+            gameObjects.EnemySpaceship.isAlive = false;
+            gameObjects.EnemySpaceship.direction = false;
+            EraseFill(2, 8, gameObjects.EnemySpaceship.positionX, gameObjects.EnemySpaceship.positionY);
+        }
+    else
+    {
+        if (gameObjects.EnemySpaceship.positionX > 4)
+        {
+            EraseRight(2, 6, gameObjects.EnemySpaceship.positionX, gameObjects.EnemySpaceship.positionY);
+            gameObjects.EnemySpaceship.positionX--;
+            DrawEntity((int *)gameObjects.EnemySpaceship.entity, 2, 8, gameObjects.EnemySpaceship.positionX, gameObjects.EnemySpaceship.positionY, false);
+        }
+        else
+        {
+
+            gameObjects.EnemySpaceship.isAlive = false;
+            gameObjects.EnemySpaceship.direction = true;
+            EraseFill(2, 8, gameObjects.EnemySpaceship.positionX, gameObjects.EnemySpaceship.positionY);
+        }
+    }
+}
 bool PlayLevel(GameOptions &game)
 {
     GameObjects gameObjects = InitializeGameObjects(game);
     int totalTime = 1;
     Draw(gameObjects, game);
     bool isRunning = true;
-    bool isWin = false;
+    bool &isWin = game.isWin;
     bool isLose = false;
     while (isRunning)
     {
 
-        PlayerMovement(gameObjects);
+        InputHandle(gameObjects);
 
         if (clock() % 100 == 0)
         {
@@ -591,6 +660,14 @@ bool PlayLevel(GameOptions &game)
             DrawEnemies(gameObjects.enemiesData);
             isLose = CheckEnemyCatchShip(gameObjects);
         }
+        if (clock() % 20000 == 0)
+        {
+            gameObjects.EnemySpaceship = enemyspaceship;
+        }
+        if (clock() % 100 == 0 && gameObjects.EnemySpaceship.isAlive)
+        {
+            MoveEnemySpaceship(gameObjects);
+        }
         if (gameObjects.EnemyBullet.isActive && clock() % gameObjects.EnemyBullet.speed == 0)
         {
             MoveEnemyBullet(gameObjects);
@@ -598,19 +675,22 @@ bool PlayLevel(GameOptions &game)
             CheckShipCollision(gameObjects, game);
             isLose = CheckShipAlive(gameObjects);
         }
-        if (gameObjects.playerBullet.isActive && clock() % gameObjects.playerBullet.speed == 0)
+        if (gameObjects.playerBullet.isActive && clock() % gameObjects.playerBullet.speed == 1)
         {
             MovePlayerBullet(gameObjects);
             CheckWallCollision(gameObjects, gameObjects.playerBullet);
             CheckEnemyCollision(gameObjects);
+            CheckEnemySpaceshipCollision(gameObjects);
             isWin = WinCheck(gameObjects);
         }
+
         if (isWin)
             isRunning = false;
         if (isLose)
             isRunning = false;
     }
-    return isWin;
+
+    return gameObjects.Score;
 }
 void NextLevel(GameOptions &game)
 {
@@ -628,19 +708,61 @@ void NextLevel(GameOptions &game)
     }
     game.currentLevel = startLevel;
 }
+void ShowGameOver(int fgcolor, int bgcolor)
+{
+    int x = 35;
+    int y = 18;
+    string fg_color = GenerateANSI(fgcolor);
+    string bg_color = GenerateANSI(bgcolor);
+    Gotoxy(x, y);
+    cout << fg_color << bg_color << "   _____                         ____                 _ ";
+    y++;
+    Gotoxy(x, y);
+    cout << fg_color << bg_color << R"(  / ____|                       / __ \               | |)";
+    y++;
+    Gotoxy(x, y);
+    cout << fg_color << bg_color << " | |  __  __ _ _ __ ___   ___  | |  | |_   _____ _ __| |";
+    y++;
+    Gotoxy(x, y);
+    cout << fg_color << bg_color << R"( | | |_ |/ _` | '_ ` _ \ / _ \ | |  | \ \ / / _ \ '__| |)";
+    y++;
+    Gotoxy(x, y);
+    cout << fg_color << bg_color << R"( | |__| | (_| | | | | | |  __/ | |__| |\ V /  __/ |  |_|)";
+    y++;
+    Gotoxy(x, y);
+    cout << fg_color << bg_color << R"(  \_____|\__,_|_| |_| |_|\___|  \____/  \_/ \___|_|  (_))";
+    y++;
+    Gotoxy(x, y);
+    cout << fg_color << bg_color << R"(                                                        )";
+}
+void LoseAnimation()
+{
+    for (int i = 0; i < 12; i++)
+    {
+        ShowGameOver(03, 1964);
+        Sleep(150);
+        ShowGameOver(04, 1963);
+        Sleep(150);
+    }
+    Sleep(1000);
+}
 void RunGame(GameOptions &game)
 {
     HideCursor();
     LoadSettings(settings);
     PrintScreen();
     CreateLevel(game);
+    int Score = 0;
     while (1)
     {
-        bool levelRusult = PlayLevel(game);
-        if (levelRusult)
+        Score += PlayLevel(game);
+        if (game.isWin)
             NextLevel(game);
         else
+        {
+            LoseAnimation();
             break;
+        }
     }
 }
 int main()

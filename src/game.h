@@ -20,7 +20,15 @@ enum GameDifficulty{
     CUSTOM
 };
 
-
+struct EnemySpaceship
+{
+	bool direction;
+	bool isAlive;
+	int entity[2][8];
+	int Score;
+	int positionX;
+	int positionY;
+};
 struct LevelOptions{
     int id = 1;
     int enemyShotsPerSec = 100;
@@ -39,6 +47,7 @@ struct GameOptions{
     int maxHealth;
     int bulletsCount;
     LevelOptions currentLevel;
+	bool isWin = false;
 };
 
 struct Bullet
@@ -103,5 +112,6 @@ struct GameObjects{
 	Bullet EnemyBullet;
     EnemiesData enemiesData;
     Wall wall;
+	EnemySpaceship EnemySpaceship;
 	int Score = 0;
 };

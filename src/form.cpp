@@ -195,6 +195,11 @@ void RenderBackground(Display display)
     Gotoxy(0, 0);
     cout << BG_BLACK << display.secondaryColor << blank_form;
 }
+void RenderMinimalBackground(Display display)
+{
+    Gotoxy(0, 0);
+    cout << BG_BLACK << display.secondaryColor << minimal_form;
+}
 void RenderButton(Button button, Display display, Coordinate elementPos)
 {
     string fg_color = "";

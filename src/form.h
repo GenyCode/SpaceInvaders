@@ -37,7 +37,37 @@ string blank_form = R"(
     ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
     ║                                                                                                                      ║
     ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝)";
-
+string minimal_form = R"(
+  
+  
+  
+  
+  
+        ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ║                                                                                                              ║
+        ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+        ║                                                                                                              ║
+        ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝)";
 enum ElementType
 {
     BUTTON,
@@ -204,7 +234,7 @@ struct Messagebox
 bool IsElementSelected(Position position, Display display);
 
 void DrawBox(int width, int height, string fg_color,string rest_color, int borderStyle);
-void RenderBackground();
+void RenderBackground(Display display);
 void RenderButton(Button button, Display display);
 void RenderTextbox(Textbox &textbox, Display display);
 void RenderRangebar(Rangebar &Rangebar, Display display);
@@ -235,5 +265,6 @@ void AddRangebarToForm(Form &form, Rangebar *rangebar);
 void AddCheckboxToForm(Form &form, Checkbox *checkbox);
 void AddSelectboxToForm(Form &form, Selectbox *selectbox);
 void InitialElementGrid(Form &form);
+void InitialDisplay(Display &display);
 void FreeElementGrid(Form &form);
 void CloseForm(Form &form);
