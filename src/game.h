@@ -30,10 +30,11 @@ struct EnemySpaceship
 	int positionY;
 };
 struct LevelOptions{
-    int id = 1;
+    int number = 1;
     int enemyShotsPerSec = 100;
     int wallIndex = 0;
-	int subId = 1;
+	int subNumber = 1;
+	int health = 0;
 };
 enum GameStatus{
 	RUNNINGGAME,
@@ -44,9 +45,7 @@ struct GameOptions{
     string playerName;
     GameDifficulty difficulty;
     int SpaceshipType;
-    int time;
     int maxHealth;
-    int bulletsCount;
     LevelOptions currentLevel;
 	bool isWin = false;
 	GameStatus status = RUNNINGGAME;

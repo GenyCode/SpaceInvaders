@@ -13,10 +13,11 @@
 #include "color.h"
 #include "settings.cpp"
 #include "form.cpp"
+#include "Leaderboard.cpp"
 void DrawEnemies(EnemiesData &data);
 Generalsettings settings;
 EnemySpaceship enemyspaceship = {1, 1, {{0, 20230, 19730, 19730, 19730, 19730, 20230, 0}, {20230, 20230, 20230, 20230, 20230, 20230, 20230, 20230}}, 500, 5, 5};
-Enemy normalEnemy = {5, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {0, 19730, 0, 19730, 0}}, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {19730, 0, 0, 0, 19730}}, true, true, 100};
+Enemy normalEnemy = {5, {{19730, 19730, 19730, 19730, 19730}, {19730, 19736, 19730, 19736, 19730}, {19735, 19730, 19735, 19730, 19735}}, {{19730, 19730, 19730, 19730, 19730}, {19730, 19735, 19730, 19735, 19730}, {19735, 19730, 19735, 19730, 19735}}, true, true, 100};
 Bullet EnemyBullet = {50, 5, "╽", 333, false, true, false};
 Bullet NormalBullet = {50, 5, "╿", 1963, false, true, false};
 Ship horned = {0, 30, {{0, 2130, 3330, 3330, 2130, 0}, {2130, 2130, 2130, 2130, 2130, 2130}}, 58, 38};
@@ -137,7 +138,6 @@ void CreateLevel(GameOptions &game)
         break;
     }
     game.maxHealth = 20;
-    game.bulletsCount = 40;
     game.currentLevel = startLevel;
 }
 void SetRightestEnemy(EnemiesData &data)
@@ -261,7 +261,7 @@ void DrawWall(GameObjects &gameObjects)
 void DrawLevel(GameOptions &game)
 {
     Gotoxy(14, 2);
-    cout << FG_WHITE << game.currentLevel.id << "-" << game.currentLevel.subId;
+    cout << FG_WHITE << game.currentLevel.number << "-" << game.currentLevel.subNumber;
 }
 void DrawHealth(GameObjects &gameObjects, GameOptions &game)
 {
@@ -670,6 +670,39 @@ void MoveEnemySpaceship(GameObjects &gameObjects)
         }
     }
 }
+void SaveGame(const GameOptions &game) {
+    string filename = "usersave.bin";
+    ofstream file(filename, ios::binary);
+    if (file.is_open()) {
+        size_t nameLength = game.playerName.size();
+        file.write(reinterpret_cast<const char *>(&nameLength), sizeof(nameLength));
+        file.write(game.playerName.c_str(), nameLength);
+        file.write(reinterpret_cast<const char *>(&game.difficulty), sizeof(game.difficulty));
+        file.write(reinterpret_cast<const char *>(&game.maxHealth), sizeof(game.maxHealth));
+        file.write(reinterpret_cast<const char *>(&game.currentLevel), sizeof(game.currentLevel));
+        file.write(reinterpret_cast<const char *>(&game.isWin), sizeof(game.isWin));
+        file.write(reinterpret_cast<const char *>(&game.status), sizeof(game.status));
+
+        file.close();
+    }
+}
+
+void LoadGame(GameOptions &game) {
+    string filename = "usersave.bin";
+    ifstream file(filename, ios::binary);
+    if (file.is_open()) {
+        size_t nameLength;
+        file.read(reinterpret_cast<char *>(&nameLength), sizeof(nameLength));
+        game.playerName.resize(nameLength);
+        file.read(&game.playerName[0], nameLength);
+        file.read(reinterpret_cast<char *>(&game.difficulty), sizeof(game.difficulty));
+        file.read(reinterpret_cast<char *>(&game.maxHealth), sizeof(game.maxHealth));
+        file.read(reinterpret_cast<char *>(&game.currentLevel), sizeof(game.currentLevel));
+        file.read(reinterpret_cast<char *>(&game.isWin), sizeof(game.isWin));
+        file.read(reinterpret_cast<char *>(&game.status), sizeof(game.status));
+        file.close();
+    }
+}
 bool PlayLevel(GameOptions &game)
 {
     GameObjects gameObjects = InitializeGameObjects(game);
@@ -784,12 +817,16 @@ void LoseAnimation()
     }
     Sleep(1000);
 }
-void RunGame(GameOptions &game)
+void RunGame(GameOptions &game,bool loadGame)
 {
     HideCursor();
     LoadSettings(settings);
     CreateLevel(game);
     int Score = 0;
+    bool isLose = false;
+    if(loadGame){
+        LoadGame(game);
+    }
     while (1)
     {
         game.status = RUNNINGGAME;
@@ -809,10 +846,18 @@ void RunGame(GameOptions &game)
             NextLevel(game);
         else
         {
+            isLose = true;
             LoseAnimation();
             break;
         }
     }
+    if(!isLose){
+        SaveGame(game);
+    }else{
+        Player player = {};
+        UpdateLeaderboard(GetDefaultFileName(),);
+    }
+
 }
 int main()
 {
@@ -820,6 +865,6 @@ int main()
     HideCursor();
     SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     GameOptions game;
-    RunGame(game);
+    RunGame(game,true);
     return 0;
 }
