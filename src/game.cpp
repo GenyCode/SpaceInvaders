@@ -8,19 +8,19 @@
 #include <string>
 #include <fstream>
 #include <chrono>
-//#include "utilities.cpp"
+// #include "utilities.cpp"
 #include "game.h"
 #include "color.h"
 #include "settings.cpp"
 #include "form.cpp"
 void DrawEnemies(EnemiesData &data);
 Generalsettings settings;
-EnemySpaceship enemyspaceship = {1, 1, {{0, 2023, 1973, 1973, 1973, 1973, 2023, 0}, {2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023}}, 500, 5, 5};
-Enemy normalEnemy = {5, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {0, 1973, 0, 1973, 0}}, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {1973, 0, 0, 0, 1973}}, true, true, 100};
+EnemySpaceship enemyspaceship = {1, 1, {{0, 20230, 19730, 19730, 19730, 19730, 20230, 0}, {20230, 20230, 20230, 20230, 20230, 20230, 20230, 20230}}, 500, 5, 5};
+Enemy normalEnemy = {5, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {0, 19730, 0, 19730, 0}}, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {19730, 0, 0, 0, 19730}}, true, true, 100};
 Bullet EnemyBullet = {50, 5, "╽", 333, false, true, false};
 Bullet NormalBullet = {50, 5, "╿", 1963, false, true, false};
-Ship horned = {0, 3, {{0, 213, 333, 333, 213, 0}, {213, 213, 213, 213, 213, 213}}, 58, 38};
-Wall wall = {403, 1123, {{0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}}, 14, 30, true};
+Ship horned = {0, 30, {{0, 2130, 3330, 3330, 2130, 0}, {2130, 2130, 2130, 2130, 2130, 2130}}, 58, 38};
+Wall wall = {4030, 11230, {{0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0}, {0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0}, {0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0}, {0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0}, {0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0, 0, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 4030, 0}}, 14, 30, true};
 void EraseFill(int row, int col, int cursorX, int cursorY)
 {
     for (int i = 0; i < row; i++)
@@ -66,6 +66,33 @@ void EraseRight(int row, int col, int cursorX, int cursorY)
         cout << " " << FG_WHITE;
     }
 }
+string GenenrateCharacter(int code)
+{
+    switch (code)
+    {
+    case 0:
+        return "█";
+    case 1:
+        return "▓";
+    case 2:
+        return "▌";
+    case 3:
+        return "▐";
+    case 4:
+        return "▲";
+    case 5:
+        return "▀";
+    case 6:
+        return "▄";
+    case 7:
+        return "░";
+    case 8:
+        return "▼";
+    case 9:
+        return "";
+    }
+    return "";
+}
 void DrawEntity(int *entity, int row, int col, int cursorX, int cursorY, bool isErase)
 {
     int *currentEntity = entity;
@@ -78,12 +105,13 @@ void DrawEntity(int *entity, int row, int col, int cursorX, int cursorY, bool is
             int value = *currentEntity++;
             if (!isErase && value > 0)
             {
-                string color = GenerateANSI(value);
+                string character = GenenrateCharacter((value % 10));
+                string color = GenerateANSI(value /10);
                 if (color != lastColor)
                 {
                     lastColor = color;
                 }
-                cout << lastColor << "█";
+                cout << lastColor << character;
             }
             else
             {
@@ -141,12 +169,13 @@ void SetLeftestEnemy(EnemiesData &data)
         }
     }
 }
-void SetBottomEnemies(EnemiesData &data,bool initialMode)
+void SetBottomEnemies(EnemiesData &data, bool initialMode)
 {
     for (int i = 0; i < 10; i++)
     {
-        bool check = (initialMode || data.bottomEnemy[i] != nullptr) && (data.bottomEnemy[i] == nullptr || data.bottomEnemy[i]->isAlive) ;
-        for (int j = 2; j >= -1 && check; j--)
+        // bool check = (initialMode || data.bottomEnemy[i] != nullptr) && (data.bottomEnemy[i] == nullptr || (*data.bottomEnemy[i]).isAlive);
+        // for (int j = 2; j >= -1 && check; j--)
+        for (int j = 2; j >= -1; j--)
         {
             if (j == -1)
                 data.bottomEnemy[i] = nullptr;
@@ -195,7 +224,7 @@ void initialEnemies(EnemiesData &data)
     SetRightestEnemy(data);
     SetLeftestEnemy(data);
     SetBottomestEnemy(data);
-    SetBottomEnemies(data,true);
+    SetBottomEnemies(data, true);
 }
 GameObjects InitializeGameObjects(GameOptions &game)
 {
@@ -239,7 +268,7 @@ void DrawHealth(GameObjects &gameObjects, GameOptions &game)
     Gotoxy(27, 2);
     string health = IntToString((gameObjects.playerShip.health * 100) / game.maxHealth) + "%";
     cout << FG_WHITE << "    ";
-        Gotoxy(27, 2);
+    Gotoxy(27, 2);
     cout << FG_WHITE << health;
 }
 void DrawScore(GameObjects &gameObjects)
@@ -281,26 +310,26 @@ void FirePlayerBullet(GameObjects &gameObjects)
         gameObjects.playerBullet.isActive = true;
     }
 }
-void ShowPauseMenu(){
-bool MusicIsPlay = false;
-    Form form = {"Main Menu", 5, 2};
+void ShowPauseMenu(GameOptions &game)
+{
+    bool MusicIsPlay = false;
+    Form form = {"Pause Menu", 5, 2};
     Display display = {0, 4, 0, 0, {0, 0}};
     InitialDisplay(display);
     RenderMinimalBackground(display);
     Generalsettings generalsettings;
     LoadSettings(generalsettings);
     form.isSoundEnabled = generalsettings.Sound;
-    Button NewGameButton = {"New Game", {0, 0}, true, 0};
-    Button LoadGameButton = {"Load Game", {1, 0}, true, 1};
-    Button SettingsButton = {"Settings", {2, 0}, true, 2};
-    Button HowToPlayButton = {"How to play", {3, 0}, true, 3};
-    Button ExitButton = {"Exit", {4, 0}, true, 4};
+    Button ContinueButton = {"Continue", {0, 0}, true, 0};
+    Button RestartButton = {"Restart Game", {1, 0}, true, 2};
+    Button QuitButton = {"Quit Game", {2, 0}, true, 3};
+    Button ExitButton = {"Exit Space Invadors", {3, 0}, true, 4};
     InitialElementGrid(form);
-    AddButtonToForm(form, &NewGameButton);
-    AddButtonToForm(form, &LoadGameButton);
-    AddButtonToForm(form, &SettingsButton);
-    AddButtonToForm(form, &HowToPlayButton);
+    AddButtonToForm(form, &ContinueButton);
+    AddButtonToForm(form, &RestartButton);
+    AddButtonToForm(form, &QuitButton);
     AddButtonToForm(form, &ExitButton);
+
     while (form.isRunning)
     {
         RenderForm(form, display);
@@ -314,15 +343,20 @@ bool MusicIsPlay = false;
             switch ((*button).id)
             {
             case 0:
+                form.isRunning = false;
                 break;
             case 1:
                 break;
             case 2:
+                game.status = RESETGAME;
+                form.isRunning = false;
                 break;
             case 3:
+                game.status = QUITTOMENU;
+                form.isRunning = false;
                 break;
             case 4:
-                form.isRunning = false;
+                exit(0);
                 break;
             }
         }
@@ -333,7 +367,7 @@ bool MusicIsPlay = false;
     }
     CloseForm(form);
 }
-void InputHandle(GameObjects &gameObjects)
+void InputHandle(GameObjects &gameObjects, GameOptions &game)
 {
     if (_kbhit())
     {
@@ -352,9 +386,10 @@ void InputHandle(GameObjects &gameObjects)
         {
             FirePlayerBullet(gameObjects);
         }
-        else if (order == 27){
-            ShowPauseMenu();
-            EraseFill(25,112,8,6);
+        else if (order == 27)
+        {
+            ShowPauseMenu(game);
+            EraseFill(25, 112, 8, 6);
         }
     }
 }
@@ -538,7 +573,7 @@ void CheckEnemyCollision(GameObjects &gameObjects)
                 {
                     SetBottomestEnemy(gameObjects.enemiesData);
                 }
-                SetBottomEnemies(gameObjects.enemiesData,false);
+                SetBottomEnemies(gameObjects.enemiesData, false);
 
                 return;
             }
@@ -600,7 +635,7 @@ void CheckEnemySpaceshipCollision(GameObjects &gameObjects)
         gameObjects.EnemySpaceship.isAlive = false;
         gameObjects.Score += gameObjects.EnemySpaceship.Score;
         DrawScore(gameObjects);
-                    EraseFill(2, 8, gameObjects.EnemySpaceship.positionX, gameObjects.EnemySpaceship.positionY);
+        EraseFill(2, 8, gameObjects.EnemySpaceship.positionX, gameObjects.EnemySpaceship.positionY);
     }
 }
 void MoveEnemySpaceship(GameObjects &gameObjects)
@@ -646,8 +681,11 @@ bool PlayLevel(GameOptions &game)
     while (isRunning)
     {
 
-        InputHandle(gameObjects);
-
+        InputHandle(gameObjects, game);
+        if (game.status != RUNNINGGAME)
+        {
+            isRunning = false;
+        }
         if (clock() % 100 == 0)
         {
             FireEnemyBullet(gameObjects);
@@ -750,12 +788,23 @@ void RunGame(GameOptions &game)
 {
     HideCursor();
     LoadSettings(settings);
-    PrintScreen();
     CreateLevel(game);
     int Score = 0;
     while (1)
     {
-        Score += PlayLevel(game);
+        game.status = RUNNINGGAME;
+        PrintScreen();
+        int currentScore = PlayLevel(game);
+        if (game.status == RESETGAME)
+        {
+            system("cls");
+            continue;
+        }
+        Score += currentScore;
+        if (game.status == QUITTOMENU)
+        {
+            break;
+        }
         if (game.isWin)
             NextLevel(game);
         else

@@ -35,9 +35,10 @@ struct LevelOptions{
     int wallIndex = 0;
 	int subId = 1;
 };
-struct Player{
-	int name;
-	int score;
+enum GameStatus{
+	RUNNINGGAME,
+	RESETGAME,
+	QUITTOMENU
 };
 struct GameOptions{
     string playerName;
@@ -48,6 +49,7 @@ struct GameOptions{
     int bulletsCount;
     LevelOptions currentLevel;
 	bool isWin = false;
+	GameStatus status = RUNNINGGAME;
 };
 
 struct Bullet
