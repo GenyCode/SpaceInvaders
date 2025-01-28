@@ -15,8 +15,8 @@
 
 void DrawEnemies(EnemiesData &data);
 Generalsettings settings;
-Enemy normalEnemy = {5, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {0, 1973, 0, 1973, 0}}, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {1973, 0, 0, 0, 1973}}, true, true};
-Bullet EnemyBullet = {50, 5, "╽", 2023, false, true, false};
+Enemy normalEnemy = {5, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {0, 1973, 0, 1973, 0}}, {{1973, 1973, 1973, 1973, 1973}, {1973, 333, 1973, 333, 1973}, {1973, 0, 0, 0, 1973}}, true, true, 100};
+Bullet EnemyBullet = {50, 5, "╽", 333, false, true, false};
 Bullet NormalBullet = {50, 5, "╿", 1963, false, true, false};
 Ship horned = {10, 3, {{0, 213, 333, 333, 213, 0}, {213, 213, 213, 213, 213, 213}}, 58, 38};
 Wall wall = {403, 1123, {{0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}, {0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0, 0, 403, 403, 403, 403, 403, 403, 403, 403, 0}}, 14, 30, true};
@@ -107,6 +107,8 @@ void CreateLevel(GameOptions &game)
     case CUSTOM:
         break;
     }
+    game.maxHealth = 20;
+    game.bulletsCount = 40;
     game.currentLevel = startLevel;
 }
 void SetRightestEnemy(EnemiesData &data)
@@ -161,7 +163,7 @@ void SetBottomestEnemy(EnemiesData &data)
 {
     for (int i = 0; i < 10; i++)
     {
-        for (int j = 2; j >=0; j--)
+        for (int j = 2; j >= 0; j--)
         {
             if (data.enemies[j][i].isAlive)
             {
@@ -178,7 +180,7 @@ void initialEnemies(EnemiesData &data)
         for (int j = 0; j < 10; j++)
         {
             data.enemies[i][j] = normalEnemy;
-            data.enemies[i][j].positionX = 5 + j * 10;
+            data.enemies[i][j].positionX = 15 + j * 10;
             data.enemies[i][j].positionY = 5 + i * 6;
             data.aliveEnemyCount++;
             /*if (!(i == 2))
@@ -211,7 +213,7 @@ void PrintScreen()
 {
     string screen = R"(
     ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
-    ║  Level:      Health:      Bullets:                                                                     Time:         ║
+    ║  Level:      Health:      Score:                                                                                     ║
     ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
     ║                                                                                                                      ║
     ║                                                                                                                      ║
@@ -261,8 +263,27 @@ void DrawWall(GameObjects &gameObjects)
 {
     DrawEntity((int *)gameObjects.wall.entity, 5, 100, gameObjects.wall.positionX, gameObjects.wall.positionY, false);
 }
-void Draw(GameObjects &gameObjects)
+void DrawLevel(GameOptions &game)
 {
+    Gotoxy(14, 2);
+    cout << FG_WHITE << game.currentLevel.id << "-" << game.currentLevel.subId;
+}
+void DrawHealth(GameObjects &gameObjects, GameOptions &game)
+{
+    Gotoxy(27, 2);
+    string health = IntToString((gameObjects.playerShip.health * 100) / game.maxHealth) + "%";
+    cout << FG_WHITE << setw(3) << left << health;
+}
+void DrawScore(GameObjects &gameObjects)
+{
+    Gotoxy(40, 2);
+    cout << FG_WHITE << setw(10) << left << gameObjects.Score;
+}
+void Draw(GameObjects &gameObjects, GameOptions &game)
+{
+    DrawLevel(game);
+    DrawHealth(gameObjects, game);
+    DrawScore(gameObjects);
     DrawShip(gameObjects);
     DrawWall(gameObjects);
     DrawEnemies(gameObjects.enemiesData);
@@ -345,16 +366,15 @@ void CollisionWallEntity(Wall &wall, int row, int col)
         cout << GenerateANSI(wall.entity[row][col]) << "█" << FG_WHITE;
     }
 }
-void CheckShipCollision(GameObjects &gameObjects)
+void CheckShipCollision(GameObjects &gameObjects, GameOptions &game)
 {
     int j = gameObjects.EnemyBullet.positionX - gameObjects.playerShip.positionX;
     int i = gameObjects.EnemyBullet.positionY - gameObjects.playerShip.positionY;
-    cout << j << "-" << i;
-    if ((i >= 0 && j >= 0 && j < 5 && i < 2) && gameObjects.playerShip.entity[i][j])
+    if ((i >= 0 && j >= 0 && j < 6 && i < 2) && gameObjects.playerShip.entity[i][j])
     {
         gameObjects.EnemyBullet.isActive = false;
         gameObjects.playerShip.health -= gameObjects.EnemyBullet.damage;
-        cout << gameObjects.playerShip.health;
+        DrawHealth(gameObjects, game);
     }
 }
 void CheckWallCollision(GameObjects &gameObjects, Bullet &bullet)
@@ -476,6 +496,9 @@ void CheckEnemyCollision(GameObjects &gameObjects)
                 {
                     enemy.isAlive = false;
                     gameObjects.enemiesData.aliveEnemyCount--;
+                    
+                    gameObjects.Score += enemy.Score;
+                    DrawScore(gameObjects);
                     EraseFill(3, 5, enemy.positionX, enemy.positionY);
                 }
                 if (!(*gameObjects.enemiesData.rightestEnemy).isAlive)
@@ -488,9 +511,10 @@ void CheckEnemyCollision(GameObjects &gameObjects)
                 }
                 if (!(*gameObjects.enemiesData.bottomestEnemy).isAlive)
                 {
-                        SetBottomestEnemy(gameObjects.enemiesData);
+                    SetBottomestEnemy(gameObjects.enemiesData);
                 }
                 SetBottomEnemies(gameObjects.enemiesData);
+
                 return;
             }
         }
@@ -526,7 +550,8 @@ void MoveEnemyBullet(GameObjects &gameObjects)
     if (gameObjects.EnemyBullet.positionY < lengthScreen - 1)
     {
         Gotoxy(gameObjects.EnemyBullet.positionX, gameObjects.EnemyBullet.positionY);
-        cout << gameObjects.EnemyBullet.shape;
+        string color = GenerateANSI(gameObjects.EnemyBullet.colorCode);
+        cout << color << gameObjects.EnemyBullet.shape << FG_WHITE;
     }
     else
     {
@@ -535,7 +560,7 @@ void MoveEnemyBullet(GameObjects &gameObjects)
 }
 bool CheckEnemyCatchShip(GameObjects &gameObjects)
 {
-    return (*gameObjects.enemiesData.bottomestEnemy).positionY+3 >= gameObjects.playerShip.positionY;
+    return (*gameObjects.enemiesData.bottomestEnemy).positionY + 3 >= gameObjects.playerShip.positionY;
 }
 bool CheckShipAlive(GameObjects &gameObjects)
 {
@@ -545,7 +570,7 @@ bool PlayLevel(GameOptions &game)
 {
     GameObjects gameObjects = InitializeGameObjects(game);
     int totalTime = 1;
-    Draw(gameObjects);
+    Draw(gameObjects, game);
     bool isRunning = true;
     bool isWin = false;
     bool isLose = false;
@@ -570,9 +595,8 @@ bool PlayLevel(GameOptions &game)
         {
             MoveEnemyBullet(gameObjects);
             CheckWallCollision(gameObjects, gameObjects.EnemyBullet);
-            CheckShipCollision(gameObjects);
+            CheckShipCollision(gameObjects, game);
             isLose = CheckShipAlive(gameObjects);
-
         }
         if (gameObjects.playerBullet.isActive && clock() % gameObjects.playerBullet.speed == 0)
         {
@@ -580,13 +604,11 @@ bool PlayLevel(GameOptions &game)
             CheckWallCollision(gameObjects, gameObjects.playerBullet);
             CheckEnemyCollision(gameObjects);
             isWin = WinCheck(gameObjects);
-
-
         }
-                    if (isWin)
-                isRunning = false;
-                    if (isLose)
-                isRunning = false;
+        if (isWin)
+            isRunning = false;
+        if (isLose)
+            isRunning = false;
     }
     return isWin;
 }
@@ -614,7 +636,6 @@ void RunGame(GameOptions &game)
     CreateLevel(game);
     while (1)
     {
-
         bool levelRusult = PlayLevel(game);
         if (levelRusult)
             NextLevel(game);

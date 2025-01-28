@@ -22,9 +22,10 @@ enum GameDifficulty{
 
 
 struct LevelOptions{
-    int id;
-    int enemyShotsPerSec;
-    int wallIndex;
+    int id = 1;
+    int enemyShotsPerSec = 100;
+    int wallIndex = 0;
+	int subId = 1;
 };
 struct Player{
 	int name;
@@ -68,6 +69,7 @@ struct Enemy
 	int entity2[3][5];
 	bool IsOne = 0;
 	bool isAlive;
+	int Score = 100;
 	int positionX;
 	int positionY;
 };
@@ -101,4 +103,5 @@ struct GameObjects{
 	Bullet EnemyBullet;
     EnemiesData enemiesData;
     Wall wall;
+	int Score = 0;
 };
