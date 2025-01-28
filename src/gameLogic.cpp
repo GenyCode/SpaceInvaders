@@ -47,6 +47,7 @@ struct Enemy
 struct EnemiesData
 {
 	Enemy enemies[3][10];
+	Enemy *bottomEnemy [ 10 ] = { nullptr } ;	
 	Enemy *leftestEnemy = nullptr;
 	Enemy *rightestEnemy = nullptr;
 	int dir = 1;
@@ -82,6 +83,10 @@ void printEnemies(EnemiesData &) ;
 void CheckShieldCollision(Shield Shields[4]);
 void CheckEnemyCollision(EnemiesData &) ;
 
+void setBottomEnemies (EnemiesData &) ;
+void fireEnemyBullet(EnemiesData &data) ;
+void moveEnemyBullet () ;
+
 char back[lengthScreen][widthScreen];
 char front[lengthScreen][widthScreen];
 string shipEraser[3] = {{"     "}, {"     "}, {"     "}};
@@ -92,6 +97,7 @@ bullets Laser = {0, 'l', true, true, false};
 bullets Bomb = {0, 'b', false, true, false};
 bullets Spreadable = {0, 's', false, true, true};
 bullets MainBullet = Normal;
+bullets EnemyBullet = Reverse;
 
 ship terminator = {3, 1, {{"▲ ▲ ▲"}, {"█▄█▄█"}}, 'r', 58};
 ship feisty = {2, 2, {{"≶ ⭻ ≷"}, {"█▒█▒█"}}, 'b', 58};
@@ -159,16 +165,16 @@ int main()
 		shipControl();
 		if (clock() % 100 == 0)
 		{
-			//moveEnemyBullet(); 
+			moveEnemyBullet();
 			movePlayerBullet();
 			CheckShieldCollision(shields);
 			CheckEnemyCollision(data);
 		}
 		
-		//if ( clock() % 2000 == 0 )
-		//{
-		//	enemyFireBullet ( data ) ;
-		//}
+		if ( clock() % 2000 == 0 )
+		{
+			fireEnemyBullet (data) ;
+		}
 		
 		
 		if (clock() % 500 == 0)
@@ -458,6 +464,7 @@ void initialEnemies(EnemiesData &data)
 	}
 	SetRightestEnemy(data);
 	SetLeftestEnemy(data);
+	setBottomEnemies(data);
 }
 
 void initialShields(Shield Shields[4])
@@ -557,9 +564,10 @@ void CheckShieldCollision(Shield Shields[4])
 		{
 			for (int k = 0; k < 12; k++)
 			{
-				if (Shields[i].entity[j][k] && Shields[i].PositionX + k == MainBullet.positionX && Shields[i].PositionY + j == MainBullet.positionY)
+				if (Shields[i].entity[j][k] && Shields[i].PositionX + k == MainBullet.positionX && Shields[i].PositionY + j == MainBullet.positionY && Shields[i].PositionX + k == EnemyBullet.positionX && Shields[i].PositionY + j == EnemyBullet.positionY)
 				{
 					MainBullet.isActive = false;
+					EnemyBullet.isActive = false;
 					Shields[i].entity[j][k] = false;
 					if (k + 1 < 12)
 					{
@@ -599,11 +607,73 @@ void CheckEnemyCollision(EnemiesData &data)
                 MainBullet.positionX < enemy.positionX + 5 && 
                 MainBullet.positionY >= enemy.positionY &&
                 MainBullet.positionY < enemy.positionY + 3) { 
+                
                 enemy.isAlive = false;
                 MainBullet.isActive = false;
+                
+                SetRightestEnemy(data);
+				SetLeftestEnemy(data);
+				setBottomEnemies(data);
+				
                 return;
             }
         }
     }
 }
 
+void fireEnemyBullet(EnemiesData &data)
+{
+	if (!EnemyBullet.isActive)
+	{
+		srand ( static_cast < unsigned int > ( time ( NULL ) ) ) ;
+		int i  = rand() % 10 ;
+		EnemyBullet = Reverse;
+		
+		while ( data.bottomEnemy [ i ] == nullptr ){
+			i  = rand() % 10 ;
+		}
+		
+		EnemyBullet.positionX = data.bottomEnemy[i]->positionX + 2;
+		EnemyBullet.positionY = data.bottomEnemy[i]->positionY + 3;
+		EnemyBullet.isActive = true;
+	}
+}
+
+void setBottomEnemies (EnemiesData &data)
+{
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 2; j >= -1; j--)
+		{
+			if ( j == -1 )
+				data.bottomEnemy [ i ] = nullptr;
+			else
+			{
+				if (data.enemies[j][i].isAlive)
+				{
+					data.bottomEnemy [ i ] = &data.enemies[j][i];
+					break;
+				}
+			}
+		}
+	}
+}
+
+void moveEnemyBullet ()
+{
+	if (EnemyBullet.isActive)
+	{
+		gotoXY(EnemyBullet.positionY, EnemyBullet.positionX);
+		cout << " ";
+		EnemyBullet.positionY++;
+		if (EnemyBullet.positionY < lengthScreen - 1 )
+		{
+			gotoXY(EnemyBullet.positionY, EnemyBullet.positionX);
+			cout << EnemyBullet.shape;
+		}
+		else
+		{
+			EnemyBullet.isActive = false;
+		}
+	}
+}
