@@ -54,6 +54,16 @@ struct EnemiesData
 	int effectdir = 1;
 };
 
+struct EnemySpaceship
+{
+	bool direction ;
+	bool isAlive ;
+	bool entity[3][8];
+	string shape[3];
+	int positionX;
+	int positionY;
+} ; 
+
 struct Shield
 {
 	bool entity[5][12];
@@ -81,11 +91,12 @@ void moveEnemies(EnemiesData &);
 void eraseEnemies(EnemiesData &) ;
 void printEnemies(EnemiesData &) ;
 void CheckShieldCollision(Shield Shields[4]);
-void CheckEnemyCollision(EnemiesData &) ;
-
+void CheckEnemyCollision(EnemiesData &,EnemySpaceship&) ;
 void setBottomEnemies (EnemiesData &) ;
 void fireEnemyBullet(EnemiesData &data) ;
-void moveEnemyBullet () ;
+void moveEnemyBullet();
+
+void moveEnemySpaceship(EnemySpaceship &);
 
 char back[lengthScreen][widthScreen];
 char front[lengthScreen][widthScreen];
@@ -108,11 +119,14 @@ Enemy normalEnemy = {0, {{1, 1, 1, 1, 1}, {1, 1, 1, 1, 1}}, {{"█████"}
 Shield normalShield = {{{0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0}, {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1}, {1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1}}};
 Shield shields[4];
 
+EnemySpaceship EnemySpaceship1 = { true , false , {1} , { "█ ████ █" , " ██  ██ " , "█ ████ █" } , 1 , 1 } ;
+
 int main()
 {
 	system("cls");
 	hideCursor();
 	EnemiesData data;
+	EnemySpaceship EnemySpaceshipData = EnemySpaceship1 ;
 	initialEnemies(data);
 
 	SendMessage(GetConsoleWindow(), WM_SYSCOMMAND, SC_MAXIMIZE, 0);
@@ -168,7 +182,7 @@ int main()
 			moveEnemyBullet();
 			movePlayerBullet();
 			CheckShieldCollision(shields);
-			CheckEnemyCollision(data);
+			CheckEnemyCollision(data,EnemySpaceshipData);
 		}
 		
 		if ( clock() % 2000 == 0 )
@@ -176,6 +190,15 @@ int main()
 			fireEnemyBullet (data) ;
 		}
 		
+		if ( clock() % 20000 == 0 )
+		{
+			EnemySpaceshipData.isAlive = true ;
+		}
+		
+		if ( clock() % 400 == 0 && EnemySpaceshipData.isAlive )
+		{
+			moveEnemySpaceship ( EnemySpaceshipData ) ;	
+		}
 		
 		if (clock() % 500 == 0)
 		{
@@ -593,14 +616,15 @@ void CheckShieldCollision(Shield Shields[4])
 	}
 }
 
-void CheckEnemyCollision(EnemiesData &data)
+void CheckEnemyCollision(EnemiesData &data, EnemySpaceship &EnemySpaceshipData)
 {
+	bool sw = 1 ;
     if (!MainBullet.isActive) {
         return;
     }
 
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 10; j++) {
+    for (int i = 0; i < 3&&sw; i++) {
+        for (int j = 0; j < 10&&sw; j++) {
             Enemy &enemy = data.enemies[i][j];
             if (enemy.isAlive &&
                 MainBullet.positionX >= enemy.positionX &&
@@ -615,10 +639,30 @@ void CheckEnemyCollision(EnemiesData &data)
 				SetLeftestEnemy(data);
 				setBottomEnemies(data);
 				
-                return;
+                sw = 0 ;
             }
         }
     }
+
+	sw =1 ;
+	    
+    for ( int i = 0 ; i < 3 && sw ; i++ )
+    {
+    	if ( EnemySpaceshipData.isAlive &&
+		MainBullet.positionX < EnemySpaceshipData.positionX + 8 && MainBullet.positionX >= EnemySpaceshipData.positionX &&
+		MainBullet.positionY < EnemySpaceshipData.positionY + 3 && MainBullet.positionY >= EnemySpaceshipData.positionY )
+		{
+    		EnemySpaceshipData.isAlive = false;
+        	MainBullet.isActive = false;
+        	for ( int i = 0 ; i < 3 ; i++ )
+			{
+				gotoXY ( EnemySpaceshipData.positionY + i , EnemySpaceshipData.positionX ) ; 
+				cout << "        " ;
+			}
+			EnemySpaceshipData.positionY = 1 ;
+        	EnemySpaceshipData.positionX = 1 ;
+    	}
+	}
 }
 
 void fireEnemyBullet(EnemiesData &data)
@@ -677,3 +721,64 @@ void moveEnemyBullet ()
 		}
 	}
 }
+
+void moveEnemySpaceship(EnemySpaceship &EnemySpaceshipData)
+{
+	if ( EnemySpaceshipData.direction )
+		if ( EnemySpaceshipData.positionX + 7 < widthScreen - 2 )
+		{
+			for ( int i = 0 ; i < 3 ; i++ )
+			{
+				gotoXY ( EnemySpaceshipData.positionY + i , EnemySpaceshipData.positionX ) ; 
+				cout << "        " ;
+			}
+			
+			EnemySpaceshipData.positionX++ ;
+	
+			for ( int i = 0 ; i < 3 ; i++ )
+			{
+				gotoXY ( EnemySpaceshipData.positionY + i , EnemySpaceshipData.positionX ) ; 
+				cout << EnemySpaceshipData.shape[i] ;
+			}
+		}
+		else
+		{
+			for ( int i = 0 ; i < 3 ; i++ )
+			{
+				gotoXY ( EnemySpaceshipData.positionY + i , EnemySpaceshipData.positionX ) ; 
+				cout << "        " ;
+			}
+			EnemySpaceshipData.isAlive = false ;
+			EnemySpaceshipData.direction = false ;
+		}
+	else
+	{
+		if ( EnemySpaceshipData.positionX > 1 )
+		{
+			for ( int i = 0 ; i < 3 ; i++ )
+			{
+				gotoXY ( EnemySpaceshipData.positionY + i , EnemySpaceshipData.positionX ) ; 
+				cout << "        " ;
+			}
+			
+			EnemySpaceshipData.positionX-- ;
+	
+			for ( int i = 0 ; i < 3 ; i++ )
+			{
+				gotoXY ( EnemySpaceshipData.positionY + i , EnemySpaceshipData.positionX ) ; 
+				cout << EnemySpaceshipData.shape[i] ;
+			}
+		}
+		else
+		{
+			for ( int i = 0 ; i < 3 ; i++ )
+			{
+				gotoXY ( EnemySpaceshipData.positionY + i , EnemySpaceshipData.positionX ) ; 
+				cout << "        " ;
+			}
+			EnemySpaceshipData.isAlive = false ;
+			EnemySpaceshipData.direction = true ;
+		}
+	}
+}
+
