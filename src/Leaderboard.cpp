@@ -14,7 +14,32 @@ using namespace std;
 
 
 void LeaderboardMenu(){
-    
+    Form form = {"Leaderboard", 15, 2, false};
+    Display display = {0, 4, 0, 1, {0, 0}};
+    RenderBackground(display);
+    InitialElementGrid(form);
+    int counter = 0;
+    Player players[20];
+    ReadPlayersFromFile("scoreBoard.txt",players,counter);
+    Table table = {
+        104, 19, 2, 0, 7, {0,0}};
+    AddTableToForm(form, &table);
+    table.Cells[0][0] = {"Name"};
+    table.Cells[0][1] = {"Score"};
+    for(int i = 1;i <20;i++){
+        if(i >= counter) break;
+        table.Cells[i][0] = {players[i-1].name};
+        table.Cells[i][1] = {IntToString(players[i-1].score)};
+    }
+    while (form.isRunning)
+    {
+        RenderForm(form, display);
+        Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
+        RenderFooter(GetKeyHints(SelectedElement.type),display.secondaryColor);
+        char ch = getch();
+        HandleInput(ch, display, form);
+    }
+    CloseForm(form);
 }
 
 string GetDefaultFileName(){

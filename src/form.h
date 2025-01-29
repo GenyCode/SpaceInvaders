@@ -240,7 +240,7 @@ void RenderMinimalBackground(Display display);
 void RenderButton(Button button, Display display);
 void RenderTextbox(Textbox &textbox, Display display);
 void RenderRangebar(Rangebar &Rangebar, Display display);
-
+void AddTableToForm(Form &form, Table *table);
 void RenderFooter(string text,string fg_color);
 void RenderNullElement(Position position, Display display);
 void RenderCheckbox(Checkbox &checkbox, Display display);
