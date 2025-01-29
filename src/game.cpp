@@ -723,7 +723,7 @@ void LoadGame(GameOptions &game)
         file.close();
     }
 }
-bool PlayLevel(GameOptions &game)
+int PlayLevel(GameOptions &game)
 {
     GameObjects gameObjects = InitializeGameObjects(game);
     int totalTime = 1;

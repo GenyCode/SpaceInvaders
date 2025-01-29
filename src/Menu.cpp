@@ -6,6 +6,7 @@
 #include "Audio.h"
 //#include "Game.h"
 #include "Game.h"
+#include "Leaderboard.h"
 using namespace std;
 
 void SurvivalGameplaySettings()
@@ -324,12 +325,14 @@ void MainMenu()
     Button LoadGameButton = {"Load Game", {1, 0}, true, 1};
     Button SettingsButton = {"Settings", {2, 0}, true, 2};
     Button HowToPlayButton = {"How to play", {3, 0}, true, 3};
-    Button ExitButton = {"Exit", {4, 0}, true, 4};
+    Button LeaderboardButton = {"Leaderboard", {4, 0}, true, 4};
+    Button ExitButton = {"Exit", {5, 0}, true, 5};
     InitialElementGrid(form);
     AddButtonToForm(form, &NewGameButton);
     AddButtonToForm(form, &LoadGameButton);
     AddButtonToForm(form, &SettingsButton);
     AddButtonToForm(form, &HowToPlayButton);
+    AddButtonToForm(form, &LeaderboardButton);
     AddButtonToForm(form, &ExitButton);
     while (form.isRunning)
     {
@@ -384,6 +387,10 @@ void MainMenu()
                 form.renderBackground = true;
                 break;
             case 4:
+                LeaderboardMenu();
+                form.renderBackground = true;
+                break;
+            case 5:
                 form.isRunning = false;
                 break;
             }

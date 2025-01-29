@@ -2,9 +2,9 @@
 #include <string>
 #include "player.h"
 using namespace std;
-void Leaderboard();
+void LeaderboardMenu();
 string GetDefaultFileName();
-void Leaderboard(string Filename);
+void LeaderboardMenu(string Filename);
 Player* LoadPlayers(string Filename);
 void WritePlayersToFile(string Filename, Player players[], int counter);
 void ReadPlayersFromFile(string Filename, Player players[], int &counter);
