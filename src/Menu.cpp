@@ -4,7 +4,7 @@
 #include "utilities.h"
 #include "Settings.h"
 #include "Audio.h"
-//#include "Game.h"
+// #include "Game.h"
 #include "Game.h"
 #include "Leaderboard.h"
 using namespace std;
@@ -21,20 +21,13 @@ void SurvivalGameplaySettings()
     Textbox PlayerName = {"Name:", "Enter Your Name", "", "", true, false, {0, 0}};
     Selectbox difficulty = {{{"Easy", 0}, {"Medium", 1}, {"Hard", 2}}, "Difficulty:", 3, 0, {1, 0}};
     Label SpaceshipLabel = {{"Spaceship Settings", 18}, 1, {2, 0}};
-    Label Spaceship1 = {{{"█   █", 5}, {"█▄▄▄█", 5}}, 2, {3, 0}, 2};
-    Label Spaceship2 = {{{"▲ ▲ ▲", 5}, {"█▄█▄█", 5}}, 2, {3, 0}, 2};
-    Label Spaceship3 = {{{"≶ ⭻ ≷", 5}, {"█▒█▒█", 5}}, 2, {3, 0}, 2};
-    Label SelectedSpaceship = Spaceship1;
-    Selectbox SpaceshipType = {{{"A", 0}, {"B", 1}, {"C", 2}}, "Type:", 3, 0, {5, 0}};
-    Selectbox SpaceshipColor = {{{"CYAN", 0}, {"BLUE", 1}, {"GREEN", 2}, {"RED", 2}, {"YELLOW", 3}}, "Color:", 5, 0, {6, 0}};
-    Button StartButton = {"Start", {7, 0}, true, 0};
+    Selectbox SpaceshipType = {{{"A", 0}, {"B", 1}, {"C", 2}}, "Type:", 3, 0, {3, 0},true};
+    Button StartButton = {"Start", {4, 0}, true, 0};
     InitialElementGrid(form);
     AddTextboxToForm(form, &PlayerName);
     AddLabelToForm(form, &SpaceshipLabel);
-    AddLabelToForm(form, &SelectedSpaceship);
     AddSelectboxToForm(form, &difficulty);
     AddSelectboxToForm(form, &SpaceshipType);
-    AddSelectboxToForm(form, &SpaceshipColor);
     AddButtonToForm(form, &StartButton);
     while (form.isRunning)
     {
@@ -43,19 +36,6 @@ void SurvivalGameplaySettings()
             RenderBackground(display);
             form.renderBackground = false;
         }
-        switch (SpaceshipType.SelectedIndex)
-        {
-        case 0:
-            SelectedSpaceship = Spaceship1;
-            break;
-        case 1:
-            SelectedSpaceship = Spaceship2;
-            break;
-        case 2:
-            SelectedSpaceship = Spaceship3;
-            break;
-        }
-
         RenderForm(form, display);
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
         RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
@@ -69,12 +49,13 @@ void SurvivalGameplaySettings()
                 form.isRunning = false;
                 gameoptions.difficulty = (GameDifficulty)difficulty.SelectedIndex;
                 gameoptions.playerName = PlayerName.value;
+                gameoptions.SpaceshipType = SpaceshipType.SelectedIndex;
                 RunGame(gameoptions, false);
                 system("cls");
                 form.renderBackground = true;
                 break;
             case 1:
-            break;
+                break;
             }
         }
         else
@@ -93,24 +74,17 @@ void CustomGameplaySettings()
     form.isSoundEnabled = generalsettings.Sound;
     Display display = {0, 4, 0, 1, {0, 0}};
     InitialDisplay(display);
+    GameOptions gameoptions;
     Textbox PlayerName = {"Name:", "Enter Your Name", "", "", true, false, {0, 0}};
     Label Spaceship = {{"Spaceship Settings", 18}, 1, {1, 0}};
-    Selectbox SpaceshipType = {{{"A", 0}, {"B", 1}, {"C", 2}}, "Type:", 3, 0, {2, 0}};
-    Selectbox SpaceshipColor = {{{"CYAN", 0}, {"BLUE", 1}, {"GREEN", 2}, {"RED", 2}, {"YELLOW", 3}}, "Color:", 5, 0, {3, 0}};
-    Label Level = {{"Level Settings", 14}, 1, {1, 1}};
-    Rangebar Time = {"Time:", 0, 10, 5, false, {4, 1}};
-    Rangebar Health = {"Health:", 100, 300, 150, false, {2, 1}};
-    Rangebar Bullets = {"Bullets:", 25, 100, 50, false, {3, 1}};
+    Selectbox SpaceshipType = {{{"A", 0}, {"B", 1}, {"C", 2}}, "Type:", 3, 0, {2, 0},true};
+    Rangebar Health = {"Health:", 10, 60, 20, false, {3, 0}};
     Button StartButton = {"Start", {4, 0}, true, 0};
     InitialElementGrid(form);
     AddTextboxToForm(form, &PlayerName);
     AddLabelToForm(form, &Spaceship);
-    AddLabelToForm(form, &Level);
     AddSelectboxToForm(form, &SpaceshipType);
-    AddSelectboxToForm(form, &SpaceshipColor);
-    AddRangebarToForm(form, &Time);
     AddRangebarToForm(form, &Health);
-    AddRangebarToForm(form, &Bullets);
     AddButtonToForm(form, &StartButton);
     while (form.isRunning)
     {
@@ -123,7 +97,29 @@ void CustomGameplaySettings()
         Element SelectedElement = form.ElementsGrid[display.userPosition.row][display.userPosition.col];
         RenderFooter(GetKeyHints(SelectedElement.type), display.secondaryColor);
         char ch = getch();
-        HandleInput(ch, display, form);
+        if (SelectedElement.type == BUTTON && ch == '\r')
+        {
+            Button *button = (Button *)(SelectedElement.ptr);
+            switch ((*button).id)
+            {
+            case 0:
+                form.isRunning = false;
+                gameoptions.difficulty = (GameDifficulty)3;
+                gameoptions.playerName = PlayerName.value;
+                gameoptions.SpaceshipType = SpaceshipType.SelectedIndex;
+                gameoptions.maxHealth = Health.value;
+                RunGame(gameoptions, false);
+                system("cls");
+                form.renderBackground = true;
+                break;
+            case 1:
+                break;
+            }
+        }
+        else
+        {
+            HandleInput(ch, display, form);
+        }
     }
     CloseForm(form);
 }
@@ -322,11 +318,12 @@ void MainMenu()
     LoadSettings(generalsettings);
     form.isSoundEnabled = generalsettings.Sound;
     Button NewGameButton = {"New Game", {0, 0}, true, 0};
-    Button LoadGameButton = {"Load Game", {1, 0}, true, 1};
+    Button LoadGameButton = {"Load Game", {1, 0}, false, 1};
     Button SettingsButton = {"Settings", {2, 0}, true, 2};
     Button HowToPlayButton = {"How to play", {3, 0}, true, 3};
     Button LeaderboardButton = {"Leaderboard", {4, 0}, true, 4};
     Button ExitButton = {"Exit", {5, 0}, true, 5};
+    LoadGameButton.IsEnabled = fileExists("usersave.bin");
     InitialElementGrid(form);
     AddButtonToForm(form, &NewGameButton);
     AddButtonToForm(form, &LoadGameButton);
@@ -363,11 +360,15 @@ void MainMenu()
             {
             case 0:
                 GameModesMenu();
+                LoadGameButton.IsEnabled = fileExists("usersave.bin");
+
                 form.renderBackground = true;
                 break;
             case 1:
-                
-                RunGame(gameoptions, true);    
+
+                RunGame(gameoptions, true);
+                LoadGameButton.IsEnabled = fileExists("usersave.bin");
+
                 system("cls");
                 form.renderBackground = true;
                 break;

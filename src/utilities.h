@@ -16,3 +16,4 @@ string GetInput(int maxLength);
 string IntToString(int number);
 int CalculateCenterIndex(int totalLength,int itemLength);
 string GenerateANSI(int code);
+bool fileExists(const string& filename);

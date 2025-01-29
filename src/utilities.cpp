@@ -1,6 +1,7 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
+#include <fstream>
 #include "utilities.h"
 #include "color.h"
 using namespace std;
@@ -32,7 +33,10 @@ void Gotoxy(int x, int y)
     pos.Y = y;
     SetConsoleCursorPosition(hConsole, pos);
 }
-
+bool fileExists(const string& filename) {
+    std::ifstream file(filename);
+    return file.good();
+}
 Coordinate GetCursorPosition() {
     Coordinate coordinate;
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); 

@@ -35,6 +35,7 @@ struct LevelOptions{
 	int enemySpaceshipDelay = 100;
     int wallIndex = 0;
 	int health = 0;
+	int enemySpeed;
 };
 enum GameStatus{
 	RUNNINGGAME,
@@ -46,9 +47,11 @@ struct GameOptions{
     GameDifficulty difficulty;
     int SpaceshipType;
     int maxHealth;
+	int EnemySpeed;
     LevelOptions currentLevel;
 	bool isWin = false;
 	GameStatus status = RUNNINGGAME;
+	int Score = 0;
 };
 
 struct Bullet

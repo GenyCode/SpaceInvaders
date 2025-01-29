@@ -26,6 +26,7 @@ Bullet NormalBullet = {50, 5, "╿", 1963, false, true, false};
 Ship ship1 = {0, 30,{{1730,12438,12438,12438,12438,1730},{1730,1730,1730,1730,1730,1730}}, 58, 38};
 Ship ship2 = {0, 30,{{5332,0,16738,16734,0,5333},{5330,5330,5337,5337,5330,5330}} , 58, 38};
 Ship ship3 = {0, 30,{{20834,0,20834,20834,0,20834},{22030,22036,22030,22030,22036,22030}}, 58, 38};
+Ship ships[3] = {ship1,ship2,ship3};
 Wall wall = { 0 , 0 , { {0,21430,21430,21430,21430,21430,21430,21430,21430,21430,0,0,21530,21530,21530,21530,21530,21530,21530,21530,21530,21530,
 	0,0,21630,21630,21630,21630,21630,21630,21630,21630,21630,21630,0,0,21730,21730,21730,21730,21730,21730,21730,21730,21730,21730,0,0,
 	21830,21830,21830,21830,21830,21830,21830,21830,21830,21830,0,0,21930,21930,21930,21930,21930,21930,21930,21930,21930,21930,0,0,
@@ -150,27 +151,31 @@ void DrawEntity(int *entity, int row, int col, int cursorX, int cursorY, bool is
 void CreateLevel(GameOptions &game)
 {
     LevelOptions startLevel;
+    startLevel.number = 1;
     switch (game.difficulty)
     {
     case EASY:
         startLevel.enemyShotDelay = 500;
         startLevel.enemySpaceshipDelay = 5000;
+        startLevel.enemySpeed = 2500;
         game.maxHealth = 50;
         break;
     case MEDIUM:
         startLevel.enemyShotDelay = 300;
         startLevel.enemySpaceshipDelay = 8000;
+        startLevel.enemySpeed = 1500;
         game.maxHealth = 40;
         break;
     case HARD:
         startLevel.enemyShotDelay = 150;
         startLevel.enemySpaceshipDelay = 10000;
+        startLevel.enemySpeed = 800;
         game.maxHealth = 30;
         break;
     case CUSTOM:
         startLevel.enemyShotDelay = 200;
         startLevel.enemySpaceshipDelay = 10000;
-        game.maxHealth = 20;
+        startLevel.enemySpeed = game.EnemySpeed;
         break;
     }
 
@@ -265,7 +270,7 @@ void initialEnemies(EnemiesData &data)
 GameObjects InitializeGameObjects(GameOptions &game)
 {
     GameObjects gameObjects;
-    gameObjects.playerShip = ship1;
+    gameObjects.playerShip = ships[game.SpaceshipType];
     gameObjects.playerShip.health = game.maxHealth;
     gameObjects.playerBullet = NormalBullet;
     gameObjects.EnemyBullet = EnemyBullet;
@@ -273,6 +278,8 @@ GameObjects InitializeGameObjects(GameOptions &game)
     gameObjects.EnemySpaceship = enemyspaceship;
 
     initialEnemies(gameObjects.enemiesData);
+        gameObjects.enemiesData.speed = game.currentLevel.enemySpeed;
+
     // Set Spaceship
     // set Enemies
     // set wall
@@ -717,6 +724,7 @@ void SaveGame(const GameOptions &game)
         file.write(game.playerName.c_str(), nameLength);
         file.write(reinterpret_cast<const char *>(&game.difficulty), sizeof(game.difficulty));
         file.write(reinterpret_cast<const char *>(&game.maxHealth), sizeof(game.maxHealth));
+        file.write(reinterpret_cast<const char *>(&game.EnemySpeed), sizeof(game.EnemySpeed));
         file.write(reinterpret_cast<const char *>(&game.currentLevel), sizeof(game.currentLevel));
         file.write(reinterpret_cast<const char *>(&game.isWin), sizeof(game.isWin));
         file.write(reinterpret_cast<const char *>(&game.status), sizeof(game.status));
@@ -737,6 +745,7 @@ void LoadGame(GameOptions &game)
         file.read(&game.playerName[0], nameLength);
         file.read(reinterpret_cast<char *>(&game.difficulty), sizeof(game.difficulty));
         file.read(reinterpret_cast<char *>(&game.maxHealth), sizeof(game.maxHealth));
+        file.read(reinterpret_cast<char *>(&game.EnemySpeed), sizeof(game.EnemySpeed));
         file.read(reinterpret_cast<char *>(&game.currentLevel), sizeof(game.currentLevel));
         file.read(reinterpret_cast<char *>(&game.isWin), sizeof(game.isWin));
         file.read(reinterpret_cast<char *>(&game.status), sizeof(game.status));
@@ -746,6 +755,7 @@ void LoadGame(GameOptions &game)
 int PlayLevel(GameOptions &game)
 {
     GameObjects gameObjects = InitializeGameObjects(game);
+    gameObjects.Score = game.Score;
     int totalTime = 1;
     Draw(gameObjects, game);
     bool isRunning = true;
@@ -811,14 +821,17 @@ void NextLevel(GameOptions &game)
     case EASY:
         startLevel.enemyShotDelay *= 0.9;
         startLevel.enemySpaceshipDelay *= 1.1;
+        startLevel.enemySpeed *= 0.9;
         break;
     case MEDIUM:
         startLevel.enemyShotDelay *= 0.8;
         startLevel.enemySpaceshipDelay *= 1.2;
+        startLevel.enemySpeed *= 0.8;
         break;
     case HARD:
         startLevel.enemyShotDelay *= 0.5;
         startLevel.enemySpaceshipDelay *= 1.5;
+        startLevel.enemySpeed *= 0.75;
         break;
     case CUSTOM:
         startLevel.enemyShotDelay *= 0.85;
@@ -877,11 +890,12 @@ void RunGame(GameOptions &game, bool loadGame)
 {
     system("cls");
     HideCursor();
+    
     game.difficulty = HARD;
     // GameOptions maingame = game;
     LoadSettings(settings);
     CreateLevel(game);
-    int Score = 0;
+    game.Score = 0;
     bool isLose = false;
     if (loadGame)
     {
@@ -898,7 +912,7 @@ void RunGame(GameOptions &game, bool loadGame)
             system("cls");
             continue;
         }
-        Score += currentScore;
+        game.Score += currentScore;
         if (game.status == QUITTOMENU)
         {
             break;
@@ -923,7 +937,8 @@ void RunGame(GameOptions &game, bool loadGame)
     }
     else
     {
-        Player player = {game.playerName, Score};
+        remove("usersave.bin");
+        Player player = {game.playerName, game.Score};
         UpdateLeaderboard(GetDefaultFileName(), player);
     }
 }
