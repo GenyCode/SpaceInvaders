@@ -12,13 +12,14 @@
 #include "game.h"
 #include "color.h"
 #include "settings.h"
+#include "Audio.h"
 #include "form.h"
 #include "Leaderboard.h"
 void DrawEnemies(EnemiesData &data);
 Generalsettings settings;
-EnemySpaceship enemyspaceship = {1, 1, {{20230,20230,2130,20230,20230,2130,20230,20230},{20232,0,20232,20235,0,0,20235,20233}}, 500, 5, 5};
+EnemySpaceship enemyspaceship = {1, 1, {{20230,20230,0,20230,20230,0,20230,20230},{20232,20233,20235,0,0,20235,20232,20233}}, 500, 5, 5};
 Enemy EnemyType3 = {10, {{7236, 0, 7236, 0, 7236}, {7232, 7235, 7232, 7235, 7232}, {7235, 7236, 7235, 7236, 7235}}, {{7236, 0, 7236, 0, 7236}, {7233, 7235, 7233, 7235, 7233}, {7235, 7236, 7235, 7236, 7235}}, true, true, 200};
-Enemy EnemyType2 = {10, {{7532, 7536, 7536, 7536, 7533}, {7530, 7532, 0, 7533, 7530}, {7536, 7535, 7535, 7535, 7536}}, {{7532, 7536, 7536, 7536, 7533}, {7530, 7532, 19630, 7533, 7530}, {7536, 7535, 7535, 7535, 7536}}, true, true, 150};
+Enemy EnemyType2 = {5, {{7532, 7536, 7536, 7536, 7533}, {7530, 7532, 0, 7533, 7530}, {7536, 7535, 7535, 7535, 7536}}, {{7532, 7536, 7536, 7536, 7533}, {7530, 7532, 19630, 7533, 7530}, {7536, 7535, 7535, 7535, 7536}}, true, true, 150};
 Enemy EnemyType1 = {5, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {0, 19730, 0, 19730, 0}}, {{19730, 19730, 19730, 19730, 19730}, {19730, 3330, 19730, 3330, 19730}, {19730, 0, 0, 0, 19730}}, true, true, 100};
 Enemy Enemies[3] = {EnemyType1, EnemyType2, EnemyType3};
 Bullet EnemyBullet = {50, 5, "╽", 333, false, true, false};
@@ -347,6 +348,9 @@ void FirePlayerBullet(GameObjects &gameObjects)
 {
     if (!gameObjects.playerBullet.isActive)
     {
+        if(settings.Sound){
+            PlayShotSound();
+        }
         gameObjects.playerBullet = NormalBullet;
         gameObjects.playerBullet.positionX = gameObjects.playerShip.positionX + 2;
         gameObjects.playerBullet.positionY = gameObjects.playerShip.positionY - 1;
@@ -595,8 +599,12 @@ void CheckEnemyCollision(GameObjects &gameObjects)
                 gameObjects.playerBullet.isActive = false;
                 Gotoxy(gameObjects.playerBullet.positionX, gameObjects.playerBullet.positionY);
                 cout << " ";
+                if(settings.Sound){
+                    PlayColistionSound();
+                }
                 if (enemy.health <= 0)
                 {
+                    
                     enemy.isAlive = false;
                     gameObjects.enemiesData.aliveEnemyCount--;
 
@@ -843,7 +851,7 @@ void NextLevel(GameOptions &game)
 void LoadLevel(GameOptions &game, int number)
 {
     CreateLevel(game);
-    for (int i = 0; i < number; i++)
+    for (int i = 1; i < number; i++)
     {
         NextLevel(game);
     }
@@ -895,6 +903,10 @@ void RunGame(GameOptions &game, bool loadGame)
     // GameOptions maingame = game;
     LoadSettings(settings);
     CreateLevel(game);
+    if(settings.Music){
+        StopBackgroundMusic();
+        PlayGameMusic();
+    }
     game.Score = 0;
     bool isLose = false;
     if (loadGame)
@@ -941,6 +953,9 @@ void RunGame(GameOptions &game, bool loadGame)
         Player player = {game.playerName, game.Score};
         UpdateLeaderboard(GetDefaultFileName(), player);
     }
+    StopGameMusic();
+            PlayBackgroundMusic();
+
 }
 /* int main()
 {

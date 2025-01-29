@@ -50,10 +50,21 @@ void PlayBackgroundMusic(){
 void StopBackgroundMusic(){
     StopSoundFile("background");
 }
+void PlayGameMusic(){
+    PlaySoundFile("game1", "gameMusic1.wav", true);
+}
+void StopGameMusic(){
+    StopSoundFile("game1");
+}
 void PlayNavigateSound() {
     PlayEffectSound("Navigate.wav");
 }
-
+void PlayShotSound() {
+    PlayEffectSound("Shot.wav");
+}
+void PlayColistionSound() {
+    PlayEffectSound("Colistion.wav");
+}
 void PlayAlertSound() {
     PlayEffectSound("Alert.wav");
 }
