@@ -257,10 +257,11 @@ void initialEnemies(EnemiesData &data)
             data.enemies[i][j].positionX = 15 + j * 10;
             data.enemies[i][j].positionY = 8 + i * 6;
             data.aliveEnemyCount++;
-            /*if (!(i == 2))
+            if (!(i == 2 && j == 5))
             {
+                data.enemies[i][j].isAlive = false;
                 data.aliveEnemyCount--;
-            }*/
+            }
         }
     }
     SetRightestEnemy(data);
@@ -683,6 +684,9 @@ void CheckEnemySpaceshipCollision(GameObjects &gameObjects)
     int i = gameObjects.playerBullet.positionY - gameObjects.EnemySpaceship.positionY;
     if ((i >= 0 && j >= 0 && j < 8 && i < 2) && gameObjects.EnemySpaceship.entity[i][j])
     {
+        if(settings.Sound){
+                    PlayColistionSound();
+            }
         gameObjects.EnemySpaceship.isAlive = false;
         gameObjects.Score += gameObjects.EnemySpaceship.Score;
         DrawScore(gameObjects);
@@ -788,7 +792,7 @@ int PlayLevel(GameOptions &game)
             DrawEnemies(gameObjects.enemiesData);
             isLose = CheckEnemyCatchShip(gameObjects);
         }
-        if (clock() % game.currentLevel.enemySpaceshipDelay == 0)
+        if (!gameObjects.EnemySpaceship.isAlive && clock() % game.currentLevel.enemySpaceshipDelay == 0)
         {
             gameObjects.EnemySpaceship = enemyspaceship;
         }
@@ -900,13 +904,14 @@ void RunGame(GameOptions &game, bool loadGame)
     HideCursor();
     
     game.difficulty = HARD;
-    // GameOptions maingame = game;
+    GameOptions maingame = game;
     LoadSettings(settings);
     CreateLevel(game);
     if(settings.Music){
         StopBackgroundMusic();
         PlayGameMusic();
     }
+    LevelOptions level = game.currentLevel;
     game.Score = 0;
     bool isLose = false;
     if (loadGame)
@@ -933,6 +938,9 @@ void RunGame(GameOptions &game, bool loadGame)
         {
             system("cls");
             NextLevel(game);
+            level = game.currentLevel;
+            game = maingame;
+            game.currentLevel = level;
             continue;
         }
 
