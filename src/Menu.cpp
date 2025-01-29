@@ -11,7 +11,7 @@ using namespace std;
 
 void SurvivalGameplaySettings()
 {
-    Form form = {"Gameplay Settings", 8, 2};
+    Form form = {"Gameplay Settings", 10, 2};
     GameOptions gameoptions;
     Generalsettings generalsettings;
     LoadSettings(generalsettings);
@@ -315,7 +315,7 @@ void HowToPlay(Display display)
 void MainMenu()
 {
     bool MusicIsPlay = false;
-    Form form = {"Main Menu", 5, 2};
+    Form form = {"Main Menu", 6, 2};
     Display display = {0, 4, 0, 1, {0, 0}};
     InitialDisplay(display);
     Generalsettings generalsettings;
