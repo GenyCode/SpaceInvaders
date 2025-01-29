@@ -257,11 +257,11 @@ void initialEnemies(EnemiesData &data)
             data.enemies[i][j].positionX = 15 + j * 10;
             data.enemies[i][j].positionY = 8 + i * 6;
             data.aliveEnemyCount++;
-            if (!(i == 2 && j == 5))
-            {
-                data.enemies[i][j].isAlive = false;
-                data.aliveEnemyCount--;
-            }
+            //if (!(i == 2 && j == 5))
+            //{
+            //    data.enemies[i][j].isAlive = false;
+            //    data.aliveEnemyCount--;
+            //}
         }
     }
     SetRightestEnemy(data);
@@ -906,13 +906,14 @@ void RunGame(GameOptions &game, bool loadGame)
     HideCursor();
     
     game.difficulty = HARD;
-    GameOptions maingame = game;
+    
     LoadSettings(settings);
     CreateLevel(game);
     if(settings.Music){
         StopBackgroundMusic();
         PlayGameMusic();
     }
+    GameOptions maingame = game;
     LevelOptions level = game.currentLevel;
     game.Score = 0;
     bool isLose = false;
