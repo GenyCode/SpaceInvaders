@@ -12,6 +12,11 @@
 #include "utilities.h"
 using namespace std;
 
+
+void LeaderboardMenu(){
+    
+}
+
 string GetDefaultFileName(){
     return "scoreBoard.txt"; 
 }
@@ -51,7 +56,7 @@ void WritePlayersToFile(string Filename, Player players[], int counter) {
         return;
     }
     for (int i = 0; i < counter; i++) {
-        dataFile << players[i].name << " " << players[i].score;
+        dataFile << players[i].name << " " << players[i].score << endl;
     }
     dataFile.close();
 }
@@ -62,9 +67,20 @@ void Leaderboard(string Filename)
 void UpdateLeaderboard(string Filename,Player player){
     Player players[20];
     int counter = 0;
+    bool isPlayed = false;
     ReadPlayersFromFile(Filename,players,counter);
+    for(int i = 0;i<counter;i++){
+        if(players[i].name ==  player.name){
+            isPlayed = true;
+            if(players[i].score > player.score){
+                players[i] = player;
+            }
+        }
+    }if(!isPlayed){
     players[counter] = player;
     counter++;
+    }
+
     bubbleSort(players, counter);
     if (counter > 20) {
         counter = 20;

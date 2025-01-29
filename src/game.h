@@ -116,3 +116,4 @@ struct GameObjects{
 	EnemySpaceship EnemySpaceship;
 	int Score = 0;
 };
+void RunGame(GameOptions &game, bool loadGame);
