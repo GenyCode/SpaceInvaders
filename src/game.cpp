@@ -179,7 +179,7 @@ void CreateLevel(GameOptions &game)
         startLevel.enemySpeed = game.EnemySpeed;
         break;
     }
-
+    startLevel.health = game.maxHealth;
     game.currentLevel = startLevel;
 }
 void SetRightestEnemy(EnemiesData &data)
@@ -273,7 +273,7 @@ GameObjects InitializeGameObjects(GameOptions &game)
 {
     GameObjects gameObjects;
     gameObjects.playerShip = ships[game.SpaceshipType];
-    gameObjects.playerShip.health = game.maxHealth;
+    gameObjects.playerShip.health = game.currentLevel.health;
     gameObjects.playerBullet = NormalBullet;
     gameObjects.EnemyBullet = EnemyBullet;
     gameObjects.wall = wall;
@@ -311,6 +311,7 @@ void DrawLevel(GameOptions &game)
 void DrawHealth(GameObjects &gameObjects, GameOptions &game)
 {
     Gotoxy(27, 2);
+    if(game.maxHealth == 0) return;
     string health = IntToString((gameObjects.playerShip.health * 100) / game.maxHealth) + "%";
     cout << FG_WHITE << "    ";
     Gotoxy(27, 2);
@@ -766,6 +767,7 @@ void LoadGame(GameOptions &game)
 }
 int PlayLevel(GameOptions &game)
 {
+
     GameObjects gameObjects = InitializeGameObjects(game);
     gameObjects.Score = game.Score;
     int totalTime = 1;
@@ -821,7 +823,7 @@ int PlayLevel(GameOptions &game)
         if (isLose)
             isRunning = false;
     }
-
+        game.currentLevel.health = gameObjects.playerShip.health;
     return gameObjects.Score;
 }
 void NextLevel(GameOptions &game)
@@ -919,6 +921,7 @@ void RunGame(GameOptions &game, bool loadGame)
         LoadGame(game);
         LoadLevel(game, game.currentLevel.number);
     }
+     
     while (1)
     {
         game.status = RUNNINGGAME;
