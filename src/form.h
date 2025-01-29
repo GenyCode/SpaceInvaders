@@ -6,7 +6,7 @@ using namespace std;
 const Coordinate start_area = {12, 8};
 const Coordinate end_area = {116, 25};
 const Coordinate footer_area = {12, 29};
-string blank_form = R"(
+const string blank_form = R"(
     ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
     ║       _______  _____  _______ _______ _______      _____ __   _ _    _ _______ ______  _______  ______ _______       ║
     ║       |______ |_____] |_____| |       |______        |   | \  |  \  /  |_____| |     \ |______ |_____/ |______       ║
@@ -37,7 +37,7 @@ string blank_form = R"(
     ╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
     ║                                                                                                                      ║
     ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝)";
-string minimal_form = R"(
+const string minimal_form = R"(
   
   
   
@@ -235,6 +235,8 @@ bool IsElementSelected(Position position, Display display);
 
 void DrawBox(int width, int height, string fg_color,string rest_color, int borderStyle);
 void RenderBackground(Display display);
+void RenderMinimalBackground(Display display);
+
 void RenderButton(Button button, Display display);
 void RenderTextbox(Textbox &textbox, Display display);
 void RenderRangebar(Rangebar &Rangebar, Display display);
@@ -253,10 +255,10 @@ void HandleNavigation(char input, Form &form, Display &display);
 void GetTextboxValue(Textbox &textbox, Display &display);
 void OnPress6(void *element, ElementType type, Display &display);
 void OnPress5(void *element, ElementType type, Display &display);
-
+int GetItemIndexByValue(Selectbox selectbox, int value);
 void HandleInput(char input, Display &display, Form &form);
 string GetKeyHints(ElementType type);
-
+void ShowMessageBox(Messagebox &messagebox,string sec_color);
 void DeleteElement(Form &form, Position position);
 void AddElementToForm(Form &form, Element &element, Position position);
 void AddButtonToForm(Form &form, Button *button);
@@ -264,6 +266,8 @@ void AddTextboxToForm(Form &form, Textbox *textbox);
 void AddRangebarToForm(Form &form, Rangebar *rangebar);
 void AddCheckboxToForm(Form &form, Checkbox *checkbox);
 void AddSelectboxToForm(Form &form, Selectbox *selectbox);
+void AddKeyboxToForm(Form &form, Keybox *keybox);
+void AddLabelToForm(Form &form, Label *label);
 void InitialElementGrid(Form &form);
 void InitialDisplay(Display &display);
 void FreeElementGrid(Form &form);

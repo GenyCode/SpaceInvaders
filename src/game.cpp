@@ -8,12 +8,12 @@
 #include <string>
 #include <fstream>
 #include <chrono>
-// #include "utilities.cpp"
+#include "utilities.h"
 #include "game.h"
 #include "color.h"
-#include "settings.cpp"
-#include "form.cpp"
-#include "Leaderboard.cpp"
+#include "settings.h"
+#include "form.h"
+#include "Leaderboard.h"
 void DrawEnemies(EnemiesData &data);
 Generalsettings settings;
 EnemySpaceship enemyspaceship = {1, 1, {{0, 20230, 19730, 19730, 19730, 19730, 20230, 0}, {20230, 20230, 20230, 20230, 20230, 20230, 20230, 20230}}, 500, 5, 5};
@@ -855,9 +855,10 @@ void LoseAnimation()
 }
 void RunGame(GameOptions &game, bool loadGame)
 {
+    system("cls");
     HideCursor();
     game.difficulty = HARD;
-    //GameOptions maingame = game;
+    // GameOptions maingame = game;
     LoadSettings(settings);
     CreateLevel(game);
     int Score = 0;
@@ -906,7 +907,7 @@ void RunGame(GameOptions &game, bool loadGame)
         UpdateLeaderboard(GetDefaultFileName(), player);
     }
 }
-int main()
+/* int main()
 {
     system("cls");
     HideCursor();
@@ -914,4 +915,4 @@ int main()
     GameOptions game;
     RunGame(game, true);
     return 0;
-}
+} */
