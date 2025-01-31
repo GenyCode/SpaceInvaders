@@ -8,6 +8,9 @@ int GetSoundFileDuration(const string& alias);
 void PlayBackgroundMusic();
 void StopBackgroundMusic();
 void PlayNavigateSound();
-
+void PlayShotSound();
+void PlayColistionSound();
 void PlayChangeSound();
 void PlayAlertSound();
+void PlayGameMusic();
+void StopGameMusic();
